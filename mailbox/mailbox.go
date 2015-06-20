@@ -34,13 +34,17 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 
 			idUrl, _ := s.Find("a.lm").Attr("href")
 
-			mail := &Mail{
-				id: re.FindStringSubmatch(idUrl)[1],
-				Title: s.Find("span.lmf").Text(),
-				SumUp: s.Find("span.lms").Text(),
-			}
+			matches := re.FindStringSubmatch(idUrl)
 
-			mails = append(mails, mail)
+			if len(matches) == 2 {
+				mail := &Mail{
+					id: matches[1],
+					Title: s.Find("span.lmf").Text(),
+					SumUp: s.Find("span.lms").Text(),
+				}
+
+				mails = append(mails, mail)
+			}
 		})
 	}
 
