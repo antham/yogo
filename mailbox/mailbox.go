@@ -5,7 +5,9 @@ import "fmt"
 import "log"
 import "regexp"
 
-var baseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=r&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
+
+var baseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
+var mailPerPage = 15
 
 type Mailbox struct {
 	mail  string
@@ -20,24 +22,31 @@ func NewMailbox(mail string) *Mailbox {
 func (m *Mailbox) GetMails(limit int) []*Mail {
 	var mails []*Mail
 
-	doc, err := goquery.NewDocument(fmt.Sprintf(baseUrl, m.mail))
-	if err != nil {
-		log.Fatal(err)
-	}
+	for counter := 1; counter <= int(limit / mailPerPage) + 1; counter++ {
 
-	doc.Find("div.um").Each(func(i int, s *goquery.Selection) {
-		re := regexp.MustCompile("mail.php.b=.*?id=(.*)")
-
-		idUrl, _ := s.Find("a.lm").Attr("href")
-
-		mail := &Mail{
-			id: re.FindStringSubmatch(idUrl)[1],
-			Title: s.Find("span.lmf").Text(),
-			SumUp: s.Find("span.lms").Text(),
+		doc, err := goquery.NewDocument(fmt.Sprintf(baseUrl, m.mail, counter))
+		if err != nil {
+			log.Fatal(err)
 		}
 
-		mails = append(mails, mail)
-	})
+		doc.Find("div.um").Each(func(i int, s *goquery.Selection) {
+			re := regexp.MustCompile("mail.php.b=.*?id=(.*)")
 
-	return mails
+			idUrl, _ := s.Find("a.lm").Attr("href")
+
+			mail := &Mail{
+				id: re.FindStringSubmatch(idUrl)[1],
+				Title: s.Find("span.lmf").Text(),
+				SumUp: s.Find("span.lms").Text(),
+			}
+
+			mails = append(mails, mail)
+		})
+	}
+
+	if limit >= len(mails) {
+		return mails
+	}
+
+	return mails[:limit]
 }

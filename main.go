@@ -10,7 +10,7 @@ var (
 	verbose = kingpin.Flag("verbose", "Verbose mode.").Short('v').Bool()
 
 	mailboxArgs      = app.Command("mailbox", "Handle mail")
-	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Int()
+	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Default("1").Int()
 	mailboxMailArgs  = mailboxArgs.Arg("mail", "mail").Required().String()
 	mailboxFlushArgs = mailboxArgs.Flag("flush", "Flush inbox").Bool()
 )
