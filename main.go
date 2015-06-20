@@ -8,10 +8,10 @@ var (
 	app     = kingpin.New("yogo", "Interact with yopmail from command line")
 	verbose = kingpin.Flag("verbose", "Verbose mode.").Short('v').Bool()
 
-	mailbox      = app.Command("mailbox", "Handle mail")
-	mailboxEmail = mailbox.Arg("email", "Email").Required().String()
-	mailboxMax   = mailbox.Flag("limit", "Maximal number of messages to fetch").Int()
-	mailboxFlush = mailbox.Flag("flush", "Flush inbox").Bool()
+	mailboxArgs      = app.Command("mailbox", "Handle mail")
+	mailboxEmailArgs = mailboxArgs.Arg("email", "Email").Required().String()
+	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Int()
+	mailboxFlushArgs = mailboxArgs.Flag("flush", "Flush inbox").Bool()
 )
 
 func main() {
