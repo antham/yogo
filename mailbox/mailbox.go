@@ -32,8 +32,8 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 
 		mail := &Mail{
 			id: re.FindStringSubmatch(idUrl)[1],
-			title: s.Find("span.lmf").Text(),
-			sumUp: s.Find("span.lms").Text(),
+			Title: s.Find("span.lmf").Text(),
+			SumUp: s.Find("span.lms").Text(),
 		}
 
 		mails = append(mails, mail)

@@ -4,9 +4,9 @@ import "time"
 
 type Mail struct {
 	id      string
-	sumUp   string
-	title   string
 	from    string
+	SumUp   string
+	Title   string
 	at      time.Time
 	headers []string
 	body    string
