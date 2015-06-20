@@ -10,15 +10,15 @@ var (
 	verbose = kingpin.Flag("verbose", "Verbose mode.").Short('v').Bool()
 
 	mailboxArgs      = app.Command("mailbox", "Handle mail")
-	mailboxEmailArgs = mailboxArgs.Arg("email", "Email").Required().String()
 	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Int()
+	mailboxMailArgs  = mailboxArgs.Arg("mail", "mail").Required().String()
 	mailboxFlushArgs = mailboxArgs.Flag("flush", "Flush inbox").Bool()
 )
 
 func main() {
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
-	mailbox := mailbox.NewMailbox(*mailboxEmailArgs)
+	mailbox := mailbox.NewMailbox(*mailboxMailArgs)
 	mails := mailbox.GetMails(*mailboxLimitArgs)
 	view.OutputMails(mails)
 }
