@@ -3,6 +3,7 @@ package main
 import "gopkg.in/alecthomas/kingpin.v2"
 import "os"
 import "github.com/antham/yogo/mailbox"
+import "github.com/antham/yogo/view"
 
 var (
 	app     = kingpin.New("yogo", "Interact with yopmail from command line")
@@ -16,4 +17,8 @@ var (
 
 func main() {
 	kingpin.MustParse(app.Parse(os.Args[1:]))
+
+	mailbox := mailbox.NewMailbox(*mailboxEmailArgs)
+	mails := mailbox.GetMails(*mailboxLimitArgs)
+	view.OutputMails(mails)
 }
