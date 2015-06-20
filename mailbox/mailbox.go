@@ -7,17 +7,17 @@ import "regexp"
 
 var baseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=r&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
 
-type MailBox struct {
+type Mailbox struct {
 	mail  string
 }
 
-func NewMailBox(mail string) *MailBox {
-	return &MailBox{
+func NewMailbox(mail string) *Mailbox {
+	return &Mailbox{
 		mail: mail,
 	}
 }
 
-func (m *MailBox) GetMails(limit int) []*Mail {
+func (m *Mailbox) GetMails(limit int) []*Mail {
 	var mails []*Mail
 
 	doc, err := goquery.NewDocument(fmt.Sprintf(baseUrl, m.mail))
