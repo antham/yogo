@@ -9,7 +9,6 @@ var baseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=r&d=&ctrl=&scrl=&s
 
 type MailBox struct {
 	mail  string
-	mails []string
 }
 
 func NewMailBox(mail string) *MailBox {
