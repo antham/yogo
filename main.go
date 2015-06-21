@@ -9,12 +9,12 @@ var (
 	app     = kingpin.New("yogo", "Interact with yopmail from command line")
 	verbose = kingpin.Flag("verbose", "Verbose mode.").Short('v').Bool()
 
-	mailboxArgs      = app.Command("mailbox", "Handle mail")
+	mailboxArgs      = app.Command("mailbox", "Manage mailbox")
 	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Default("1").Int()
 	mailboxMailArgs  = mailboxArgs.Arg("mail", "mail").Required().String()
 	mailboxFlushArgs = mailboxArgs.Flag("flush", "Flush inbox").Bool()
 
-	mailArgs         = app.Command("mail", "Handle mail")
+	mailArgs         = app.Command("mail", "Manage mail")
 	mailMailArgs     = mailArgs.Arg("mail", "mail").Required().String()
 	mailPositionArgs = mailArgs.Arg("position", "Position in mailbox").Default("1").Int()
 )
