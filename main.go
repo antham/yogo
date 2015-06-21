@@ -13,12 +13,22 @@ var (
 	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Default("1").Int()
 	mailboxMailArgs  = mailboxArgs.Arg("mail", "mail").Required().String()
 	mailboxFlushArgs = mailboxArgs.Flag("flush", "Flush inbox").Bool()
+
+	mailArgs         = app.Command("mail", "Handle mail")
+	mailMailArgs     = mailArgs.Arg("mail", "mail").Required().String()
+	mailPositionArgs = mailArgs.Arg("position", "Position in mailbox").Default("1").Int()
 )
 
 func main() {
-	kingpin.MustParse(app.Parse(os.Args[1:]))
-
-	mailbox := mailbox.NewMailbox(*mailboxMailArgs)
-	mails := mailbox.GetMails(*mailboxLimitArgs)
-	view.OutputMails(mails)
+	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
+	case mailboxArgs.FullCommand():
+		mailbox := mailbox.NewMailbox(*mailboxMailArgs)
+		mails := mailbox.GetMails(*mailboxLimitArgs)
+		view.OutputMails(mails)
+	case mailArgs.FullCommand():
+		mailbox := mailbox.NewMailbox(*mailMailArgs)
+		mails := mailbox.GetMails(*mailPositionArgs)
+		mail := mailbox.GetMail(mails[*mailPositionArgs-1].Id)
+		view.OutputCompleteMail(mail)
+	}
 }

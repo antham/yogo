@@ -19,3 +19,12 @@ func OutputMail(mail *mailbox.Mail) {
 	fmt.Printf("%s\n%s\n", yellow(mail.Title), cyan(mail.SumUp))
 	fmt.Printf("---\n")
 }
+
+func OutputCompleteMail(mail *mailbox.Mail) {
+	fmt.Printf("---\n")
+	fmt.Printf("From  : %s <%s>\n", magenta(mail.FromString), magenta(mail.FromMail))
+	fmt.Printf("Title : %s\n", yellow(mail.Title))
+	fmt.Printf("---\n")
+	fmt.Printf(cyan(mail.Body))
+	fmt.Printf("\n---\n")
+}
