@@ -38,7 +38,7 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 
 			if len(matches) == 2 {
 				mail := &Mail{
-					id:    matches[1],
+					Id:    matches[1],
 					Title: s.Find("span.lmf").Text(),
 					SumUp: s.Find("span.lms").Text(),
 				}

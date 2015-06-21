@@ -3,7 +3,7 @@ package mailbox
 import "time"
 
 type Mail struct {
-	id         string
+	Id         string
 	FromString string
 	FromMail   string
 	SumUp      string
