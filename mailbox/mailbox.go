@@ -10,7 +10,7 @@ var baseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&
 var mailPerPage = 15
 
 type Mailbox struct {
-	mail  string
+	mail string
 }
 
 func NewMailbox(mail string) *Mailbox {
@@ -22,7 +22,7 @@ func NewMailbox(mail string) *Mailbox {
 func (m *Mailbox) GetMails(limit int) []*Mail {
 	var mails []*Mail
 
-	for counter := 1; counter <= int(limit / mailPerPage) + 1; counter++ {
+	for counter := 1; counter <= int(limit/mailPerPage)+1; counter++ {
 
 		doc, err := goquery.NewDocument(fmt.Sprintf(baseUrl, m.mail, counter))
 		if err != nil {
@@ -38,7 +38,7 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 
 			if len(matches) == 2 {
 				mail := &Mail{
-					id: matches[1],
+					id:    matches[1],
 					Title: s.Find("span.lmf").Text(),
 					SumUp: s.Find("span.lms").Text(),
 				}

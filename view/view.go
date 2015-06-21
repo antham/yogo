@@ -9,7 +9,7 @@ var cyan = color.New(color.FgCyan).SprintFunc()
 var yellow = color.New(color.FgYellow).SprintFunc()
 
 func OutputMails(mails []*mailbox.Mail) {
-	for _,mail := range(mails) {
+	for _, mail := range mails {
 		OutputMail(mail)
 	}
 }
