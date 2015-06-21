@@ -4,9 +4,10 @@ import "github.com/PuerkitoBio/goquery"
 import "fmt"
 import "log"
 import "regexp"
+import "strings"
 
-
-var baseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
+var mailboxBaseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
+var mailBaseUrl = "http://www.yopmail.com/mail.php?b=%v&id=%v"
 var mailPerPage = 15
 
 type Mailbox struct {
@@ -24,7 +25,7 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 
 	for counter := 1; counter <= int(limit/mailPerPage)+1; counter++ {
 
-		doc, err := goquery.NewDocument(fmt.Sprintf(baseUrl, m.mail, counter))
+		doc, err := goquery.NewDocument(fmt.Sprintf(mailboxBaseUrl, m.mail, counter))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -53,4 +54,30 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 	}
 
 	return mails[:limit]
+}
+
+func (m *Mailbox) GetMail(id string) *Mail {
+
+	doc, err := goquery.NewDocument(fmt.Sprintf(mailBaseUrl, m.mail, id))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var mail *Mail
+
+	doc.Find("body").Each(func(i int, s *goquery.Selection) {
+		re := regexp.MustCompile(".*?: (.*?)<(.*?)>")
+
+		matches := re.FindStringSubmatch(s.Find("div#mailhaut div:nth-child(2)").Text())
+
+		mail = &Mail{
+			Id:         id,
+			FromString: matches[1],
+			FromMail:   matches[2],
+			Body:       strings.TrimSpace(s.Find("div#mailmillieu").Text()),
+			Title:      strings.TrimSpace(s.Find("div#mailhaut .f16").Text()),
+		}
+	})
+
+	return mail
 }
