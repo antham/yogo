@@ -7,6 +7,7 @@ import "fmt"
 var blue = color.New(color.FgBlue).SprintFunc()
 var cyan = color.New(color.FgCyan).SprintFunc()
 var yellow = color.New(color.FgYellow).SprintFunc()
+var magenta = color.New(color.FgMagenta).SprintFunc()
 
 func OutputMails(mails []*mailbox.Mail) {
 	for _, mail := range mails {
