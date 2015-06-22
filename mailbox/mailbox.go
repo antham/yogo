@@ -31,15 +31,24 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 		}
 
 		doc.Find("div.um").Each(func(i int, s *goquery.Selection) {
-			re := regexp.MustCompile("mail.php.b=.*?id=(.*)")
 
-			idUrl, _ := s.Find("a.lm").Attr("href")
+			id := func(s *goquery.Selection) string {
+				re := regexp.MustCompile("mail.php.b=.*?id=(.*)")
 
-			matches := re.FindStringSubmatch(idUrl)
+				idUrl, _ := s.Find("a.lm").Attr("href")
 
-			if len(matches) == 2 {
+				matches := re.FindStringSubmatch(idUrl)
+
+				if len(matches) == 2 {
+					return matches[1]
+				}
+
+				return ""
+			}(s)
+
+			if id != "" {
 				mail := &Mail{
-					Id:    matches[1],
+					Id:    id,
 					Title: s.Find("span.lmf").Text(),
 					SumUp: s.Find("span.lms").Text(),
 				}
@@ -66,14 +75,24 @@ func (m *Mailbox) GetMail(id string) *Mail {
 	var mail *Mail
 
 	doc.Find("body").Each(func(i int, s *goquery.Selection) {
-		re := regexp.MustCompile(".*?: (.*?)<(.*?)>")
 
-		matches := re.FindStringSubmatch(s.Find("div#mailhaut div:nth-child(2)").Text())
+		fromString, fromMail := func(s *goquery.Selection) (string, string) {
+
+			re := regexp.MustCompile(".*?: (.*?)<(.*?)>")
+
+			matches := re.FindStringSubmatch(s.Find("div#mailhaut div:nth-child(2)").Text())
+
+			if len(matches) == 3 {
+				return matches[1], matches[2]
+			}
+
+			return "", ""
+		}(s)
 
 		mail = &Mail{
 			Id:         id,
-			FromString: matches[1],
-			FromMail:   matches[2],
+			FromString: fromString,
+			FromMail:   fromMail,
 			Body:       strings.TrimSpace(s.Find("div#mailmillieu").Text()),
 			Title:      strings.TrimSpace(s.Find("div#mailhaut .f16").Text()),
 		}
