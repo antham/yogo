@@ -12,6 +12,3 @@ type Mail struct {
 	headers    []string
 	Body       string
 }
-
-func NewMail() {
-}
