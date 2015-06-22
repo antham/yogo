@@ -4,6 +4,8 @@ import "github.com/PuerkitoBio/goquery"
 import "fmt"
 import "log"
 import "regexp"
+
+import "time"
 import "strings"
 
 var mailboxBaseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
@@ -89,10 +91,30 @@ func (m *Mailbox) GetMail(id string) *Mail {
 			return "", ""
 		}(s)
 
+		date := func(s *goquery.Selection) time.Time {
+			re := regexp.MustCompile(".*?(\\d+/\\d+/\\d+).*?(\\d+:\\d+)")
+
+			matches := re.FindStringSubmatch(s.Find("div#mailhaut div:nth-child(4)").Text())
+
+			if len(matches) != 3 {
+				return time.Time{}
+			}
+
+			date, error := time.Parse("02/01/2006 15:04", fmt.Sprintf("%v %v", matches[1], matches[2]))
+
+			if error != nil {
+				return time.Time{}
+			}
+
+			return date
+
+		}(s)
+
 		mail = &Mail{
 			Id:         id,
 			FromString: fromString,
 			FromMail:   fromMail,
+			Date:       date,
 			Body:       strings.TrimSpace(s.Find("div#mailmillieu").Text()),
 			Title:      strings.TrimSpace(s.Find("div#mailhaut .f16").Text()),
 		}

@@ -21,9 +21,11 @@ func OutputMail(mail *mailbox.Mail) {
 }
 
 func OutputCompleteMail(mail *mailbox.Mail) {
+
 	fmt.Printf("---\n")
 	fmt.Printf("From  : %s <%s>\n", magenta(mail.FromString), magenta(mail.FromMail))
 	fmt.Printf("Title : %s\n", yellow(mail.Title))
+	fmt.Printf("Date  : %s\n", blue(mail.Date.Format("2006-01-02 15:04")))
 	fmt.Printf("---\n")
 	fmt.Printf(cyan(mail.Body))
 	fmt.Printf("\n---\n")
