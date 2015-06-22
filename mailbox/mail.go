@@ -8,7 +8,7 @@ type Mail struct {
 	FromMail   string
 	SumUp      string
 	Title      string
-	at         time.Time
+	Date       time.Time
 	headers    []string
 	Body       string
 }
