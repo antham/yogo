@@ -11,7 +11,6 @@ var (
 
 	mailboxArgs      = app.Command("mailbox", "Manage mailbox")
 	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Default("1").Int()
-	mailboxFlushArgs = mailboxArgs.Flag("flush", "Flush inbox").Bool()
 	mailboxMailArgs  = mailboxArgs.Arg("mail", "Targeted inbox").Required().String()
 
 	mailArgs         = app.Command("mail", "Manage mail")
