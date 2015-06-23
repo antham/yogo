@@ -9,34 +9,44 @@ var (
 	app     = kingpin.New("yogo", "Interact with yopmail from command line")
 	verbose = kingpin.Flag("verbose", "Verbose mode.").Short('v').Bool()
 
-	mailboxArgs      = app.Command("mailbox", "Manage mailbox")
-	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Default("1").Int()
-	mailboxMailArgs  = mailboxArgs.Arg("mail", "Targeted inbox").Required().String()
+	mailboxArgs       = app.Command("mailbox", "Manage mailbox")
+	mailboxLimitArgs  = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Default("1").Int()
+	mailboxMailArgs   = mailboxArgs.Arg("mail", "Targeted inbox").Required().String()
+	mailboxActionArgs = mailboxArgs.Arg("action", "Action to do").Default("list").Enum("list", "flush")
 
 	mailArgs         = app.Command("mail", "Manage mail")
 	mailMailArgs     = mailArgs.Arg("mail", "Targeted inbox").Required().String()
 	mailPositionArgs = mailArgs.Arg("position", "Position in mailbox").Default("1").Int()
+	mailActionArgs   = mailArgs.Arg("action", "Action to do").Default("read").Enum("read", "delete")
 )
 
 func main() {
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case mailboxArgs.FullCommand():
-		callMailboxAction()
+		callMailboxAction(mailboxActionArgs)
 	case mailArgs.FullCommand():
-		callMailAction()
+		callMailAction(mailActionArgs)
 	}
 }
 
-func callMailboxAction() {
+func callMailboxAction(action *string) {
 	mailbox := mailboxmod.NewMailbox(*mailboxMailArgs)
-	mailbox.Fetch(*mailboxLimitArgs)
-	mailboxmod.Render(mailbox)
+
+	switch *action {
+	case "list":
+		mailbox.Fetch(*mailboxLimitArgs)
+		mailboxmod.Render(mailbox)
+	}
 }
 
-func callMailAction() {
+func callMailAction(action *string) {
 	mailbox := mailboxmod.NewMailbox(*mailMailArgs)
 	mailbox.Fetch(*mailPositionArgs)
 	mail := mailbox.Get(*mailPositionArgs - 1)
-	mail.Fetch()
-	mailmod.Render(mail)
+
+	switch *action {
+	case "read":
+		mail.Fetch()
+		mailmod.Render(mail)
+	}
 }
