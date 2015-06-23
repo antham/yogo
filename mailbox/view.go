@@ -4,8 +4,8 @@ import "github.com/antham/yogo/utils"
 import "github.com/antham/yogo/mail"
 import "fmt"
 
-func OutputMails(mails []*mail.Mail) {
-	for _, mail := range mails {
+func OutputMails(mailbox *Mailbox) {
+	for _, mail := range mailbox.GetAll() {
 		OutputMail(mail)
 	}
 }

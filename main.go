@@ -23,12 +23,13 @@ func main() {
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case mailboxArgs.FullCommand():
 		mailbox := mailboxmod.NewMailbox(*mailboxMailArgs)
-		mails := mailbox.GetMails(*mailboxLimitArgs)
-		mailboxmod.OutputMails(mails)
+		mailbox.Fetch(*mailboxLimitArgs)
+		mailboxmod.OutputMails(mailbox)
 	case mailArgs.FullCommand():
 		mailbox := mailboxmod.NewMailbox(*mailMailArgs)
-		mails := mailbox.GetMails(*mailPositionArgs)
-		mail := mailbox.GetMail(mails[*mailPositionArgs-1].Id)
+		mailbox.Fetch(*mailPositionArgs)
+		mail := mailbox.Get(*mailPositionArgs - 1)
+		mail.Fetch()
 		mailmod.OutputMail(mail)
 	}
 }
