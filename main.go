@@ -11,11 +11,11 @@ var (
 
 	mailboxArgs      = app.Command("mailbox", "Manage mailbox")
 	mailboxLimitArgs = mailboxArgs.Flag("limit", "Maximal number of messages to fetch").Default("1").Int()
-	mailboxMailArgs  = mailboxArgs.Arg("mail", "mail").Required().String()
 	mailboxFlushArgs = mailboxArgs.Flag("flush", "Flush inbox").Bool()
+	mailboxMailArgs  = mailboxArgs.Arg("mail", "Targeted inbox").Required().String()
 
 	mailArgs         = app.Command("mail", "Manage mail")
-	mailMailArgs     = mailArgs.Arg("mail", "mail").Required().String()
+	mailMailArgs     = mailArgs.Arg("mail", "Targeted inbox").Required().String()
 	mailPositionArgs = mailArgs.Arg("position", "Position in mailbox").Default("1").Int()
 )
 
