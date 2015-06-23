@@ -1,6 +1,7 @@
 package mailbox
 
 import "github.com/PuerkitoBio/goquery"
+import mailmod "github.com/antham/yogo/mail"
 import "fmt"
 import "log"
 import "regexp"
@@ -22,8 +23,8 @@ func NewMailbox(mail string) *Mailbox {
 	}
 }
 
-func (m *Mailbox) GetMails(limit int) []*Mail {
-	var mails []*Mail
+func (m *Mailbox) GetMails(limit int) []*mailmod.Mail {
+	var mails []*mailmod.Mail
 
 	for counter := 1; counter <= int(limit/mailPerPage)+1; counter++ {
 
@@ -49,7 +50,7 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 			}(s)
 
 			if id != "" {
-				mail := &Mail{
+				mail := &mailmod.Mail{
 					Id:    id,
 					Title: s.Find("span.lmf").Text(),
 					SumUp: s.Find("span.lms").Text(),
@@ -67,14 +68,14 @@ func (m *Mailbox) GetMails(limit int) []*Mail {
 	return mails[:limit]
 }
 
-func (m *Mailbox) GetMail(id string) *Mail {
+func (m *Mailbox) GetMail(id string) *mailmod.Mail {
 
 	doc, err := goquery.NewDocument(fmt.Sprintf(mailBaseUrl, m.mail, id))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var mail *Mail
+	var mail *mailmod.Mail
 
 	doc.Find("body").Each(func(i int, s *goquery.Selection) {
 
@@ -110,7 +111,7 @@ func (m *Mailbox) GetMail(id string) *Mail {
 
 		}(s)
 
-		mail = &Mail{
+		mail = &mailmod.Mail{
 			Id:         id,
 			FromString: fromString,
 			FromMail:   fromMail,

@@ -1,21 +1,9 @@
-package view
+package mail
 
-import "github.com/antham/yogo/mailbox"
 import "github.com/antham/yogo/utils"
 import "fmt"
 
-func OutputMails(mails []*mailbox.Mail) {
-	for _, mail := range mails {
-		OutputMail(mail)
-	}
-}
-
-func OutputMail(mail *mailbox.Mail) {
-	fmt.Printf("%s\n%s\n", utils.Yellow(mail.Title), utils.Cyan(mail.SumUp))
-	fmt.Printf("---\n")
-}
-
-func OutputCompleteMail(mail *mailbox.Mail) {
+func OutputMail(mail *Mail) {
 
 	fmt.Printf("---\n")
 	fmt.Printf("From  : %s <%s>\n", utils.Magenta(mail.FromString), utils.Magenta(mail.FromMail))
