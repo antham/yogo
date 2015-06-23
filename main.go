@@ -21,14 +21,22 @@ var (
 func main() {
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case mailboxArgs.FullCommand():
-		mailbox := mailboxmod.NewMailbox(*mailboxMailArgs)
-		mailbox.Fetch(*mailboxLimitArgs)
-		mailboxmod.Render(mailbox)
+		callMailboxAction()
 	case mailArgs.FullCommand():
-		mailbox := mailboxmod.NewMailbox(*mailMailArgs)
-		mailbox.Fetch(*mailPositionArgs)
-		mail := mailbox.Get(*mailPositionArgs - 1)
-		mail.Fetch()
-		mailmod.Render(mail)
+		callMailAction()
 	}
+}
+
+func callMailboxAction() {
+	mailbox := mailboxmod.NewMailbox(*mailboxMailArgs)
+	mailbox.Fetch(*mailboxLimitArgs)
+	mailboxmod.Render(mailbox)
+}
+
+func callMailAction() {
+	mailbox := mailboxmod.NewMailbox(*mailMailArgs)
+	mailbox.Fetch(*mailPositionArgs)
+	mail := mailbox.Get(*mailPositionArgs - 1)
+	mail.Fetch()
+	mailmod.Render(mail)
 }
