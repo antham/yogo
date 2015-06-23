@@ -4,13 +4,13 @@ import "github.com/antham/yogo/utils"
 import "github.com/antham/yogo/mail"
 import "fmt"
 
-func OutputMails(mailbox *Mailbox) {
+func Render(mailbox *Mailbox) {
 	for _, mail := range mailbox.GetAll() {
-		OutputMail(mail)
+		renderMail(mail)
 	}
 }
 
-func OutputMail(mail *mail.Mail) {
+func renderMail(mail *mail.Mail) {
 	fmt.Printf("%s\n%s\n", utils.Yellow(mail.Title), utils.Cyan(mail.SumUp))
 	fmt.Printf("---\n")
 }

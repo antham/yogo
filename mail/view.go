@@ -3,7 +3,7 @@ package mail
 import "github.com/antham/yogo/utils"
 import "fmt"
 
-func OutputMail(mail *Mail) {
+func Render(mail *Mail) {
 
 	fmt.Printf("---\n")
 	fmt.Printf("From  : %s <%s>\n", utils.Magenta(mail.FromString), utils.Magenta(mail.FromMail))

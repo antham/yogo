@@ -24,12 +24,12 @@ func main() {
 	case mailboxArgs.FullCommand():
 		mailbox := mailboxmod.NewMailbox(*mailboxMailArgs)
 		mailbox.Fetch(*mailboxLimitArgs)
-		mailboxmod.OutputMails(mailbox)
+		mailboxmod.Render(mailbox)
 	case mailArgs.FullCommand():
 		mailbox := mailboxmod.NewMailbox(*mailMailArgs)
 		mailbox.Fetch(*mailPositionArgs)
 		mail := mailbox.Get(*mailPositionArgs - 1)
 		mail.Fetch()
-		mailmod.OutputMail(mail)
+		mailmod.Render(mail)
 	}
 }
