@@ -36,6 +36,8 @@ func callMailboxAction(action *string) {
 	case "list":
 		mailbox.Fetch(*mailboxLimitArgs)
 		mailboxmod.Render(mailbox)
+	case "flush":
+		mailbox.Flush()
 	}
 }
 

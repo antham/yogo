@@ -5,8 +5,11 @@ import mailmod "github.com/antham/yogo/mail"
 import "fmt"
 import "log"
 import "regexp"
+import "net/http"
+import "strings"
 
 var indexUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
+var deleteUrl = "http://www.yopmail.com/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.6&r_c=&id="
 var mailPerPage = 15
 
 type Mailbox struct {
@@ -67,4 +70,30 @@ func (m *Mailbox) GetAll() []*mailmod.Mail {
 
 func (m *Mailbox) Get(position int) *mailmod.Mail {
 	return m.mails[position]
+}
+
+func (m *Mailbox) Flush() {
+	id := func() string {
+		doc, err := goquery.NewDocument(fmt.Sprintf(indexUrl, m.mail, 1))
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		idUrl, _ := doc.Find("div.um a.lm").First().Attr("href")
+
+		re := regexp.MustCompile("mail.php.b=.*?id=(.*)")
+
+		matches := re.FindStringSubmatch(idUrl)
+
+		if len(matches) == 2 {
+			return matches[1]
+		}
+
+		return ""
+	}()
+
+	if id != "" {
+		http.Get(fmt.Sprintf(deleteUrl, m.mail, strings.TrimLeft(id, "m")))
+	}
 }
