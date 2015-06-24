@@ -76,6 +76,10 @@ func (m *Mailbox) Get(position int) *mailmod.Mail {
 	return nil
 }
 
+func (m *Mailbox) Count() int {
+	return len(m.mails)
+}
+
 func (m *Mailbox) Flush() {
 	id := func() string {
 		doc, err := goquery.NewDocument(fmt.Sprintf(indexUrl, m.mail, 1))
