@@ -2,7 +2,6 @@ package main
 
 import "gopkg.in/alecthomas/kingpin.v2"
 import "os"
-import "errors"
 import mailboxmod "github.com/antham/yogo/mailbox"
 import mailmod "github.com/antham/yogo/mail"
 
@@ -53,7 +52,7 @@ func callMailAction(action *string) {
 			mail.Fetch()
 			mailmod.Render(mail)
 		}
+	} else {
+		mailmod.RenderMessage("No mail found")
 	}
-
-	mailmod.RenderError(errors.New("No mail found"))
 }

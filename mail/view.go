@@ -14,6 +14,6 @@ func Render(mail *Mail) {
 	fmt.Printf("\n---\n")
 }
 
-func RenderError(error error) {
-	fmt.Println(utils.Red(error))
+func RenderMessage(string string) {
+	fmt.Println(utils.Cyan(string))
 }
