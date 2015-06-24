@@ -26,7 +26,7 @@ func NewMailbox(mail string) *Mailbox {
 func (m *Mailbox) Fetch(limit int) {
 	var mails []*mailmod.Mail
 
-	for counter := 1; counter <= int(limit/mailPerPage)+1; counter++ {
+	for counter := 1; counter <= int(limit/mailPerPage)+1 && limit >= len(mails); counter++ {
 
 		doc, err := goquery.NewDocument(fmt.Sprintf(indexUrl, m.mail, counter))
 		if err != nil {
@@ -55,13 +55,13 @@ func (m *Mailbox) Fetch(limit int) {
 				mails = append(mails, mail)
 			}
 		})
-
-		if limit >= len(mails) {
-			m.mails = mails
-		}
 	}
 
-	m.mails = mails[:limit]
+	if limit >= len(mails) {
+		m.mails = mails
+	} else if len(mails) != 0 {
+		m.mails = mails[:limit]
+	}
 }
 
 func (m *Mailbox) GetAll() []*mailmod.Mail {
