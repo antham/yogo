@@ -6,7 +6,7 @@ import "fmt"
 import "log"
 import "regexp"
 
-var mailboxBaseUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
+var indexUrl = "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id="
 var mailPerPage = 15
 
 type Mailbox struct {
@@ -25,7 +25,7 @@ func (m *Mailbox) Fetch(limit int) {
 
 	for counter := 1; counter <= int(limit/mailPerPage)+1; counter++ {
 
-		doc, err := goquery.NewDocument(fmt.Sprintf(mailboxBaseUrl, m.mail, counter))
+		doc, err := goquery.NewDocument(fmt.Sprintf(indexUrl, m.mail, counter))
 		if err != nil {
 			log.Fatal(err)
 		}

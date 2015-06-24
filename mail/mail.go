@@ -8,7 +8,7 @@ import "regexp"
 
 import "strings"
 
-var mailBaseUrl = "http://www.yopmail.com/mail.php?b=%v&id=%v"
+var getUrl = "http://www.yopmail.com/mail.php?b=%v&id=%v"
 
 type Mail struct {
 	id         string
@@ -33,7 +33,7 @@ func NewMail(mail string, id string, title string, sumUp string) *Mail {
 
 func (m *Mail) Fetch() {
 
-	doc, err := goquery.NewDocument(fmt.Sprintf(mailBaseUrl, m.mail, m.id))
+	doc, err := goquery.NewDocument(fmt.Sprintf(getUrl, m.mail, m.id))
 	if err != nil {
 		log.Fatal(err)
 	}
