@@ -14,3 +14,7 @@ func renderMail(mail *mail.Mail) {
 	fmt.Printf("%s\n%s\n", utils.Yellow(mail.Title), utils.Cyan(mail.SumUp))
 	fmt.Printf("---\n")
 }
+
+func RenderMessage(string string) {
+	fmt.Println(utils.Cyan(string))
+}

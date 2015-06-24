@@ -32,12 +32,16 @@ func main() {
 func callMailboxAction(action *string) {
 	mailbox := mailboxmod.NewMailbox(*mailboxMailArgs)
 
-	switch *action {
-	case "list":
-		mailbox.Fetch(*mailboxLimitArgs)
-		mailboxmod.Render(mailbox)
-	case "flush":
-		mailbox.Flush()
+	if mailbox.Count() != 0 {
+		switch *action {
+		case "list":
+			mailbox.Fetch(*mailboxLimitArgs)
+			mailboxmod.Render(mailbox)
+		case "flush":
+			mailbox.Flush()
+		}
+	} else {
+		mailboxmod.RenderMessage("Mo mails found")
 	}
 }
 
