@@ -2,6 +2,7 @@ package main
 
 import "gopkg.in/alecthomas/kingpin.v2"
 import "os"
+import "errors"
 import mailboxmod "github.com/antham/yogo/mailbox"
 import mailmod "github.com/antham/yogo/mail"
 
@@ -46,9 +47,13 @@ func callMailAction(action *string) {
 	mailbox.Fetch(*mailPositionArgs)
 	mail := mailbox.Get(*mailPositionArgs - 1)
 
-	switch *action {
-	case "read":
-		mail.Fetch()
-		mailmod.Render(mail)
+	if mail != nil {
+		switch *action {
+		case "read":
+			mail.Fetch()
+			mailmod.Render(mail)
+		}
 	}
+
+	mailmod.RenderError(errors.New("No mail found"))
 }

@@ -69,7 +69,11 @@ func (m *Mailbox) GetAll() []*mailmod.Mail {
 }
 
 func (m *Mailbox) Get(position int) *mailmod.Mail {
-	return m.mails[position]
+	if len(m.mails) > 0 {
+		return m.mails[position]
+	}
+
+	return nil
 }
 
 func (m *Mailbox) Flush() {
