@@ -13,3 +13,7 @@ func Render(mail *Mail) {
 	fmt.Printf(utils.Cyan(mail.Body))
 	fmt.Printf("\n---\n")
 }
+
+func RenderError(error error) {
+	fmt.Println(utils.Red(error))
+}
