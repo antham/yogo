@@ -42,6 +42,7 @@ func callMailboxAction(action *string) {
 		}
 	case "flush":
 		mailbox.Flush()
+		mailboxmod.RenderMessage("Mailbox flushed")
 	}
 }
 
