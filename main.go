@@ -55,6 +55,9 @@ func callMailAction(action *string) {
 		case "read":
 			mail.Fetch()
 			mailmod.Render(mail)
+		case "delete":
+			mail.Delete()
+			mailmod.RenderMessage("Mail deleted")
 		}
 	} else {
 		mailmod.RenderMessage("No mail found")

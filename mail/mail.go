@@ -5,10 +5,12 @@ import "github.com/PuerkitoBio/goquery"
 import "fmt"
 import "log"
 import "regexp"
+import "net/http"
 
 import "strings"
 
 var getUrl = "http://www.yopmail.com/mail.php?b=%v&id=%v"
+var deleteUrl = "http://www.yopmail.com/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=2.6&r_c="
 
 type Mail struct {
 	id         string
@@ -77,4 +79,8 @@ func (m *Mail) Fetch() {
 		m.Body = strings.TrimSpace(s.Find("div#mailmillieu").Text())
 		m.Title = strings.TrimSpace(s.Find("div#mailhaut .f16").Text())
 	})
+}
+
+func (m *Mail) Delete() {
+	http.Get(fmt.Sprintf(deleteUrl, m.mail, strings.TrimLeft(m.id, "m")))
 }
