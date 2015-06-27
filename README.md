@@ -4,7 +4,7 @@ Interact with yopmail from command-line
 
 ## Install
 
-Download for linux from here [yogo](https://github.com/antham/yogo/releases/download/v1.0.2/yogo-linux).
+Download for linux from here [yogo](https://github.com/antham/yogo/releases/download/v1.0.3/yogo-linux).
 
 ## Usage ##
 
