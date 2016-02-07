@@ -1,5 +1,5 @@
 compile:
-	mkdir -p build
-	go build -ldflags "-s" -o build/yogo main.go
-format:
-	find -name "*.go" -exec go fmt {} \;
+	git stash -u
+	gox -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+fmt:
+	gofmt -l -s -w .
