@@ -41,3 +41,27 @@ func TestParseMailAndOffsetArgsWithSecondArgumentLessThan0(t *testing.T) {
 
 	parseMailAndOffsetArgs([]string{"test", "0"})
 }
+
+func TestCheckOffsetWithOffsetGreaterThanCount(t *testing.T) {
+	perror = func(err error) {
+		assert.EqualError(t, err, `Lower your offset value`, "Must return an error")
+	}
+
+	errorExit = func() {
+		t.SkipNow()
+	}
+
+	checkOffset(1, 3)
+}
+
+func TestCheckOffsetWhenCountEqualZero(t *testing.T) {
+	perror = func(err error) {
+		assert.EqualError(t, err, `Inbox is empty`, "Must return an error")
+	}
+
+	errorExit = func() {
+		t.SkipNow()
+	}
+
+	checkOffset(0, 3)
+}
