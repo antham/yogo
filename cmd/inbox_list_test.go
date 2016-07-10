@@ -1,58 +1,12 @@
 package cmd
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/antham/yogo/inbox"
 )
-
-func TestInboxListWithNoArguments(t *testing.T) {
-
-	perror = func(err error) {
-		assert.EqualError(t, err, "Two arguments mandatory", "Must return an error")
-	}
-
-	errorExit = func() {
-		t.SkipNow()
-	}
-
-	os.Args = []string{"", "inbox", "list"}
-
-	RootCmd.Execute()
-}
-
-func TestInboxListWithOneArgument(t *testing.T) {
-
-	perror = func(err error) {
-		assert.EqualError(t, err, "Two arguments mandatory", "Must return an error")
-	}
-
-	errorExit = func() {
-		t.SkipNow()
-	}
-
-	os.Args = []string{"", "inbox", "list", "test"}
-
-	RootCmd.Execute()
-}
-
-func TestInboxListWithStringAsLastArgument(t *testing.T) {
-
-	perror = func(err error) {
-		assert.EqualError(t, err, `"test" must be an integer`, "Must return an error")
-	}
-
-	errorExit = func() {
-		t.SkipNow()
-	}
-
-	os.Args = []string{"", "inbox", "list", "test", "test"}
-
-	RootCmd.Execute()
-}
 
 func TestRenderInboxMailWithEmptyInbox(t *testing.T) {
 	info = func(msg string) {
