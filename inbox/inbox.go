@@ -37,7 +37,7 @@ func (i *Inbox) Count() int {
 
 // Shrink reduce mails size to given value
 func (i *Inbox) Shrink(limit int) {
-	if len(i.mails) == 0 {
+	if len(i.mails) < limit {
 		return
 	}
 

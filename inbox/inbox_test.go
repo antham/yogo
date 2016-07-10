@@ -83,6 +83,22 @@ func TestShrinkEmptyInbox(t *testing.T) {
 	assert.Equal(t, 0, inbox.Count(), "Must return 0 elements")
 }
 
+func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
+	fetchURL = func(URL string) (*goquery.Document, error) {
+		URLS := map[string]string{
+			"http://www.yopmail.com/en/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id=": "inbox_page_1",
+			"http://www.yopmail.com/en/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id=": "inbox_empty",
+		}
+
+		return getDoc(URLS[URL]), nil
+	}
+
+	inbox, err := ParseInboxPages("test", 18)
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, 15, inbox.Count(), "Must return 15 elements")
+}
+
 func TestGetAll(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
