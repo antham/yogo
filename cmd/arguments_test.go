@@ -55,11 +55,11 @@ func TestCheckOffsetWithOffsetGreaterThanCount(t *testing.T) {
 }
 
 func TestCheckOffsetWhenCountEqualZero(t *testing.T) {
-	perror = func(err error) {
-		assert.EqualError(t, err, `Inbox is empty`, "Must return an error")
+	info = func(msg string) {
+		assert.Equal(t, `Inbox is empty`, msg, "Must give a message that inbox is empty")
 	}
 
-	errorExit = func() {
+	successExit = func() {
 		t.SkipNow()
 	}
 

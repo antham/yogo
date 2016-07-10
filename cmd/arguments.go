@@ -31,9 +31,9 @@ func parseMailAndOffsetArgs(args []string) (string, int) {
 
 func checkOffset(count int, offset int) {
 	if count == 0 {
-		perror(fmt.Errorf("Inbox is empty"))
+		info("Inbox is empty")
 
-		errorExit()
+		successExit()
 	}
 
 	if count < offset-1 {
