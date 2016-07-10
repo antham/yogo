@@ -16,7 +16,7 @@ Usage:
   yogo [command]
 
 Available Commands:
-  inbox       Check inbox messages
+  inbox       Handle inbox messages
   version     App version
 
 Flags:

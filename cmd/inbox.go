@@ -7,7 +7,7 @@ import (
 // inboxCmd represents the inbox command
 var inboxCmd = &cobra.Command{
 	Use:   "inbox",
-	Short: "Check inbox messages",
+	Short: "Handle inbox messages",
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
