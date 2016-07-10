@@ -10,7 +10,7 @@ import (
 )
 
 var mailURLs = map[string]string{
-	"get":  "http://www.yopmail.com/mail.php?b=%v&id=%v",
+	"get":    "http://www.yopmail.com/mail.php?b=%v&id=%v",
 	"delete": "http://www.yopmail.com/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=2.6&r_c=",
 }
 

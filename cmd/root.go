@@ -27,7 +27,7 @@ var cfgFile string
 var RootCmd = &cobra.Command{
 	Use:   "yogo",
 	Short: "Interact with yopmail from command-line",
-	Long: `Check yopmail mails and inboxes from command line.`,
+	Long:  `Check yopmail mails and inboxes from command line.`,
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
