@@ -21,6 +21,8 @@ var inboxShowCmd = &cobra.Command{
 			errorExit()
 		}
 
+		checkOffset(in.Count(), offset)
+
 		in.Parse(offset - 1)
 		mail := in.Get(offset - 1)
 		renderMail(mail)
