@@ -92,6 +92,8 @@ func (i *Inbox) Flush() {
 	}
 
 	send(fmt.Sprintf(inboxURLs["delete"], i.identifier, strings.TrimLeft(i.mails[0].ID, "m")))
+
+	i.mails = []Mail{}
 }
 
 func parseMailID(s string) string {
