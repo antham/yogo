@@ -7,6 +7,8 @@ Check yopmail mails and inboxes from command line.
 
 Download binaries here : [yogo](https://github.com/antham/yogo/releases/).
 
+A package is available in aur for archlinux.
+
 ## Usage ##
 
 ```
