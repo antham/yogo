@@ -9,8 +9,8 @@ import (
 )
 
 var inboxURLs = map[string]string{
-	"index":  "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.6&r_c=&id=",
-	"delete": "http://www.yopmail.com/en/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.6&r_c=&id=",
+	"index":  "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.7&r_c=&id=",
+	"delete": "http://www.yopmail.com/en/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.7&r_c=&id=",
 }
 
 var itemNumber = 15
@@ -112,7 +112,7 @@ func parseMailID(s string) string {
 func ParseInboxPages(identifier string, limit int) (*Inbox, error) {
 	inbox := Inbox{identifier: identifier}
 
-	for page := 1; page <= int(limit/itemNumber)+1 && limit >= inbox.Count(); page++ {
+	for page := 1; page <= (limit/itemNumber)+1 && limit >= inbox.Count(); page++ {
 		URL := fmt.Sprintf(inboxURLs["index"], identifier, page)
 
 		doc, err := fetchURL(URL)
