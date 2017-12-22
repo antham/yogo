@@ -1,8 +1,0 @@
-package: github.com/antham/yogo
-import:
-- package: github.com/PuerkitoBio/goquery
-- package: github.com/fatih/color
-- package: github.com/jaytaylor/html2text
-- package: github.com/spf13/cobra
-- package: github.com/stretchr/testify
-- package: github.com/Sirupsen/logrus

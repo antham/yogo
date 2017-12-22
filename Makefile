@@ -15,8 +15,6 @@ fmt:
 checker:
 	gometalinter -D gotype --vendor --deadline=240s -e '_string' -j 5 ./...
 
-run-tests: test-all
-
 test-all:
 	./test.sh checker
 
