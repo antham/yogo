@@ -16,7 +16,7 @@ checker:
 	gometalinter -D gotype --vendor --deadline=240s -e '_string' -j 5 ./...
 
 test-all:
-	./test.sh checker
+	./test.sh
 
 test-package:
 	go test -race -cover -coverprofile=/tmp/yogo github.com/antham/yogo/$(pkg)
