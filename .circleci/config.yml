@@ -2,22 +2,23 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.9
-    working_directory: /go/src/github.com/antham/gommit
+      - image: circleci/golang:1.11
+    working_directory: /home/circleci/gommit
     environment:
        BASH_ENV: /home/circleci/.bashrc
     steps:
       - checkout
       - run:
-          name: Install dep and gometalinter
+          name: Install gometalinter
           command: |
-            go get -u github.com/golang/dep/cmd/dep
+            export GO111MODULE=off
             go get github.com/alecthomas/gometalinter
             gometalinter --install --update
       - run:
           name: Install vendors
           command: |
-            dep ensure -v
+            export GO111MODULE=on
+            go mod vendor
       - run:
           name: Run tests
           command: |
