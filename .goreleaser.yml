@@ -4,6 +4,18 @@ before:
 builds:
 - env:
   - CGO_ENABLED=0
+- goos:
+  - freebsd
+  - windows
+  - linux
+  - openbsd
+  - darwin
+  - netbsd
+- goarch:
+  - x86
+  - amd64
+  - arm
+  - arm64
 archive:
   replacements:
     darwin: Darwin
