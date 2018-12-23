@@ -9,8 +9,8 @@ import (
 )
 
 var inboxURLs = map[string]string{
-	"index":  "http://www.yopmail.com/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=",
-	"delete": "http://www.yopmail.com/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.8&r_c=&id=",
+	"index": "http://www.yopmail.com/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=",
+	"flush": "http://www.yopmail.com/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.8&r_c=&id=",
 }
 
 var itemNumber = 15
@@ -59,10 +59,9 @@ func (i *Inbox) Add(mail Mail) {
 	i.mails = append(i.mails, mail)
 }
 
-// Remove an email
-func (i *Inbox) Remove(position int) {
+// Delete an email
+func (i *Inbox) Delete(position int) {
 	mail := i.mails[position]
-
 	send(fmt.Sprintf(mailURLs["delete"], i.GetIdentifier(), strings.TrimLeft(mail.ID, "m")))
 
 	i.mails = append(i.mails[:position], i.mails[position+1:]...)
@@ -91,7 +90,7 @@ func (i *Inbox) Flush() {
 		return
 	}
 
-	send(fmt.Sprintf(inboxURLs["delete"], i.identifier, strings.TrimLeft(i.mails[0].ID, "m")))
+	send(fmt.Sprintf(inboxURLs["flush"], i.identifier, strings.TrimLeft(i.mails[0].ID, "m")))
 
 	i.mails = []Mail{}
 }
