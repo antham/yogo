@@ -26,7 +26,7 @@ var inboxDeleteCmd = &cobra.Command{
 
 		checkOffset(in.Count(), offset)
 
-		in.Remove(offset - 1)
+		in.Delete(offset - 1)
 		success(fmt.Sprintf(`Email "%d" successfully deleted`, offset))
 	},
 }
