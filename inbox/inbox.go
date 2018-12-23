@@ -9,8 +9,8 @@ import (
 )
 
 var inboxURLs = map[string]string{
-	"index":  "http://www.yopmail.com/en/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.7&r_c=&id=",
-	"delete": "http://www.yopmail.com/en/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.7&r_c=&id=",
+	"index":  "http://www.yopmail.com/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=",
+	"delete": "http://www.yopmail.com/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.8&r_c=&id=",
 }
 
 var itemNumber = 15
@@ -97,7 +97,7 @@ func (i *Inbox) Flush() {
 }
 
 func parseMailID(s string) string {
-	re := regexp.MustCompile("mail.php.b=.*?id=(.*)")
+	re := regexp.MustCompile("m.php.b=.*?id=(.*)")
 
 	matches := re.FindStringSubmatch(s)
 
