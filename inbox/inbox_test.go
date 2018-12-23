@@ -154,3 +154,22 @@ func TestFlushEmptyInbox(t *testing.T) {
 	assert.NoError(t, err, "Must return no errors")
 	assert.Equal(t, 0, inbox.Count(), "Must return 0 elements")
 }
+
+func TestDelete(t *testing.T) {
+	fetchURL = func(URL string) (*goquery.Document, error) {
+		URLS := map[string]string{
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_1",
+		}
+
+		return getDoc(URLS[URL]), nil
+	}
+
+	send = func(URL string) {
+		assert.Equal(t, "http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=2.8&r_c=", URL, "Must build a correct deletion URL")
+	}
+
+	inbox, err := ParseInboxPages("test", 1)
+	inbox.Delete(0)
+
+	assert.NoError(t, err, "Must return no errors")
+}

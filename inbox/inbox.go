@@ -63,7 +63,7 @@ func (i *Inbox) Add(mail Mail) {
 func (i *Inbox) Remove(position int) {
 	mail := i.mails[position]
 
-	send(fmt.Sprintf(mailURLs["delete"], mail.Sender.Mail, strings.TrimLeft(mail.ID, "m")))
+	send(fmt.Sprintf(mailURLs["delete"], i.GetIdentifier(), strings.TrimLeft(mail.ID, "m")))
 
 	i.mails = append(i.mails[:position], i.mails[position+1:]...)
 }
