@@ -73,7 +73,13 @@ func (i *Inbox) Parse(position int) error {
 
 	URL := fmt.Sprintf(mailURLs["get"], i.identifier, mail.ID)
 
-	doc, err := fetchURL(URL)
+	r, err := buildReader("GET", URL, map[string]string{"Cookie": fmt.Sprintf("compte=%s", i.identifier)}, nil)
+
+	if err != nil {
+		return err
+	}
+
+	doc, err := fetchFromReader(r)
 
 	if err != nil {
 		return err
