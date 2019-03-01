@@ -4,7 +4,7 @@ require (
 	github.com/PuerkitoBio/goquery v0.0.0-20160629125928-f0d75731e0db
 	github.com/Sirupsen/logrus v0.0.0-20160601113210-f3cfb454f4c2
 	github.com/andybalholm/cascadia v0.0.0-20150730174459-3ad29d1ad1c4
-	github.com/davecgh/go-spew v1.1.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/color v1.0.0
 	github.com/inconshreveable/mousetrap v1.0.0
 	github.com/jaytaylor/html2text v0.0.0-20160528172251-52d9b785554a
