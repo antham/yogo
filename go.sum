@@ -13,8 +13,12 @@ github.com/jaytaylor/html2text v0.0.0-20160528172251-52d9b785554a h1:TMHe5IRlS6P
 github.com/jaytaylor/html2text v0.0.0-20160528172251-52d9b785554a/go.mod h1:CVKlgaMiht+LXvHG173ujK6JUhZXKb2u/BQtjPDIvyk=
 github.com/mattn/go-colorable v0.0.5 h1:X1IeP+MaFWC+vpbhw3y426rQftzXSj+N7eJFnBEMBfE=
 github.com/mattn/go-colorable v0.0.5/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
+github.com/mattn/go-colorable v0.1.1 h1:G1f5SKeVxmagw/IyvzvtZE4Gybcc4Tr1tf7I8z0XgOg=
+github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
 github.com/mattn/go-isatty v0.0.0-20151211000621-56b76bdf51f7 h1:owMyzMR4QR+jSdlfkX9jPU3rsby4++j99BfbtgVr6ZY=
 github.com/mattn/go-isatty v0.0.0-20151211000621-56b76bdf51f7/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
+github.com/mattn/go-isatty v0.0.5 h1:tHXDdz1cpzGaovsTB+TVB8q90WEokoVmfMqoVcrLUgw=
+github.com/mattn/go-isatty v0.0.5/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hdxcsrc5s=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/spf13/cobra v0.0.0-20160708202402-a272c3cbd5ff h1:5yDVKp3UzVKSUc9720sZdiz9sIiiZhlgP2KAbizbNRs=
@@ -26,3 +30,5 @@ github.com/stretchr/testify v0.0.0-20160615092844-d77da356e56a/go.mod h1:a8OnRci
 golang.org/x/net v0.0.0-20160707223729-f841c39de738 h1:N5K0l3yYkhlC0RSRoAhtspo2WgRvBMwZYoyB2ji+gkg=
 golang.org/x/net v0.0.0-20160707223729-f841c39de738/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/sys v0.0.0-20160704031755-a408501be4d1/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223 h1:DH4skfRX4EBpamg7iV4ZlCpblAHI6s6TDM39bFZumv8=
+golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
