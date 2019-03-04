@@ -9,7 +9,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0
 	github.com/jaytaylor/html2text v0.0.0-20160528172251-52d9b785554a
 	github.com/mattn/go-colorable v0.1.1
-	github.com/mattn/go-isatty v0.0.0-20151211000621-56b76bdf51f7
+	github.com/mattn/go-isatty v0.0.6
 	github.com/pmezard/go-difflib v1.0.0
 	github.com/spf13/cobra v0.0.0-20160708202402-a272c3cbd5ff
 	github.com/spf13/pflag v0.0.0-20160610190902-367864438f1b
