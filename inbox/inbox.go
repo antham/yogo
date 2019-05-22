@@ -9,8 +9,8 @@ import (
 )
 
 var inboxURLs = map[string]string{
-	"index": "http://www.yopmail.com/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=",
-	"flush": "http://www.yopmail.com/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.8&r_c=&id=",
+	"index": "http://www.yopmail.com/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=",
+	"flush": "http://www.yopmail.com/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.9&r_c=&id=",
 }
 
 var itemNumber = 15
