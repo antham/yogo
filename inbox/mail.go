@@ -11,7 +11,7 @@ import (
 
 var mailURLs = map[string]string{
 	"get":    "http://www.yopmail.com/m.php?b=%v&id=%v",
-	"delete": "http://www.yopmail.com/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=2.8&r_c=",
+	"delete": "http://www.yopmail.com/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=2.9&r_c=",
 }
 
 // Sender defines a mail sender
@@ -45,7 +45,7 @@ func parseFrom(s string) (string, string) {
 }
 
 func parseDate(s string) time.Time {
-	re := regexp.MustCompile(".*?(\\d+/\\d+/\\d+).*?(\\d+:\\d+)")
+	re := regexp.MustCompile(`.*?(\d+/\d+/\d+).*?(\d+:\d+)`)
 
 	matches := re.FindStringSubmatch(s)
 

@@ -23,7 +23,11 @@ var inboxShowCmd = &cobra.Command{
 
 		checkOffset(in.Count(), offset)
 
-		in.Parse(offset - 1)
+		if err := in.Parse(offset - 1); err != nil {
+			perror(err)
+			errorExit()
+		}
+
 		mail := in.Get(offset - 1)
 		renderMail(mail)
 	},

@@ -12,8 +12,8 @@ version:
 fmt:
 	find ! -path "./vendor/*" -name "*.go" -exec go fmt {} \;
 
-checker:
-	gometalinter -D gotype --vendor --deadline=240s -e '_string' -j 5 ./...
+lint:
+	golangci-lint run
 
 test-all:
 	./test.sh

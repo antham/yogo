@@ -20,14 +20,15 @@ var inboxFlushCmd = &cobra.Command{
 		}
 
 		in, err := inbox.ParseInboxPages(args[0], 1)
-
 		if err != nil {
 			perror(err)
-
 			errorExit()
 		}
 
-		in.Flush()
+		if err := in.Flush(); err != nil {
+			perror(err)
+			errorExit()
+		}
 
 		success(fmt.Sprintf(`Inbox "%s" successfully flushed`, args[0]))
 	},
