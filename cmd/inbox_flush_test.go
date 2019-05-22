@@ -19,5 +19,5 @@ func TestInboxFlushWithNoArguments(t *testing.T) {
 
 	os.Args = []string{"", "inbox", "flush"}
 
-	RootCmd.Execute()
+	assert.NoError(t, RootCmd.Execute())
 }

@@ -28,7 +28,7 @@ jobs:
       - run:
           name: Compile
           command: |
-            make compile
+            gox -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
       - run:
           name: Push on codecov result
           command: |
@@ -60,7 +60,7 @@ jobs:
       - run:
           name: Compile
           command: |
-            make compile
+            gox -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
       - run:
           run: Upload assets
           command: |

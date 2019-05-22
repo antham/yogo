@@ -34,9 +34,9 @@ func TestCount(t *testing.T) {
 func TestParseInboxPages(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_1",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_1",
 
-			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_2",
+			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_2",
 		}
 
 		return getDoc(URLS[URL]), nil
@@ -54,8 +54,8 @@ func TestParseInboxPages(t *testing.T) {
 func TestShrink(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_1",
-			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_2",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_1",
+			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_2",
 		}
 
 		return getDoc(URLS[URL]), nil
@@ -72,7 +72,7 @@ func TestShrink(t *testing.T) {
 func TestShrinkEmptyInbox(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_empty",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_empty",
 		}
 
 		return getDoc(URLS[URL]), nil
@@ -87,8 +87,8 @@ func TestShrinkEmptyInbox(t *testing.T) {
 func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_1",
-			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_empty",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_1",
+			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_empty",
 		}
 
 		return getDoc(URLS[URL]), nil
@@ -103,8 +103,8 @@ func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 func TestGetAll(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_1",
-			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_2",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_1",
+			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_2",
 		}
 
 		return getDoc(URLS[URL]), nil
@@ -122,15 +122,16 @@ func TestGetAll(t *testing.T) {
 func TestFlush(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_1",
-			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_2",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_1",
+			"http://www.yopmail.com/inbox.php?login=test&p=2&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_2",
 		}
 
 		return getDoc(URLS[URL]), nil
 	}
 
-	send = func(URL string) {
-		assert.Equal(t, "http://www.yopmail.com/inbox.php?login=test&p=1&d=all&ctrl=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&v=2.8&r_c=&id=", URL, "Must build a correct deletion URL")
+	send = func(URL string) error {
+		assert.Equal(t, "http://www.yopmail.com/inbox.php?login=test&p=1&d=all&ctrl=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&v=2.9&r_c=&id=", URL, "Must build a correct deletion URL")
+		return nil
 	}
 
 	inbox, err := ParseInboxPages("test", 15)
@@ -142,7 +143,7 @@ func TestFlush(t *testing.T) {
 func TestFlushEmptyInbox(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_empty",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_empty",
 		}
 
 		return getDoc(URLS[URL]), nil
@@ -158,18 +159,19 @@ func TestFlushEmptyInbox(t *testing.T) {
 func TestDelete(t *testing.T) {
 	fetchURL = func(URL string) (*goquery.Document, error) {
 		URLS := map[string]string{
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.8&r_c=&id=": "inbox_page_1",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=": "inbox_page_1",
 		}
 
 		return getDoc(URLS[URL]), nil
 	}
 
-	send = func(URL string) {
-		assert.Equal(t, "http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=2.8&r_c=", URL, "Must build a correct deletion URL")
+	send = func(URL string) error {
+		assert.Equal(t, "http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=2.9&r_c=", URL, "Must build a correct deletion URL")
+		return nil
 	}
 
 	inbox, err := ParseInboxPages("test", 1)
-	inbox.Delete(0)
+	assert.NoError(t, inbox.Delete(0))
 
 	assert.NoError(t, err, "Must return no errors")
 }

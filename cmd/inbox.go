@@ -9,7 +9,10 @@ var inboxCmd = &cobra.Command{
 	Use:   "inbox",
 	Short: "Handle inbox messages",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		if err := cmd.Help(); err != nil {
+			perror(err)
+			errorExit()
+		}
 	},
 }
 

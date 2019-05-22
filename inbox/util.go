@@ -10,8 +10,9 @@ import (
 	"github.com/jaytaylor/html2text"
 )
 
-var send = func(URL string) {
-	http.Get(URL)
+var send = func(URL string) error {
+	_, err := http.Get(URL)
+	return err
 }
 
 var buildReader = func(method string, URL string, headers map[string]string, body io.Reader) (io.Reader, error) {

@@ -20,13 +20,15 @@ var inboxDeleteCmd = &cobra.Command{
 
 		if err != nil {
 			perror(err)
-
 			errorExit()
 		}
 
 		checkOffset(in.Count(), offset)
 
-		in.Delete(offset - 1)
+		if err := in.Delete(offset - 1); err != nil {
+			perror(err)
+			errorExit()
+		}
 		success(fmt.Sprintf(`Email "%d" successfully deleted`, offset))
 	},
 }

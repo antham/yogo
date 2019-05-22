@@ -45,7 +45,7 @@ func parseFrom(s string) (string, string) {
 }
 
 func parseDate(s string) time.Time {
-	re := regexp.MustCompile(".*?(\\d+/\\d+/\\d+).*?(\\d+:\\d+)")
+	re := regexp.MustCompile(`.*?(\d+/\d+/\d+).*?(\d+:\d+)`)
 
 	matches := re.FindStringSubmatch(s)
 

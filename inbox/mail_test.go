@@ -38,7 +38,7 @@ func TestParseFrom(t *testing.T) {
 	assert.Equal(t, "john.doe@unknown.com", mail, "Must extract sender email")
 }
 
-func TestParseData(t *testing.T) {
+func TestParseDate(t *testing.T) {
 	date := parseDate("Reçu le 07/07/2016 à 23:34")
 
 	assert.Equal(t, "2016-07-07 23:34:00 +0000 UTC", date.String(), "Must parse date")

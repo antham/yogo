@@ -60,11 +60,13 @@ func (i *Inbox) Add(mail Mail) {
 }
 
 // Delete an email
-func (i *Inbox) Delete(position int) {
+func (i *Inbox) Delete(position int) error {
 	mail := i.mails[position]
-	send(fmt.Sprintf(mailURLs["delete"], i.GetIdentifier(), strings.TrimLeft(mail.ID, "m")))
-
+	if err := send(fmt.Sprintf(mailURLs["delete"], i.GetIdentifier(), strings.TrimLeft(mail.ID, "m"))); err != nil {
+		return err
+	}
 	i.mails = append(i.mails[:position], i.mails[position+1:]...)
+	return nil
 }
 
 // Parse retrieve all email datas
@@ -91,14 +93,17 @@ func (i *Inbox) Parse(position int) error {
 }
 
 // Flush empty an inbox
-func (i *Inbox) Flush() {
+func (i *Inbox) Flush() error {
 	if len(i.mails) == 0 {
-		return
+		return nil
 	}
 
-	send(fmt.Sprintf(inboxURLs["flush"], i.identifier, strings.TrimLeft(i.mails[0].ID, "m")))
+	if err := send(fmt.Sprintf(inboxURLs["flush"], i.identifier, strings.TrimLeft(i.mails[0].ID, "m"))); err != nil {
+		return err
+	}
 
 	i.mails = []Mail{}
+	return nil
 }
 
 func parseMailID(s string) string {
