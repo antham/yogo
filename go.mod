@@ -7,6 +7,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/color v1.9.0
 	github.com/inconshreveable/mousetrap v1.0.0
+	github.com/jarcoal/httpmock v1.0.4
 	github.com/jaytaylor/html2text v0.0.0-20160528172251-52d9b785554a
 	github.com/mattn/go-colorable v0.1.4
 	github.com/mattn/go-isatty v0.0.11
@@ -15,5 +16,7 @@ require (
 	github.com/spf13/pflag v0.0.0-20160610190902-367864438f1b
 	github.com/stretchr/testify v0.0.0-20160615092844-d77da356e56a
 	golang.org/x/net v0.0.0-20160707223729-f841c39de738
-	golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223
+	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037
 )
+
+go 1.13

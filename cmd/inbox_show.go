@@ -14,7 +14,6 @@ var inboxShowCmd = &cobra.Command{
 		identifier, offset := parseMailAndOffsetArgs(args)
 
 		in, err := inbox.ParseInboxPages(identifier, offset)
-
 		if err != nil {
 			perror(err)
 
