@@ -49,7 +49,12 @@ func fetchFromReader(r io.Reader) (*goquery.Document, error) {
 }
 
 func fetchURL(URL string) (*goquery.Document, error) {
-	doc, err := goquery.NewDocument(URL)
+	resp, err := http.Get(URL)
+	if err != nil {
+		return nil, err
+	}
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		return nil, err
 	}
