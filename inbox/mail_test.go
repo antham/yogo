@@ -11,19 +11,16 @@ import (
 
 func getDoc(filename string) *goquery.Document {
 	dir, err := os.Getwd()
-
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	f, err := os.Open(dir + "/" + filename + ".html")
-
+	f, err := os.Open(dir + "/" + filename)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
 	doc, err := goquery.NewDocumentFromReader(f)
-
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -47,7 +44,7 @@ func TestParseDate(t *testing.T) {
 func TestParseMail(t *testing.T) {
 
 	mail := &Mail{}
-	parseMail(getDoc("mail"), mail)
+	parseMail(getDoc("mail.html"), mail)
 
 	assert.Equal(t, "root", mail.Sender.Name, "Must return sender name")
 	assert.Equal(t, "root@sd-50982.dedibox.fr", mail.Sender.Mail, "Must return sender email")
