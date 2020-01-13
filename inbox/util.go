@@ -40,12 +40,7 @@ func buildReader(method string, URL string, headers map[string]string, body io.R
 }
 
 func fetchFromReader(r io.Reader) (*goquery.Document, error) {
-	doc, err := goquery.NewDocumentFromReader(r)
-	if err != nil {
-		return nil, err
-	}
-
-	return doc, err
+	return goquery.NewDocumentFromReader(r)
 }
 
 func fetchURL(URL string) (*goquery.Document, error) {
@@ -54,12 +49,7 @@ func fetchURL(URL string) (*goquery.Document, error) {
 		return nil, err
 	}
 
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return doc, err
+	return goquery.NewDocumentFromReader(resp.Body)
 }
 
 func parseHTML(content string, err error) string {
