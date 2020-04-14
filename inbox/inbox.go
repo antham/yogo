@@ -11,11 +11,11 @@ import (
 )
 
 const refURL = "http://www.yopmail.com"
-const jsFileURL = refURL + "/style/2.9/webmail.js"
+const jsFileURL = refURL + "/style/3.1/webmail.js"
 
 var inboxURLs = map[string]string{
-	"index": refURL + "/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=2.9&r_c=&id=",
-	"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=2.9&r_c=&id=",
+	"index": refURL + "/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=3.1&r_c=&id=",
+	"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=3.1&r_c=&id=",
 }
 
 var itemNumber = 15
