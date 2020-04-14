@@ -39,12 +39,12 @@ func TestParseInboxPages(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_1.html",
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_2.html",
 		},
 		{
@@ -54,7 +54,7 @@ func TestParseInboxPages(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/style/2.9/webmail.js",
+			"http://www.yopmail.com/style/3.1/webmail.js",
 			"webmail.js",
 		},
 	}))
@@ -75,12 +75,12 @@ func TestShrink(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_1.html",
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_2.html",
 		},
 		{
@@ -90,7 +90,7 @@ func TestShrink(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/style/2.9/webmail.js",
+			"http://www.yopmail.com/style/3.1/webmail.js",
 			"webmail.js",
 		},
 	}))
@@ -110,7 +110,7 @@ func TestShrinkEmptyInbox(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_empty.html",
 		},
 		{
@@ -120,7 +120,7 @@ func TestShrinkEmptyInbox(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/style/2.9/webmail.js",
+			"http://www.yopmail.com/style/3.1/webmail.js",
 			"webmail.js",
 		},
 	}))
@@ -138,12 +138,12 @@ func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_1.html",
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_empty.html",
 		},
 		{
@@ -153,7 +153,7 @@ func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/style/2.9/webmail.js",
+			"http://www.yopmail.com/style/3.1/webmail.js",
 			"webmail.js",
 		},
 	}))
@@ -171,12 +171,12 @@ func TestGetAll(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_1.html",
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_2.html",
 		},
 		{
@@ -186,7 +186,7 @@ func TestGetAll(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/style/2.9/webmail.js",
+			"http://www.yopmail.com/style/3.1/webmail.js",
 			"webmail.js",
 		},
 	}))
@@ -207,12 +207,12 @@ func TestFlush(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_1.html",
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_2.html",
 		},
 		{
@@ -222,12 +222,12 @@ func TestFlush(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/style/2.9/webmail.js",
+			"http://www.yopmail.com/style/3.1/webmail.js",
 			"webmail.js",
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=all&ctrl=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&v=2.9&r_c=&id",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=all&ctrl=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&v=3.1&r_c=&id",
 			"noop.html",
 		},
 	}))
@@ -245,7 +245,7 @@ func TestFlushEmptyInbox(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_empty.html",
 		},
 		{
@@ -255,7 +255,7 @@ func TestFlushEmptyInbox(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/style/2.9/webmail.js",
+			"http://www.yopmail.com/style/3.1/webmail.js",
 			"webmail.js",
 		},
 	}))
@@ -274,7 +274,7 @@ func TestDelete(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=2.9&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"inbox_page_1.html",
 		},
 		{
@@ -284,19 +284,19 @@ func TestDelete(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/style/2.9/webmail.js",
+			"http://www.yopmail.com/style/3.1/webmail.js",
 			"webmail.js",
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=2.9&r_c=",
+			"http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=3.1&r_c=",
 			"noop.html",
 		},
 	}))
 
 	inbox, err := ParseInboxPages("test", 1)
 	assert.NoError(t, inbox.Delete(0))
-	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=2.9&r_c="])
+	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=3.1&r_c="])
 	assert.NoError(t, err)
 }
 

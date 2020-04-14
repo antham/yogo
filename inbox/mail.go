@@ -11,7 +11,7 @@ import (
 
 var mailURLs = map[string]string{
 	"get":    refURL + "/m.php?b=%v&id=%v",
-	"delete": refURL + "/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=2.9&r_c=",
+	"delete": refURL + "/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=3.1&r_c=",
 }
 
 // Sender defines a mail sender
@@ -32,11 +32,16 @@ type Mail struct {
 }
 
 func parseFrom(s string) (string, string) {
-	re := regexp.MustCompile(`.*?:\s*"?(.*?)"?\s*<(.*?)>`)
+	re := regexp.MustCompile(`.+?:\s*"?(.+?)"?\s*<(.+?)>`)
 	matches := re.FindStringSubmatch(s)
-
 	if len(matches) == 3 {
 		return matches[1], matches[2]
+	}
+
+	re = regexp.MustCompile(`.+?:\s*(.+)`)
+	matches = re.FindStringSubmatch(s)
+	if len(matches) == 2 {
+		return "", matches[1]
 	}
 
 	return "", ""

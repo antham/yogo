@@ -23,7 +23,11 @@ func renderInboxMail(in *inbox.Inbox) {
 
 func renderMail(mail *inbox.Mail) {
 	output("---\n")
-	output(fmt.Sprintf("From  : %s <%s>\n", color.MagentaString(mail.Sender.Name), color.MagentaString(mail.Sender.Mail)))
+	if mail.Sender.Name == "" {
+		output(fmt.Sprintf("From  : <%s>\n", color.MagentaString(mail.Sender.Mail)))
+	} else {
+		output(fmt.Sprintf("From  : %s <%s>\n", color.MagentaString(mail.Sender.Name), color.MagentaString(mail.Sender.Mail)))
+	}
 	output(fmt.Sprintf("Title : %s\n", color.YellowString(mail.Title)))
 	output(fmt.Sprintf("Date  : %s\n", color.BlueString(mail.Date.Format("2006-01-02 15:04"))))
 	output("---\n")
