@@ -60,7 +60,7 @@ jobs:
       - run:
           name: Compile
           command: |
-            gox -ldflags "-X github.com/antham/yogo/cmd.version=$CIRCLE_TAG" "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+            gox -ldflags "-X github.com/antham/yogo/cmd.version=$CIRCLE_TAG" -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
       - run:
           run: Upload assets
           command: |
