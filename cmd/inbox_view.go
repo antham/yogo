@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/fatih/color"
@@ -8,7 +10,20 @@ import (
 	"github.com/antham/yogo/inbox"
 )
 
+var ErrSomethingWrongOccurred = errors.New("something wrong occurred")
+
 func renderInboxMail(in *inbox.Inbox) {
+	if dumpJSON {
+		data, err := json.Marshal(*in)
+		if err != nil {
+			perror(ErrSomethingWrongOccurred)
+			errorExit()
+		}
+
+		output(string(data))
+		successExit()
+	}
+
 	if in.Count() == 0 {
 		info("Inbox is empty")
 
@@ -17,11 +32,22 @@ func renderInboxMail(in *inbox.Inbox) {
 
 	for index, mail := range in.GetAll() {
 		output(fmt.Sprintf(" %s %s\n", color.GreenString(fmt.Sprintf("%d", index+1)), color.YellowString(mail.Title)))
-		output(fmt.Sprintf(" %s\n\n", color.CyanString(mail.SumUp)))
+		output(fmt.Sprintf(" %s\n\n", color.CyanString(*mail.SumUp)))
 	}
 }
 
 func renderMail(mail *inbox.Mail) {
+	if dumpJSON {
+		data, err := json.Marshal(*mail)
+		if err != nil {
+			perror(ErrSomethingWrongOccurred)
+			errorExit()
+		}
+
+		output(string(data))
+		successExit()
+	}
+
 	output("---\n")
 	if mail.Sender.Name == "" {
 		output(fmt.Sprintf("From  : <%s>\n", color.MagentaString(mail.Sender.Mail)))
