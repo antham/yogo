@@ -21,6 +21,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var dumpJSON = false
+
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "yogo",
@@ -31,6 +33,8 @@ var RootCmd = &cobra.Command{
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	RootCmd.PersistentFlags().BoolVar(&dumpJSON, "json", false, "Dump the output as json")
+
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)

@@ -18,14 +18,20 @@ Usage:
   yogo [command]
 
 Available Commands:
+  help        Help about any command
   inbox       Handle inbox messages
   version     App version
 
 Flags:
   -h, --help   help for yogo
+      --json   Dump the output as json
 
 Use "yogo [command] --help" for more information about a command.
 ```
+
+## Flag ##
+
+Use the ```--json``` output flag to get the output as JSON.
 
 ## Inbox
 

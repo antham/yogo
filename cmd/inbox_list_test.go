@@ -33,8 +33,10 @@ func TestRenderInbox(t *testing.T) {
 		t.SkipNow()
 	}
 
+	sumUp := "Sum up"
+
 	in := inbox.Inbox{}
-	in.Add(inbox.Mail{ID: "test", Title: "title", SumUp: "Sum up"})
+	in.Add(inbox.Mail{ID: "test", Title: "title", SumUp: &sumUp})
 	renderInboxMail(&in)
 
 	assert.Regexp(t, ".*1.*title.*.*", actual[0], "Must display email title")

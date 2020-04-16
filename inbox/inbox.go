@@ -23,13 +23,13 @@ var itemNumber = 15
 // Inbox represents a mail collection
 type Inbox struct {
 	identifier string
-	mails      []Mail
+	Mails      []Mail `json:"mails"`
 }
 
 // Get return email at given offset
 func (i *Inbox) Get(offset int) *Mail {
-	if len(i.mails) > offset {
-		return &i.mails[offset]
+	if len(i.Mails) > offset {
+		return &i.Mails[offset]
 	}
 
 	return nil
@@ -37,21 +37,21 @@ func (i *Inbox) Get(offset int) *Mail {
 
 // Count return total number of mails available in inbox
 func (i *Inbox) Count() int {
-	return len(i.mails)
+	return len(i.Mails)
 }
 
 // Shrink reduce mails size to given value
 func (i *Inbox) Shrink(limit int) {
-	if len(i.mails) < limit {
+	if len(i.Mails) < limit {
 		return
 	}
 
-	i.mails = i.mails[:limit]
+	i.Mails = i.Mails[:limit]
 }
 
 // GetAll return all emails
 func (i *Inbox) GetAll() []Mail {
-	return i.mails
+	return i.Mails
 }
 
 // GetIdentifier return mailbox name
@@ -61,23 +61,23 @@ func (i *Inbox) GetIdentifier() string {
 
 // Add append a mail to mails
 func (i *Inbox) Add(mail Mail) {
-	i.mails = append(i.mails, mail)
+	i.Mails = append(i.Mails, mail)
 }
 
 // Delete an email
 func (i *Inbox) Delete(position int) error {
-	mail := i.mails[position]
+	mail := i.Mails[position]
 	if err := send(fmt.Sprintf(mailURLs["delete"], i.GetIdentifier(), strings.TrimLeft(mail.ID, "m"))); err != nil {
 		return err
 	}
 
-	i.mails = append(i.mails[:position], i.mails[position+1:]...)
+	i.Mails = append(i.Mails[:position], i.Mails[position+1:]...)
 	return nil
 }
 
 // Parse retrieve all email datas
 func (i *Inbox) Parse(position int) error {
-	mail := &i.mails[position]
+	mail := &i.Mails[position]
 	URL := fmt.Sprintf(mailURLs["get"], i.identifier, mail.ID)
 
 	r, err := buildReader("GET", URL, map[string]string{"Cookie": fmt.Sprintf("compte=%s", i.identifier)}, nil)
@@ -96,15 +96,15 @@ func (i *Inbox) Parse(position int) error {
 
 // Flush empty an inbox
 func (i *Inbox) Flush() error {
-	if len(i.mails) == 0 {
+	if len(i.Mails) == 0 {
 		return nil
 	}
 
-	if err := send(fmt.Sprintf(inboxURLs["flush"], i.identifier, strings.TrimLeft(i.mails[0].ID, "m"))); err != nil {
+	if err := send(fmt.Sprintf(inboxURLs["flush"], i.identifier, strings.TrimLeft(i.Mails[0].ID, "m"))); err != nil {
 		return err
 	}
 
-	i.mails = []Mail{}
+	i.Mails = []Mail{}
 	return nil
 }
 
@@ -157,7 +157,10 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 			mail := Mail{
 				ID:    ID,
 				Title: s.Find("span.lmf").Text(),
-				SumUp: s.Find("span.lms").Text(),
+				SumUp: func() *string {
+					v := s.Find("span.lms").Text()
+					return &v
+				}(),
 			}
 
 			inbox.Add(mail)
