@@ -10,12 +10,13 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+const apiVersion = "3.1"
 const refURL = "http://www.yopmail.com"
-const jsFileURL = refURL + "/style/3.1/webmail.js"
+const jsFileURL = refURL + "/style/" + apiVersion + "/webmail.js"
 
 var inboxURLs = map[string]string{
-	"index": refURL + "/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=3.1&r_c=&id=",
-	"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=3.1&r_c=&id=",
+	"index": refURL + "/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=" + apiVersion + "&r_c=&id=",
+	"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=" + apiVersion + "&r_c=&id=",
 }
 
 var itemNumber = 15
