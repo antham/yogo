@@ -10,16 +10,18 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-const apiVersion = "3.1"
-const refURL = "http://www.yopmail.com"
-const jsFileURL = refURL + "/style/" + apiVersion + "/webmail.js"
-
-var inboxURLs = map[string]string{
-	"index": refURL + "/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=" + apiVersion + "&r_c=&id=",
-	"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=" + apiVersion + "&r_c=&id=",
+func getJsFileURL() string {
+	return refURL + "/style/" + apiVersion + "/webmail.js"
 }
 
-var itemNumber = 15
+func getInboxURLs(key string) string {
+	return map[string]string{
+		"index": refURL + "/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=" + apiVersion + "&r_c=&id=",
+		"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=" + apiVersion + "&r_c=&id=",
+	}[key]
+}
+
+const itemNumber = 15
 
 // Inbox represents a mail collection
 type Inbox struct {
@@ -68,7 +70,7 @@ func (i *Inbox) Add(mail Mail) {
 // Delete an email
 func (i *Inbox) Delete(position int) error {
 	mail := i.Mails[position]
-	if err := send(fmt.Sprintf(mailURLs["delete"], i.GetIdentifier(), strings.TrimLeft(mail.ID, "m"))); err != nil {
+	if err := send(fmt.Sprintf(getMailURLs("delete"), i.GetIdentifier(), strings.TrimLeft(mail.ID, "m"))); err != nil {
 		return err
 	}
 
@@ -79,7 +81,7 @@ func (i *Inbox) Delete(position int) error {
 // Parse retrieve all email datas
 func (i *Inbox) Parse(position int) error {
 	mail := &i.Mails[position]
-	URL := fmt.Sprintf(mailURLs["get"], i.identifier, mail.ID)
+	URL := fmt.Sprintf(getMailURLs("get"), i.identifier, mail.ID)
 
 	r, err := buildReader("GET", URL, map[string]string{"Cookie": fmt.Sprintf("compte=%s", i.identifier)}, nil)
 	if err != nil {
@@ -101,7 +103,7 @@ func (i *Inbox) Flush() error {
 		return nil
 	}
 
-	if err := send(fmt.Sprintf(inboxURLs["flush"], i.identifier, strings.TrimLeft(i.Mails[0].ID, "m"))); err != nil {
+	if err := send(fmt.Sprintf(getInboxURLs("flush"), i.identifier, strings.TrimLeft(i.Mails[0].ID, "m"))); err != nil {
 		return err
 	}
 
@@ -123,7 +125,7 @@ func ParseInboxPages(identifier string, limit int) (*Inbox, error) {
 	inbox := Inbox{identifier: identifier}
 
 	for page := 1; page <= (limit/itemNumber)+1 && limit >= inbox.Count(); page++ {
-		URL, err := urlDecorator(fmt.Sprintf(inboxURLs["index"], identifier, page))
+		URL, err := urlDecorator(fmt.Sprintf(getInboxURLs("index"), identifier, page))
 		if err != nil {
 			return nil, err
 		}
@@ -189,7 +191,7 @@ func urlDecorator(URL string) (string, error) {
 		return "", err
 	}
 
-	doc, err = fetchURL(jsFileURL)
+	doc, err = fetchURL(getJsFileURL())
 	if err != nil {
 		return "", err
 	}
