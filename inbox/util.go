@@ -4,11 +4,21 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/jaytaylor/html2text"
 )
+
+var apiVersion = ""
+
+const refURL = "http://www.yopmail.com"
+
+func init() {
+	fetchApiVersion()
+}
 
 func send(URL string) error {
 	_, err := http.Get(URL)
@@ -63,4 +73,28 @@ func parseHTML(content string, err error) string {
 	}
 
 	return text
+}
+
+func fetchApiVersion() {
+	if apiVersion != "" {
+		return
+	}
+
+	res, err := http.Get(refURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data := regexp.MustCompile(`<script type="text/javascript" src="/style/([0-9.]+)/webmail.js">`).FindStringSubmatch(string(b))
+
+	if len(data) < 2 {
+		log.Fatal("no yopmail api version found")
+	}
+
+	apiVersion = data[1]
 }

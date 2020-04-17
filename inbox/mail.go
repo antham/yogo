@@ -9,9 +9,11 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-var mailURLs = map[string]string{
-	"get":    refURL + "/m.php?b=%v&id=%v",
-	"delete": refURL + "/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=" + apiVersion + "&r_c=",
+func getMailURLs(key string) string {
+	return map[string]string{
+		"get":    refURL + "/m.php?b=%v&id=%v",
+		"delete": refURL + "/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=" + apiVersion + "&r_c=",
+	}[key]
 }
 
 // Sender defines a mail sender
