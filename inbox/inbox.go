@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -141,6 +142,7 @@ func ParseInboxPages(identifier string, limit int) (*Inbox, error) {
 		}
 
 		parseInboxPage(doc, &inbox)
+		time.Sleep(1 * time.Second)
 	}
 
 	inbox.Shrink(limit)
