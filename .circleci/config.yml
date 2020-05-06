@@ -9,9 +9,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            export GO111MODULE=off
-            go get -u github.com/mitchellh/gox
-            go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+            export GO111MODULE=on
+            go get -u github.com/mitchellh/gox@v1.0.1
+            go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.26.0
       - run:
           name: Install vendors
           command: |
