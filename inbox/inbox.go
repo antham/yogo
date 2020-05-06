@@ -25,8 +25,8 @@ const itemNumber = 15
 
 // Inbox represents a mail collection
 type Inbox struct {
-	identifier string
-	Mails      []Mail `json:"mails"`
+	Name  string `json:"name"`
+	Mails []Mail `json:"mails"`
 }
 
 // Get return email at given offset
@@ -57,9 +57,9 @@ func (i *Inbox) GetAll() []Mail {
 	return i.Mails
 }
 
-// GetIdentifier return mailbox name
-func (i *Inbox) GetIdentifier() string {
-	return i.identifier
+// GetName return mailbox name
+func (i *Inbox) GetName() string {
+	return i.Name
 }
 
 // Add append a mail to mails
@@ -70,7 +70,7 @@ func (i *Inbox) Add(mail Mail) {
 // Delete an email
 func (i *Inbox) Delete(position int) error {
 	mail := i.Mails[position]
-	if err := send(fmt.Sprintf(getMailURLs("delete"), i.GetIdentifier(), strings.TrimLeft(mail.ID, "m"))); err != nil {
+	if err := send(fmt.Sprintf(getMailURLs("delete"), i.GetName(), strings.TrimLeft(mail.ID, "m"))); err != nil {
 		return err
 	}
 
@@ -81,9 +81,9 @@ func (i *Inbox) Delete(position int) error {
 // Parse retrieve all email datas
 func (i *Inbox) Parse(position int) error {
 	mail := &i.Mails[position]
-	URL := fmt.Sprintf(getMailURLs("get"), i.identifier, mail.ID)
+	URL := fmt.Sprintf(getMailURLs("get"), i.Name, mail.ID)
 
-	r, err := buildReader("GET", URL, map[string]string{"Cookie": fmt.Sprintf("compte=%s", i.identifier)}, nil)
+	r, err := buildReader("GET", URL, map[string]string{"Cookie": fmt.Sprintf("compte=%s", i.Name)}, nil)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (i *Inbox) Flush() error {
 		return nil
 	}
 
-	if err := send(fmt.Sprintf(getInboxURLs("flush"), i.identifier, strings.TrimLeft(i.Mails[0].ID, "m"))); err != nil {
+	if err := send(fmt.Sprintf(getInboxURLs("flush"), i.Name, strings.TrimLeft(i.Mails[0].ID, "m"))); err != nil {
 		return err
 	}
 
@@ -122,7 +122,7 @@ func parseMailID(s string) string {
 
 // ParseInboxPages parse inbox email in given page
 func ParseInboxPages(identifier string, limit int) (*Inbox, error) {
-	inbox := Inbox{identifier: identifier}
+	inbox := Inbox{Name: identifier}
 
 	for page := 1; page <= (limit/itemNumber)+1 && limit >= inbox.Count(); page++ {
 		URL, err := urlDecorator(fmt.Sprintf(getInboxURLs("index"), identifier, page))

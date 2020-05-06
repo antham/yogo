@@ -62,7 +62,7 @@ func TestParseInboxPages(t *testing.T) {
 	inbox, err := ParseInboxPages("test", 29)
 
 	assert.NoError(t, err)
-	assert.Equal(t, "test", inbox.GetIdentifier())
+	assert.Equal(t, "test", inbox.GetName())
 	assert.Equal(t, 29, inbox.Count())
 	assert.Equal(t, "me_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==", inbox.Get(0).ID)
 	assert.Equal(t, "me_ZGtkZwVmZQNmAQH3ZQNjZQR4AGVlAD==", inbox.Get(28).ID)
