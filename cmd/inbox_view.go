@@ -31,7 +31,12 @@ func renderInboxMail(in *inbox.Inbox) {
 	}
 
 	for index, mail := range in.GetAll() {
-		output(fmt.Sprintf(" %s %s\n", color.GreenString(fmt.Sprintf("%d", index+1)), color.YellowString(mail.Title)))
+		var spam string
+		if mail.IsSPAM {
+			spam = " [SPAM]"
+		}
+
+		output(fmt.Sprintf(" %s %s%s\n", color.GreenString(fmt.Sprintf("%d", index+1)), color.YellowString(mail.Title), color.RedString(spam)))
 		output(fmt.Sprintf(" %s\n\n", color.CyanString(*mail.SumUp)))
 	}
 }
