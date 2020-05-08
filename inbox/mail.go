@@ -30,6 +30,7 @@ type Mail struct {
 	Title  string     `json:"title"`
 	Date   *time.Time `json:"date,omitempty"`
 	Body   string     `json:"body,omitempty"`
+	IsSPAM bool       `json:"isSPAM"`
 }
 
 func parseFrom(s string) (string, string) {

@@ -66,6 +66,10 @@ func TestParseInboxPages(t *testing.T) {
 	assert.Equal(t, 29, inbox.Count())
 	assert.Equal(t, "me_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==", inbox.Get(0).ID)
 	assert.Equal(t, "me_ZGtkZwVmZQNmAQH3ZQNjZQR4AGVlAD==", inbox.Get(28).ID)
+	assert.True(t, inbox.Get(13).IsSPAM)
+	assert.Equal(t, "root@a2plcpnl0571.prod.iad2.secureserver.net (Cron Daemon)", inbox.Get(13).Title)
+	assert.False(t, inbox.Get(14).IsSPAM)
+	assert.Equal(t, "web-troc.com@template.ovh", inbox.Get(14).Title)
 }
 
 func TestShrink(t *testing.T) {
