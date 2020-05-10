@@ -293,14 +293,14 @@ func TestDelete(t *testing.T) {
 		},
 		{
 			"GET",
-			"http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=3.1&r_c=",
+			"http://www.yopmail.com/inbox.php?ctrl=&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD%3D%3D&login=test&p=1&r_c=&scrl=0&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx",
 			"noop.html",
 		},
 	}))
 
 	inbox, err := ParseInboxPages("test", 1)
 	assert.NoError(t, inbox.Delete(0))
-	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET http://www.yopmail.com/inbox.php?login=test&p=1&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&ctrl=&scrl=0&spam=true&v=3.1&r_c="])
+	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET http://www.yopmail.com/inbox.php?ctrl=&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD%3D%3D&login=test&p=1&r_c=&scrl=0&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx"])
 	assert.NoError(t, err)
 }
 
