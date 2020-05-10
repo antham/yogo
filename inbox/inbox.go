@@ -53,16 +53,6 @@ func (i *Inbox) Shrink(limit int) {
 	i.Mails = i.Mails[:limit]
 }
 
-// GetAll return all emails
-func (i *Inbox) GetAll() []Mail {
-	return i.Mails
-}
-
-// GetName return mailbox name
-func (i *Inbox) GetName() string {
-	return i.Name
-}
-
 // Add append a mail to mails
 func (i *Inbox) Add(mail Mail) {
 	i.Mails = append(i.Mails, mail)
