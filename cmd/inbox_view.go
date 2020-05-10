@@ -30,7 +30,7 @@ func renderInboxMail(in *inbox.Inbox) {
 		successExit()
 	}
 
-	for index, mail := range in.GetAll() {
+	for index, mail := range in.Mails {
 		var spam string
 		if mail.IsSPAM {
 			spam = " [SPAM]"

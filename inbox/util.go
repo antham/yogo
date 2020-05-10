@@ -2,6 +2,7 @@ package inbox
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -20,9 +21,23 @@ func init() {
 	fetchApiVersion()
 }
 
-func send(URL string) error {
-	_, err := http.Get(URL)
-	return err
+func send(URL string, headers map[string]string) error {
+	r, err := http.NewRequest("GET", URL, nil)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range headers {
+		r.Header.Add(k, v)
+	}
+
+	c := http.Client{}
+	_, err = c.Do(r)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func buildReader(method string, URL string, headers map[string]string, body io.Reader) (io.Reader, error) {
@@ -97,4 +112,8 @@ func fetchApiVersion() {
 	}
 
 	apiVersion = data[1]
+}
+
+func createCompteCookie(compte string) map[string]string {
+	return map[string]string{"Cookie": fmt.Sprintf("compte=%s", compte)}
 }

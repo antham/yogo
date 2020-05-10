@@ -18,7 +18,7 @@ func getJsFileURL() string {
 func getInboxURLs(key string) string {
 	return map[string]string{
 		"index": refURL + "/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=" + apiVersion + "&r_c=&id=",
-		"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=" + apiVersion + "&r_c=&id=",
+		"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=" + apiVersion + "&r_c=&id=none&scrl=&spam=true",
 	}[key]
 }
 
@@ -53,16 +53,6 @@ func (i *Inbox) Shrink(limit int) {
 	i.Mails = i.Mails[:limit]
 }
 
-// GetAll return all emails
-func (i *Inbox) GetAll() []Mail {
-	return i.Mails
-}
-
-// GetName return mailbox name
-func (i *Inbox) GetName() string {
-	return i.Name
-}
-
 // Add append a mail to mails
 func (i *Inbox) Add(mail Mail) {
 	i.Mails = append(i.Mails, mail)
@@ -71,7 +61,11 @@ func (i *Inbox) Add(mail Mail) {
 // Delete an email
 func (i *Inbox) Delete(position int) error {
 	mail := i.Mails[position]
-	if err := send(fmt.Sprintf(getMailURLs("delete"), i.GetName(), strings.TrimLeft(mail.ID, "m"))); err != nil {
+	URL, err := urlDecorator(fmt.Sprintf(getMailURLs("delete"), i.Name, strings.TrimLeft(mail.ID, "m")))
+	if err != nil {
+		return err
+	}
+	if err := send(URL, createCompteCookie(i.Name)); err != nil {
 		return err
 	}
 
@@ -84,10 +78,11 @@ func (i *Inbox) Parse(position int) error {
 	mail := &i.Mails[position]
 	URL := fmt.Sprintf(getMailURLs("get"), i.Name, mail.ID)
 
-	r, err := buildReader("GET", URL, map[string]string{"Cookie": fmt.Sprintf("compte=%s", i.Name)}, nil)
+	r, err := buildReader("GET", URL, createCompteCookie(i.Name), nil)
 	if err != nil {
 		return err
 	}
+
 	doc, err := fetchFromReader(r)
 	if err != nil {
 		return err
@@ -104,7 +99,12 @@ func (i *Inbox) Flush() error {
 		return nil
 	}
 
-	if err := send(fmt.Sprintf(getInboxURLs("flush"), i.Name, strings.TrimLeft(i.Mails[0].ID, "m"))); err != nil {
+	URL, err := urlDecorator(fmt.Sprintf(getInboxURLs("flush"), i.Name, strings.TrimLeft(i.Mails[0].ID, "m")))
+	if err != nil {
+		return err
+	}
+
+	if err := send(URL, createCompteCookie(i.Name)); err != nil {
 		return err
 	}
 
@@ -131,7 +131,7 @@ func ParseInboxPages(identifier string, limit int) (*Inbox, error) {
 			return nil, err
 		}
 
-		r, err := buildReader("GET", URL, map[string]string{"Cookie": fmt.Sprintf("compte=%s", identifier)}, nil)
+		r, err := buildReader("GET", URL, createCompteCookie(identifier), nil)
 		if err != nil {
 			return nil, err
 		}
