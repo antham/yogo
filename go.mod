@@ -3,7 +3,7 @@ module github.com/antham/yogo
 require (
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/Sirupsen/logrus v0.0.0-20160601113210-f3cfb454f4c2
-	github.com/andybalholm/cascadia v1.1.0
+	github.com/andybalholm/cascadia v1.2.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/color v1.9.0
 	github.com/inconshreveable/mousetrap v1.0.0
