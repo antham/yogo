@@ -28,7 +28,7 @@ jobs:
       - run:
           name: Compile
           command: |
-            gox -ldflags "-X github.com/antham/yogo/cmd.version=$CIRCLE_BRANCH" -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+            gox -osarch "linux/amd64 darwin/amd64 windows/amd64" -ldflags "-X github.com/antham/yogo/cmd.version=$CIRCLE_BRANCH" -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
       - run:
           name: Push on codecov result
           command: |
@@ -60,7 +60,7 @@ jobs:
       - run:
           name: Compile
           command: |
-            gox -ldflags "-X github.com/antham/yogo/cmd.version=$CIRCLE_TAG" -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+            gox -osarch "linux/amd64 darwin/amd64 windows/amd64" -ldflags "-X github.com/antham/yogo/cmd.version=$CIRCLE_TAG" -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
       - run:
           run: Upload assets
           command: |
