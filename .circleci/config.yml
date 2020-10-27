@@ -11,7 +11,7 @@ jobs:
           command: |
             export GO111MODULE=on
             go get -u github.com/mitchellh/gox@v1.0.1
-            go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.30.0
+            go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.32.0
       - run:
           name: Install vendors
           command: |
