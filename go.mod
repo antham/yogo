@@ -5,11 +5,11 @@ require (
 	github.com/Sirupsen/logrus v0.0.0-20160601113210-f3cfb454f4c2
 	github.com/andybalholm/cascadia v1.2.0
 	github.com/davecgh/go-spew v1.1.1
-	github.com/fatih/color v1.9.0
+	github.com/fatih/color v1.10.0
 	github.com/inconshreveable/mousetrap v1.0.0
 	github.com/jarcoal/httpmock v1.0.6
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
-	github.com/mattn/go-colorable v0.1.7
+	github.com/mattn/go-colorable v0.1.8
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
