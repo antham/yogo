@@ -11,7 +11,8 @@ jobs:
           command: |
             export GO111MODULE=on
             go get -u github.com/mitchellh/gox@v1.0.1
-            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sudo sh -s -- -b /usr/local/bin v1.32.0
+            export BINDIR=/home/circleci/bin
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.37.0
       - run:
           name: Install vendors
           command: |
