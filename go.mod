@@ -5,7 +5,7 @@ require (
 	github.com/Sirupsen/logrus v0.0.0-20160601113210-f3cfb454f4c2
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/fatih/color v1.10.0
-	github.com/jarcoal/httpmock v1.0.6
+	github.com/jarcoal/httpmock v1.0.8
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
 	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
