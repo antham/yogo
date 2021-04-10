@@ -37,7 +37,7 @@ func renderMail(mail *inbox.Mail) {
 
 	output("---\n")
 	if mail.Sender.Name == "" {
-		output(fmt.Sprintf("From  : <%s>\n", color.MagentaString(mail.Sender.Mail)))
+		output(fmt.Sprintf("From  : %s\n", color.MagentaString(mail.Sender.Mail)))
 	} else {
 		output(fmt.Sprintf("From  : %s <%s>\n", color.MagentaString(mail.Sender.Name), color.MagentaString(mail.Sender.Mail)))
 	}
