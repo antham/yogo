@@ -13,16 +13,7 @@ import (
 var ErrSomethingWrongOccurred = errors.New("something wrong occurred")
 
 func renderInboxMail(in *inbox.Inbox) {
-	if dumpJSON {
-		data, err := json.Marshal(*in)
-		if err != nil {
-			perror(ErrSomethingWrongOccurred)
-			errorExit()
-		}
-
-		output(string(data))
-		successExit()
-	}
+	renderJSON(*in)
 
 	if in.Count() == 0 {
 		info("Inbox is empty")
@@ -42,16 +33,7 @@ func renderInboxMail(in *inbox.Inbox) {
 }
 
 func renderMail(mail *inbox.Mail) {
-	if dumpJSON {
-		data, err := json.Marshal(*mail)
-		if err != nil {
-			perror(ErrSomethingWrongOccurred)
-			errorExit()
-		}
-
-		output(string(data))
-		successExit()
-	}
+	renderJSON(*mail)
 
 	output("---\n")
 	if mail.Sender.Name == "" {
@@ -64,4 +46,17 @@ func renderMail(mail *inbox.Mail) {
 	output("---\n")
 	output(color.CyanString(mail.Body))
 	output("\n---\n")
+}
+
+func renderJSON(d interface{}) {
+	if dumpJSON {
+		data, err := json.Marshal(d)
+		if err != nil {
+			perror(ErrSomethingWrongOccurred)
+			errorExit()
+		}
+
+		output(string(data))
+		successExit()
+	}
 }
