@@ -13,18 +13,15 @@ var inboxDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete email at given position in inbox",
 	Run: func(cmd *cobra.Command, args []string) {
-
 		identifier, offset := parseMailAndOffsetArgs(args)
 
 		in, err := inbox.ParseInboxPages(identifier, offset)
-
 		if err != nil {
 			perror(err)
 			errorExit()
 		}
 
 		checkOffset(in.Count(), offset)
-
 		if err := in.Delete(offset - 1); err != nil {
 			perror(err)
 			errorExit()

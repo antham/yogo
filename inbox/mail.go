@@ -26,7 +26,6 @@ type Sender struct {
 type Mail struct {
 	ID     string     `json:"id"`
 	Sender *Sender    `json:"sender,omitempty"`
-	SumUp  *string    `json:"sumUp,omitempty"`
 	Title  string     `json:"title"`
 	Date   *time.Time `json:"date,omitempty"`
 	Body   string     `json:"body,omitempty"`
@@ -37,7 +36,7 @@ func parseFrom(s string) (string, string) {
 	re := regexp.MustCompile(`.+?:\s*"?(.+?)"?\s*<(.+?)>`)
 	matches := re.FindStringSubmatch(s)
 	if len(matches) == 3 {
-		return matches[1], matches[2]
+		return strings.TrimSpace(matches[1]), matches[2]
 	}
 
 	re = regexp.MustCompile(`.+?:\s*(.+)`)
@@ -73,6 +72,5 @@ func parseMail(doc *goquery.Document, mail *Mail) {
 
 		mail.Body = parseHTML(s.Find("div#mailmillieu").Html())
 		mail.Title = strings.TrimSpace(s.Find("div#mailhaut .f16").Text())
-		mail.SumUp = nil
 	})
 }

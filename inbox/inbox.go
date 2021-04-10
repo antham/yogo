@@ -159,21 +159,28 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 		}
 
 		var isSPAM bool
-		title := s.Find("span.lmf").Text()
+		name := s.Find("span.lmf").Text()
+		mail := name
 
-		if len(title) >= 6 && title[:6] == "[SPAM]" {
+		if len(name) >= 6 && name[:6] == "[SPAM]" {
 			isSPAM = true
-			title = title[6:]
+			name = name[6:]
+		}
+
+		if strings.Contains(name, "@") {
+			name = ""
+		} else {
+			mail = ""
 		}
 
 		if ID := parseMailID(href); ID != "" {
 			mail := Mail{
-				ID:    ID,
-				Title: title,
-				SumUp: func() *string {
-					v := s.Find("span.lms").Text()
-					return &v
-				}(),
+				ID: ID,
+				Sender: &Sender{
+					Name: name,
+					Mail: mail,
+				},
+				Title:  s.Find("span.lms").Text(),
 				IsSPAM: isSPAM,
 			}
 
