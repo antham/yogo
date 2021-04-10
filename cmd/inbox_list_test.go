@@ -22,7 +22,7 @@ func TestRenderInboxMailWithEmptyInbox(t *testing.T) {
 	renderInboxMail(&in)
 }
 
-func TestRenderInbox(t *testing.T) {
+func TestRenderInboxWithAnEmptySenderEmail(t *testing.T) {
 	actual := []string{}
 
 	output = func(data string) {
@@ -33,12 +33,29 @@ func TestRenderInbox(t *testing.T) {
 		t.SkipNow()
 	}
 
-	sumUp := "Sum up"
-
 	in := inbox.Inbox{}
-	in.Add(inbox.Mail{ID: "test", Title: "title", SumUp: &sumUp})
+	in.Add(inbox.Mail{ID: "test", Sender: &inbox.Sender{Name: "name", Mail: ""}, Title: "title"})
 	renderInboxMail(&in)
 
-	assert.Regexp(t, ".*1.*title.*.*", actual[0], "Must display email title")
-	assert.Regexp(t, ".*Sum\\s*up.*", actual[1], "Must display email sum up")
+	assert.Regexp(t, ".*1.*name.*.*", actual[0], "Must display sender name")
+	assert.Regexp(t, ".*title.*", actual[1], "Must display email title")
+}
+
+func TestRenderInboxWithAnEmptySenderName(t *testing.T) {
+	actual := []string{}
+
+	output = func(data string) {
+		actual = append(actual, data)
+	}
+
+	successExit = func() {
+		t.SkipNow()
+	}
+
+	in := inbox.Inbox{}
+	in.Add(inbox.Mail{ID: "test", Sender: &inbox.Sender{Name: "", Mail: "test@test.com"}, Title: "title"})
+	renderInboxMail(&in)
+
+	assert.Regexp(t, ".*1.*test@test.com.*.*", actual[0], "Must display sender email")
+	assert.Regexp(t, ".*title.*", actual[1], "Must display email title")
 }
