@@ -13,7 +13,6 @@ func parseMailAndOffsetArgs(args []string) (string, int) {
 	}
 
 	offset, err := strconv.Atoi(args[1])
-
 	if err != nil {
 		perror(fmt.Errorf(`argument "%s" must be an integer`, args[1]))
 
