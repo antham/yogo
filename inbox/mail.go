@@ -36,7 +36,7 @@ func parseFrom(s string) (string, string) {
 	re := regexp.MustCompile(`.+?:\s*"?(.+?)"?\s*<(.+?)>`)
 	matches := re.FindStringSubmatch(s)
 	if len(matches) == 3 {
-		return matches[1], matches[2]
+		return strings.TrimSpace(matches[1]), matches[2]
 	}
 
 	re = regexp.MustCompile(`.+?:\s*(.+)`)

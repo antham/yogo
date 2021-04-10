@@ -30,12 +30,14 @@ func getDoc(filename string) *goquery.Document {
 
 func TestParseFrom(t *testing.T) {
 	name, mail := parseFrom(`De: "John Doe"   <john.doe@unknown.com>`)
-
 	assert.Equal(t, "John Doe", name)
 	assert.Equal(t, "john.doe@unknown.com", mail)
 
 	name, mail = parseFrom(`De: john.doe@unknown.com`)
+	assert.Equal(t, "", name)
+	assert.Equal(t, "john.doe@unknown.com", mail)
 
+	name, mail = parseFrom(`De: "   "   <john.doe@unknown.com>`)
 	assert.Equal(t, "", name)
 	assert.Equal(t, "john.doe@unknown.com", mail)
 }
