@@ -42,6 +42,16 @@ func TestParseMailAndOffsetArgsWithSecondArgumentLessThan0(t *testing.T) {
 	parseMailAndOffsetArgs([]string{"test", "0"})
 }
 
+func TestParseMailAndOffsetArgsWithAnUpperCasedEmail(t *testing.T) {
+	perror = func(err error) {
+		assert.EqualError(t, err, `argument "test" must be an integer`, "Must return an error")
+	}
+
+	email, offset := parseMailAndOffsetArgs([]string{"TeSt", "1"})
+	assert.Equal(t, email, "test")
+	assert.Equal(t, offset, 1)
+}
+
 func TestCheckOffsetWithOffsetGreaterThanCount(t *testing.T) {
 	perror = func(err error) {
 		assert.EqualError(t, err, `Lower your offset value`, "Must return an error")

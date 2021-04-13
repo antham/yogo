@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func parseMailAndOffsetArgs(args []string) (string, int) {
@@ -25,7 +26,11 @@ func parseMailAndOffsetArgs(args []string) (string, int) {
 		errorExit()
 	}
 
-	return args[0], offset
+	// Providing an uppercased email triggers a panic.
+	// In the web interface there is a redirection to
+	// the inbox with the address lowercased so we mimic
+	// this behaviour
+	return strings.ToLower(args[0]), offset
 }
 
 func checkOffset(count int, offset int) {
