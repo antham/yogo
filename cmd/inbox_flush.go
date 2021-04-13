@@ -19,7 +19,7 @@ var inboxFlushCmd = &cobra.Command{
 			errorExit()
 		}
 
-		in, err := inbox.ParseInboxPages(args[0], 1)
+		in, err := inbox.ParseInboxPages(parseMailAndOffsetArgs([]string{args[0], "1"}))
 		if err != nil {
 			perror(err)
 			errorExit()
