@@ -13,14 +13,19 @@ var inboxListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		identifier, offset := parseMailAndOffsetArgs(args)
 
-		in, err := inbox.ParseInboxPages(identifier, offset)
+		in, err := inbox.NewInbox(identifier)
 		if err != nil {
+			perror(err)
+			errorExit()
+		}
+
+		if err := in.ParseInboxPages(offset); err != nil {
 			perror(err)
 
 			errorExit()
 		}
 
-		renderInboxMail(in)
+		renderInboxMail(&in)
 	},
 }
 

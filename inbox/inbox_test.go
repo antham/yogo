@@ -59,7 +59,10 @@ func TestParseInboxPages(t *testing.T) {
 		},
 	}))
 
-	inbox, err := ParseInboxPages("test", 29)
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+
+	err = inbox.ParseInboxPages(29)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "test", inbox.Name)
@@ -99,7 +102,10 @@ func TestShrink(t *testing.T) {
 		},
 	}))
 
-	inbox, err := ParseInboxPages("test", 19)
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+
+	err = inbox.ParseInboxPages(19)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 19, inbox.Count())
@@ -129,7 +135,10 @@ func TestShrinkEmptyInbox(t *testing.T) {
 		},
 	}))
 
-	inbox, err := ParseInboxPages("test", 1)
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+
+	err = inbox.ParseInboxPages(1)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, inbox.Count())
@@ -162,7 +171,10 @@ func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 		},
 	}))
 
-	inbox, err := ParseInboxPages("test", 18)
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+
+	err = inbox.ParseInboxPages(18)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 15, inbox.Count())
@@ -195,7 +207,10 @@ func TestGetAll(t *testing.T) {
 		},
 	}))
 
-	inbox, err := ParseInboxPages("test", 29)
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+
+	err = inbox.ParseInboxPages(29)
 	mails := inbox.Mails
 
 	assert.NoError(t, err)
@@ -236,7 +251,10 @@ func TestFlush(t *testing.T) {
 		},
 	}))
 
-	inbox, err := ParseInboxPages("test", 15)
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+
+	err = inbox.ParseInboxPages(15)
 	inbox.Flush()
 
 	assert.NoError(t, err)
@@ -264,7 +282,10 @@ func TestFlushEmptyInbox(t *testing.T) {
 		},
 	}))
 
-	inbox, err := ParseInboxPages("test", 1)
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+
+	err = inbox.ParseInboxPages(1)
 	inbox.Flush()
 
 	assert.NoError(t, err)
@@ -298,7 +319,10 @@ func TestDelete(t *testing.T) {
 		},
 	}))
 
-	inbox, err := ParseInboxPages("test", 1)
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+
+	err = inbox.ParseInboxPages(1)
 	assert.NoError(t, inbox.Delete(0))
 	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET http://www.yopmail.com/inbox.php?ctrl=&d=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD%3D%3D&login=test&p=1&r_c=&scrl=0&spam=true&v=3.1&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UZGx3Zmt3AQL1ZmZ1ZQV1Zwx"])
 	assert.NoError(t, err)

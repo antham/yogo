@@ -15,12 +15,18 @@ var inboxFlushCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			perror(fmt.Errorf("One argument mandatory"))
-
 			errorExit()
 		}
 
-		in, err := inbox.ParseInboxPages(parseMailAndOffsetArgs([]string{args[0], "1"}))
+		identifier, offset := parseMailAndOffsetArgs([]string{args[0], "1"})
+
+		in, err := inbox.NewInbox(identifier)
 		if err != nil {
+			perror(err)
+			errorExit()
+		}
+
+		if err = in.ParseInboxPages(offset); err != nil {
 			perror(err)
 			errorExit()
 		}

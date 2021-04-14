@@ -7,14 +7,8 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/jaytaylor/html2text"
 )
-
-func getMailURLs(key string) string {
-	return map[string]string{
-		"get":    refURL + "/m.php?b=%v&id=%v",
-		"delete": refURL + "/inbox.php?login=%v&p=1&d=%v&ctrl=&scrl=0&spam=true&v=" + apiVersion + "&r_c=",
-	}[key]
-}
 
 // Sender defines a mail sender
 type Sender struct {
@@ -73,4 +67,17 @@ func parseMail(doc *goquery.Document, mail *Mail) {
 		mail.Body = parseHTML(s.Find("div#mailmillieu").Html())
 		mail.Title = strings.TrimSpace(s.Find("div#mailhaut .f16").Text())
 	})
+}
+
+func parseHTML(content string, err error) string {
+	if err != nil {
+		return ""
+	}
+
+	text, err := html2text.FromString(content)
+	if err != nil {
+		return ""
+	}
+
+	return text
 }
