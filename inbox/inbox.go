@@ -1,36 +1,33 @@
 package inbox
 
 import (
-	"errors"
-	"fmt"
-	"net/url"
 	"regexp"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/antham/yogo/inbox/client"
 )
-
-func getJsFileURL() string {
-	return refURL + "/style/" + apiVersion + "/webmail.js"
-}
-
-func getInboxURLs(key string) string {
-	return map[string]string{
-		"index": refURL + "/inbox.php?login=%v&p=%v&d=&ctrl=&scrl=&spam=true&v=" + apiVersion + "&r_c=&id=",
-		"flush": refURL + "/inbox.php?login=%v&p=1&d=all&ctrl=%v&v=" + apiVersion + "&r_c=&id=none&scrl=&spam=true",
-	}[key]
-}
 
 const itemNumber = 15
 
 // Inbox represents a mail collection
 type Inbox struct {
-	Name  string `json:"name"`
-	Mails []Mail `json:"mails"`
+	Name   string `json:"name"`
+	Mails  []Mail `json:"mails"`
+	client client.Client
 }
 
-// Get return email at given offset
+// NewInbox creates a new mail inbox
+func NewInbox(name string) (Inbox, error) {
+	client, err := client.New()
+	return Inbox{
+		client: client,
+		Name:   name,
+	}, err
+}
+
+// Get returns email at given offset
 func (i *Inbox) Get(offset int) *Mail {
 	if len(i.Mails) > offset {
 		return &i.Mails[offset]
@@ -39,12 +36,12 @@ func (i *Inbox) Get(offset int) *Mail {
 	return nil
 }
 
-// Count return total number of mails available in inbox
+// Count returns total number of mails available in inbox
 func (i *Inbox) Count() int {
 	return len(i.Mails)
 }
 
-// Shrink reduce mails size to given value
+// Shrink reduces mails size to given value
 func (i *Inbox) Shrink(limit int) {
 	if len(i.Mails) < limit {
 		return
@@ -53,7 +50,7 @@ func (i *Inbox) Shrink(limit int) {
 	i.Mails = i.Mails[:limit]
 }
 
-// Add append a mail to mails
+// Add appends a mail to mail list
 func (i *Inbox) Add(mail Mail) {
 	i.Mails = append(i.Mails, mail)
 }
@@ -61,11 +58,7 @@ func (i *Inbox) Add(mail Mail) {
 // Delete an email
 func (i *Inbox) Delete(position int) error {
 	mail := i.Mails[position]
-	URL, err := urlDecorator(fmt.Sprintf(getMailURLs("delete"), i.Name, strings.TrimLeft(mail.ID, "m")))
-	if err != nil {
-		return err
-	}
-	if err := send(URL, createCompteCookie(i.Name)); err != nil {
+	if err := i.client.DeleteMail(i.Name, mail.ID); err != nil {
 		return err
 	}
 
@@ -73,17 +66,10 @@ func (i *Inbox) Delete(position int) error {
 	return nil
 }
 
-// Parse retrieve all email datas
+// Parse retrieves all email datas
 func (i *Inbox) Parse(position int) error {
 	mail := &i.Mails[position]
-	URL := fmt.Sprintf(getMailURLs("get"), i.Name, mail.ID)
-
-	r, err := buildReader("GET", URL, createCompteCookie(i.Name), nil)
-	if err != nil {
-		return err
-	}
-
-	doc, err := fetchFromReader(r)
+	doc, err := i.client.GetMailPage(i.Name, mail.ID)
 	if err != nil {
 		return err
 	}
@@ -93,22 +79,34 @@ func (i *Inbox) Parse(position int) error {
 	return nil
 }
 
-// Flush empty an inbox
+// Flush empties an inbox
 func (i *Inbox) Flush() error {
 	if len(i.Mails) == 0 {
 		return nil
 	}
 
-	URL, err := urlDecorator(fmt.Sprintf(getInboxURLs("flush"), i.Name, strings.TrimLeft(i.Mails[0].ID, "m")))
-	if err != nil {
-		return err
-	}
-
-	if err := send(URL, createCompteCookie(i.Name)); err != nil {
+	if err := i.client.FlushMail(i.Name, i.Mails[0].ID); err != nil {
 		return err
 	}
 
 	i.Mails = []Mail{}
+	return nil
+}
+
+// ParseInboxPages parses inbox email in given page
+func (i *Inbox) ParseInboxPages(limit int) error {
+	for page := 1; page <= (limit/itemNumber)+1 && limit >= i.Count(); page++ {
+		doc, err := i.client.GetMailsPage(i.Name, page)
+		if err != nil {
+			return err
+		}
+
+		parseInboxPage(doc, i)
+		time.Sleep(1 * time.Second)
+	}
+
+	i.Shrink(limit)
+
 	return nil
 }
 
@@ -121,36 +119,7 @@ func parseMailID(s string) string {
 	return ""
 }
 
-// ParseInboxPages parse inbox email in given page
-func ParseInboxPages(identifier string, limit int) (*Inbox, error) {
-	inbox := Inbox{Name: identifier}
-
-	for page := 1; page <= (limit/itemNumber)+1 && limit >= inbox.Count(); page++ {
-		URL, err := urlDecorator(fmt.Sprintf(getInboxURLs("index"), identifier, page))
-		if err != nil {
-			return nil, err
-		}
-
-		r, err := buildReader("GET", URL, createCompteCookie(identifier), nil)
-		if err != nil {
-			return nil, err
-		}
-
-		doc, err := fetchFromReader(r)
-		if err != nil {
-			return nil, err
-		}
-
-		parseInboxPage(doc, &inbox)
-		time.Sleep(1 * time.Second)
-	}
-
-	inbox.Shrink(limit)
-
-	return &inbox, nil
-}
-
-// ParseInboxPage parse inbox email in given page
+// ParseInboxPage parses inbox email in given page
 func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 	doc.Find("div.um").Each(func(i int, s *goquery.Selection) {
 		href, ok := s.Find("a.lm").Attr("href")
@@ -187,48 +156,4 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 			inbox.Add(mail)
 		}
 	})
-}
-
-func urlDecorator(URL string) (string, error) {
-	doc, err := fetchURL(refURL)
-	if err != nil {
-		return "", err
-	}
-
-	var yp string
-
-	doc.Find("#yp").Each(func(i int, s *goquery.Selection) {
-		var ok bool
-		yp, ok = s.Attr("value")
-		if !ok {
-			err = errors.New("no attribute yp found")
-		}
-	})
-
-	if err != nil {
-		return "", err
-	}
-
-	doc, err = fetchURL(getJsFileURL())
-	if err != nil {
-		return "", err
-	}
-
-	yj := regexp.MustCompile("&yj=(.*?)&").FindStringSubmatch(doc.Text())[1]
-
-	u, err := url.Parse(URL)
-	if err != nil {
-		return "", err
-	}
-
-	q := u.Query()
-	q.Add("yp", yp)
-	q.Add("yj", yj)
-
-	return (&url.URL{
-		Scheme:   u.Scheme,
-		Host:     u.Host,
-		Path:     u.Path,
-		RawQuery: q.Encode(),
-	}).String(), nil
 }
