@@ -1,7 +1,6 @@
 package inbox
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -27,13 +26,13 @@ type Mail struct {
 }
 
 func parseFrom(s string) (string, string) {
-	re := regexp.MustCompile(`.+?:\s*"?(.+?)"?\s*<(.+?)>`)
+	re := regexp.MustCompile(`(?s)(.+?) <(.+?)>`)
 	matches := re.FindStringSubmatch(s)
 	if len(matches) == 3 {
 		return strings.TrimSpace(matches[1]), matches[2]
 	}
 
-	re = regexp.MustCompile(`.+?:\s*(.+)`)
+	re = regexp.MustCompile(`<(.+?)>`)
 	matches = re.FindStringSubmatch(s)
 	if len(matches) == 2 {
 		return "", matches[1]
@@ -43,14 +42,7 @@ func parseFrom(s string) (string, string) {
 }
 
 func parseDate(s string) *time.Time {
-	re := regexp.MustCompile(`.*?(\d+/\d+/\d+).*?(\d+:\d+)`)
-	matches := re.FindStringSubmatch(s)
-
-	if len(matches) != 3 {
-		return nil
-	}
-
-	date, err := time.Parse("02/01/2006 15:04", fmt.Sprintf("%v %v", matches[1], matches[2]))
+	date, err := time.Parse("Monday, January 02, 2006 3:04:05 PM", s)
 	if err != nil {
 		return nil
 	}
@@ -59,21 +51,25 @@ func parseDate(s string) *time.Time {
 }
 
 func parseMail(doc *goquery.Document, mail *Mail) {
-	doc.Find("body").Each(func(i int, s *goquery.Selection) {
-		mail.Sender = &Sender{}
-		mail.Sender.Name, mail.Sender.Mail = parseFrom(s.Find("div#mailhaut div:nth-child(2)").Text())
-		mail.Date = parseDate(s.Find("div#mailhaut div:nth-child(4)").Text())
+	mail.Sender = &Sender{}
 
-		mail.Body = parseHTML(s.Find("div#mailmillieu").Html())
-		mail.Title = strings.TrimSpace(s.Find("div#mailhaut .f16").Text())
+	doc.Find("body div.fl .ellipsis").Each(func(i int, s *goquery.Selection) {
+		switch i {
+		case 0:
+			mail.Title = strings.TrimSpace(s.Text())
+		case 1:
+			mail.Sender.Name, mail.Sender.Mail = parseFrom(s.Text())
+		case 2:
+			mail.Date = parseDate(strings.Join(strings.Fields(s.Text()), " "))
+		}
 	})
+	mail.Body = parseHTML(doc.Find("div#mail").Html())
 }
 
 func parseHTML(content string, err error) string {
 	if err != nil {
 		return ""
 	}
-
 	text, err := html2text.FromString(content)
 	if err != nil {
 		return ""

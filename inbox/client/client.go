@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -16,62 +15,85 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-const refURL = "http://www.yopmail.com"
+const refURL = "https://yopmail.com"
 const defaultHttpTimeout = 10
 
 // Client provides a high level interface to abstract yopmail data fetching
 type Client struct {
+	browser    *browser
 	apiVersion string
 }
 
 // New creates a new client
 func New() (Client, error) {
-	apiVersion, err := fetchApiVersion()
+	browser := newBrowser()
+	c, err := browser.get("GET", refURL, map[string]string{}, nil)
 	if err != nil {
 		return Client{}, err
 	}
-	return Client{apiVersion: apiVersion}, nil
+
+	_, err = browser.get("GET", refURL+"/consent?c=accept", map[string]string{}, nil)
+	if err != nil {
+		return Client{}, err
+	}
+	apiVersion, err := parseApiVersion(c.String())
+	if err != nil {
+		return Client{}, err
+	}
+	return Client{apiVersion: apiVersion, browser: browser}, nil
 }
 
 // GetMailsPage fetches all html pages containing emails data
 func (c Client) GetMailsPage(identifier string, page int) (*goquery.Document, error) {
-	URL, err := decorateURL("inbox.php?d=&ctrl=&scrl=&spam=true&r_c=&id=", c.apiVersion, map[string]string{"login": identifier, "p": strconv.Itoa(page)})
+	URL, err := decorateURL("inbox?d=&ctrl=&scrl=&spam=true&r_c=&id=", c.apiVersion, false, map[string]string{"login": identifier, "p": strconv.Itoa(page)})
 	if err != nil {
 		return nil, err
 	}
-	return fetchDocument("GET", URL, createCompteCookie(identifier), nil)
+	c.browser.populateCookieFromAccount(identifier)
+	r, err := c.browser.get("GET", URL, map[string]string{}, nil)
+	if err != nil {
+		return nil, err
+	}
+	return goquery.NewDocumentFromReader(r)
 }
 
 // GetMailPage fetches html page containing the email
 func (c Client) GetMailPage(identifier string, mailID string) (*goquery.Document, error) {
-	URL, err := decorateURL("m.php", c.apiVersion, map[string]string{"b": identifier, "id": mailID})
+	URL, err := decorateURL("mail", c.apiVersion, true, map[string]string{"b": identifier, "id": "m" + mailID})
 	if err != nil {
 		return nil, err
 	}
-	return fetchDocument("GET", URL, createCompteCookie(identifier), nil)
+	c.browser.populateCookieFromAccount(identifier)
+	r, err := c.browser.get("GET", URL, map[string]string{}, nil)
+	if err != nil {
+		return nil, err
+	}
+	return goquery.NewDocumentFromReader(r)
 }
 
 // DeleteMail removes an email from yopmail inbox
 func (c Client) DeleteMail(identifier string, mailID string) error {
-	URL, err := decorateURL("inbox.php?p=1&ctrl=&scrl=0&spam=true&r_c=", c.apiVersion, map[string]string{"login": identifier, "d": strings.TrimLeft(mailID, "m")})
+	URL, err := decorateURL("inbox?p=1&ctrl=&r_c=&id=", c.apiVersion, false, map[string]string{"login": identifier, "d": mailID})
 	if err != nil {
 		return err
 	}
-	_, err = fetch("GET", URL, createCompteCookie(identifier), nil)
+	c.browser.populateCookieFromAccount(identifier)
+	_, err = c.browser.get("GET", URL, map[string]string{}, nil)
 	return err
 }
 
 // FlushMail removes all yopmail inbox mails
 func (c Client) FlushMail(identifier string, mailID string) error {
-	URL, err := decorateURL("inbox.php?p=1&d=all&r_c=&id=none&scrl=&spam=true", c.apiVersion, map[string]string{"login": identifier, "ctrl": strings.TrimLeft(mailID, "m")})
+	URL, err := decorateURL("inbox?p=1&d=all&r_c=&id=", c.apiVersion, false, map[string]string{"login": identifier, "ctrl": mailID})
 	if err != nil {
 		return err
 	}
-	_, err = fetch("GET", URL, createCompteCookie(identifier), nil)
+	c.browser.populateCookieFromAccount(identifier)
+	_, err = c.browser.get("GET", URL, map[string]string{}, nil)
 	return err
 }
 
-func decorateURL(URL string, apiVersion string, queryParams map[string]string) (string, error) {
+func decorateURL(URL string, apiVersion string, disableDefaultQueryParams bool, queryParams map[string]string) (string, error) {
 	doc, err := fetchDocument("GET", refURL, map[string]string{}, nil)
 	if err != nil {
 		return "", err
@@ -86,7 +108,7 @@ func decorateURL(URL string, apiVersion string, queryParams map[string]string) (
 		return "", errors.New("failure when fetching yp value")
 	}
 
-	doc, err = fetchDocument("GET", refURL+"/style/"+apiVersion+"/webmail.js", map[string]string{}, nil)
+	doc, err = fetchDocument("GET", refURL+"/ver/"+apiVersion+"/webmail.js", map[string]string{}, nil)
 	if err != nil {
 		return "", err
 	}
@@ -104,9 +126,12 @@ func decorateURL(URL string, apiVersion string, queryParams map[string]string) (
 	}
 
 	q := u.Query()
-	q.Add("yp", yp)
-	q.Add("yj", yj)
-	q.Add("v", apiVersion)
+
+	if !disableDefaultQueryParams {
+		q.Add("yp", yp)
+		q.Add("yj", yj)
+		q.Add("v", apiVersion)
+	}
 	for k, v := range queryParams {
 		q.Add(k, v)
 	}
@@ -114,7 +139,7 @@ func decorateURL(URL string, apiVersion string, queryParams map[string]string) (
 	return (&url.URL{
 		Scheme:   u.Scheme,
 		Host:     u.Host,
-		Path:     u.Path,
+		Path:     "en" + u.Path,
 		RawQuery: q.Encode(),
 	}).String(), nil
 }
@@ -136,7 +161,12 @@ func fetch(method string, URL string, headers map[string]string, body io.Reader)
 		return nil, wrapError(errMsg, err)
 	}
 	if res.StatusCode > 300 {
-		return nil, wrapError(errMsg, fmt.Errorf("request failed with error code %d", res.StatusCode))
+		b, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, wrapError(errMsg, errors.New("can't extract request body"))
+		}
+
+		return nil, wrapError(errMsg, fmt.Errorf("request failed with error code %d and body %s", res.StatusCode, string(b)))
 	}
 
 	b, err := io.ReadAll(res.Body)
@@ -155,34 +185,82 @@ func fetchDocument(method string, URL string, headers map[string]string, body io
 	return goquery.NewDocumentFromReader(r)
 }
 
-func fetchApiVersion() (string, error) {
-	errMsg := "no yopmail api version found"
-	client := http.Client{Timeout: defaultHttpTimeout * time.Second}
-	res, err := client.Get(refURL)
-	if err != nil {
-		return "", wrapError(errMsg, err)
-	}
-	if res.StatusCode > 300 {
-		return "", wrapError(errMsg, fmt.Errorf("request failed with error code %d", res.StatusCode))
-	}
-
-	b, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return "", wrapError(errMsg, err)
-	}
-
-	data := regexp.MustCompile(`<script type="text/javascript" src="/style/([0-9.]+)/webmail.js">`).FindStringSubmatch(string(b))
+func parseApiVersion(s string) (string, error) {
+	data := regexp.MustCompile(`<script src="/ver/([0-9.]+)/webmail.js">`).FindStringSubmatch(s)
 	if len(data) < 2 {
-		return "", wrapError(errMsg, errors.New("version could not be extracted"))
+		return "", errors.New("api version could not be extracted")
 	}
 
 	return data[1], nil
 }
 
-func createCompteCookie(compte string) map[string]string {
-	return map[string]string{"Cookie": fmt.Sprintf("compte=%s", compte)}
-}
-
 func wrapError(msg string, err error) error {
 	return fmt.Errorf("%s : %w", msg, err)
+}
+
+type browser struct {
+	cookies map[string]string
+}
+
+func newBrowser() *browser {
+	return &browser{cookies: map[string]string{}}
+}
+
+func (b *browser) setCookie(key string, value string) {
+	b.cookies[key] = value
+}
+
+func (b *browser) populateCookieFromAccount(account string) {
+	for k, v := range map[string]string{"compte": account, "ywm": account, "ytime": time.Now().Format("15:04")} {
+		b.setCookie(k, v)
+	}
+}
+
+func (b *browser) buildCookie() string {
+	data := []string{}
+	for k, v := range b.cookies {
+		data = append(data, fmt.Sprintf("%s=%s", k, v))
+	}
+	return strings.Join(data, "; ")
+}
+
+func (b *browser) get(method string, URL string, headers map[string]string, body io.Reader) (*bytes.Buffer, error) {
+	errMsg := fmt.Sprintf("failure when fetching %s", URL)
+	r, err := http.NewRequest(method, URL, body)
+	if err != nil {
+		return nil, wrapError(errMsg, err)
+	}
+
+	for k, v := range headers {
+		r.Header.Add(k, v)
+	}
+	if len(b.cookies) > 0 {
+		r.Header.Add("Cookie", b.buildCookie())
+	}
+	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
+
+	c := http.Client{Timeout: defaultHttpTimeout * time.Second}
+	res, err := c.Do(r)
+	if err != nil {
+		return nil, wrapError(errMsg, err)
+	}
+	if res.StatusCode > 300 {
+		b, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, wrapError(errMsg, errors.New("can't extract request body"))
+		}
+
+		return nil, wrapError(errMsg, fmt.Errorf("request failed with error code %d and body %s", res.StatusCode, string(b)))
+	}
+
+	buf, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, wrapError(errMsg, err)
+	}
+
+	for _, c := range res.Cookies() {
+		b.cookies[c.Name] = c.Value
+	}
+
+	return bytes.NewBuffer(buf), nil
 }
