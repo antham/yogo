@@ -1,7 +1,6 @@
 package inbox
 
 import (
-	"regexp"
 	"strings"
 	"time"
 
@@ -110,23 +109,9 @@ func (i *Inbox) ParseInboxPages(limit int) error {
 	return nil
 }
 
-func parseMailID(s string) string {
-	matches := regexp.MustCompile("m.php.b=.*?id=(.*)").FindStringSubmatch(s)
-	if len(matches) == 2 {
-		return matches[1]
-	}
-
-	return ""
-}
-
 // ParseInboxPage parses inbox email in given page
 func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
-	doc.Find("div.um").Each(func(i int, s *goquery.Selection) {
-		href, ok := s.Find("a.lm").Attr("href")
-		if !ok {
-			return
-		}
-
+	doc.Find("div.m").Each(func(i int, s *goquery.Selection) {
 		var isSPAM bool
 		name := s.Find("span.lmf").Text()
 		mail := name
@@ -142,14 +127,14 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 			mail = ""
 		}
 
-		if ID := parseMailID(href); ID != "" {
+		if ID, ok := s.Attr("id"); ok {
 			mail := Mail{
 				ID: ID,
 				Sender: &Sender{
 					Name: name,
 					Mail: mail,
 				},
-				Title:  s.Find("span.lms").Text(),
+				Title:  s.Find("div.lms").Text(),
 				IsSPAM: isSPAM,
 			}
 

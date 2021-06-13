@@ -12,68 +12,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFetchApiVersion(t *testing.T) {
+func TestParseApiVersion(t *testing.T) {
 	type scenario struct {
-		name  string
-		setup func()
-		test  func(string, error)
+		name      string
+		arguments func() string
+		test      func(string, error)
 	}
 
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
 	for _, s := range []scenario{{
-		"500 on response",
-		func() {
-			httpmock.RegisterResponder("GET", refURL,
-				httpmock.NewStringResponder(500, ""))
-		}, func(version string, err error) {
-			assert.Error(t, err)
-			assert.EqualError(t, err, "no yopmail api version found : request failed with error code 500")
-		},
-	}, {
-		"error when fetching the request",
-		func() {
-			httpmock.RegisterResponder("GET", refURL,
-				httpmock.NewErrorResponder(errors.New("an error occurred")))
-		}, func(version string, err error) {
-			assert.Error(t, err)
-			assert.EqualError(t, err, `no yopmail api version found : Get "http://www.yopmail.com": an error occurred`)
-		},
-	}, {
-		"request timeout",
-		func() {
-			httpmock.RegisterResponder("GET", refURL,
-				func(r *http.Request) (res *http.Response, e error) {
-					time.Sleep(time.Second * 20)
-					return
-				})
-		}, func(version string, err error) {
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "lient.Timeout exceeded while awaiting headers")
-		},
-	}, {
 		"no version found in JS file",
-		func() {
-			httpmock.RegisterResponder("GET", refURL,
-				httpmock.NewStringResponder(200, ``))
+		func() string {
+			return ""
 		}, func(version string, err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, "no yopmail api version found : version could not be extracted")
+			assert.EqualError(t, err, "api version could not be extracted")
 		},
 	}, {
 		"version found in JS file",
-		func() {
-			httpmock.RegisterResponder("GET", refURL,
-				httpmock.NewStringResponder(200, `xxxxxx<script type="text/javascript" src="/style/3.1/webmail.js">xxxxx`))
+		func() string {
+			return `xxxxxx<script src="/ver/3.1/webmail.js">xxxxx`
 		}, func(version string, err error) {
 			assert.NoError(t, err)
 			assert.Equal(t, "3.1", version)
 		},
 	}} {
 		t.Run(s.name, func(t *testing.T) {
-			s.setup()
-			s.test(fetchApiVersion())
+			s.test(parseApiVersion(s.arguments()))
 			httpmock.Reset()
 		})
 	}
@@ -136,7 +103,7 @@ func TestFetch(t *testing.T) {
 				httpmock.NewStringResponder(500, ""))
 		}, func(reader io.Reader, err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching http://hijklm.com : request failed with error code 500`)
+			assert.EqualError(t, err, `failure when fetching http://hijklm.com : request failed with error code 500 and body `)
 		},
 	}, {
 		"error when fetching the request",
@@ -183,7 +150,7 @@ func TestDecorateURL(t *testing.T) {
 	type scenario struct {
 		name  string
 		setup func()
-		args  func() (string, string, map[string]string)
+		args  func() (string, string, bool, map[string]string)
 		test  func(string, error)
 	}
 
@@ -195,20 +162,20 @@ func TestDecorateURL(t *testing.T) {
 		func() {
 			httpmock.RegisterResponder("GET", refURL,
 				httpmock.NewStringResponder(500, ""))
-		}, func() (string, string, map[string]string) {
-			return "test", "3.1", map[string]string{"q1": "value1", "q2": "value2"}
+		}, func() (string, string, bool, map[string]string) {
+			return "test", "3.1", false, map[string]string{"q1": "value1", "q2": "value2"}
 		},
 		func(URL string, err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching http://www.yopmail.com : request failed with error code 500`)
+			assert.EqualError(t, err, `failure when fetching https://yopmail.com : request failed with error code 500 and body `)
 		},
 	}, {
 		"no attribute yp found",
 		func() {
 			httpmock.RegisterResponder("GET", refURL,
 				httpmock.NewStringResponder(200, ""))
-		}, func() (string, string, map[string]string) {
-			return "test", "3.1", map[string]string{"q1": "value1", "q2": "value2"}
+		}, func() (string, string, bool, map[string]string) {
+			return "test", "3.1", false, map[string]string{"q1": "value1", "q2": "value2"}
 		}, func(URL string, err error) {
 			assert.Error(t, err)
 			assert.EqualError(t, err, "failure when fetching yp value")
@@ -218,8 +185,8 @@ func TestDecorateURL(t *testing.T) {
 		func() {
 			httpmock.RegisterResponder("GET", refURL,
 				httpmock.NewStringResponder(200, `<html><head></head><body><input id="yp"></body></html>`))
-		}, func() (string, string, map[string]string) {
-			return "test", "3.1", map[string]string{"q1": "value1", "q2": "value2"}
+		}, func() (string, string, bool, map[string]string) {
+			return "test", "3.1", false, map[string]string{"q1": "value1", "q2": "value2"}
 		}, func(URL string, err error) {
 			assert.Error(t, err)
 			assert.EqualError(t, err, "failure when fetching yp value")
@@ -227,25 +194,25 @@ func TestDecorateURL(t *testing.T) {
 	}, {
 		"failure when fetching the JS file",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/style/3.1/webmail.js",
+			httpmock.RegisterResponder("GET", refURL+"/ver/3.1/webmail.js",
 				httpmock.NewStringResponder(500, ""))
 			httpmock.RegisterResponder("GET", refURL,
 				httpmock.NewStringResponder(200, `<html><head></head><body><input id="yp" value="yptest"></body></html>`))
-		}, func() (string, string, map[string]string) {
-			return "test", "3.1", map[string]string{"q1": "value1", "q2": "value2"}
+		}, func() (string, string, bool, map[string]string) {
+			return "test", "3.1", false, map[string]string{"q1": "value1", "q2": "value2"}
 		}, func(URL string, err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, "failure when fetching http://www.yopmail.com/style/3.1/webmail.js : request failed with error code 500")
+			assert.EqualError(t, err, "failure when fetching https://yopmail.com/ver/3.1/webmail.js : request failed with error code 500 and body ")
 		},
 	}, {
 		"no yj attribute",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/style/3.1/webmail.js",
+			httpmock.RegisterResponder("GET", refURL+"/ver/3.1/webmail.js",
 				httpmock.NewStringResponder(200, ""))
 			httpmock.RegisterResponder("GET", refURL,
 				httpmock.NewStringResponder(200, `<html><head></head><body><input id="yp" value="yptest"></body></html>`))
-		}, func() (string, string, map[string]string) {
-			return "test", "3.1", map[string]string{"q1": "value1", "q2": "value2"}
+		}, func() (string, string, bool, map[string]string) {
+			return "test", "3.1", false, map[string]string{"q1": "value1", "q2": "value2"}
 		}, func(URL string, err error) {
 			assert.Error(t, err)
 			assert.EqualError(t, err, "failure when fetching yj value")
@@ -253,28 +220,41 @@ func TestDecorateURL(t *testing.T) {
 	}, {
 		"failure when parsing the URL",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/style/3.1/webmail.js",
+			httpmock.RegisterResponder("GET", refURL+"/ver/3.1/webmail.js",
 				httpmock.NewStringResponder(200, "xxx http://whatever.com?q=s&yj=ytest&t=a xxxxx"))
 			httpmock.RegisterResponder("GET", refURL,
 				httpmock.NewStringResponder(200, `<html><head></head><body><input id="yp" value="yptest"</body></html>`))
-		}, func() (string, string, map[string]string) {
-			return "\n\n", "3.1", map[string]string{"q1": "value1", "q2": "value2"}
+		}, func() (string, string, bool, map[string]string) {
+			return "\n\n", "3.1", false, map[string]string{"q1": "value1", "q2": "value2"}
 		}, func(URL string, err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `parse "http://www.yopmail.com/\n\n": net/url: invalid control character in URL`)
+			assert.EqualError(t, err, `parse "https://yopmail.com/\n\n": net/url: invalid control character in URL`)
 		},
 	}, {
 		"decorate the URL",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/style/3.1/webmail.js",
+			httpmock.RegisterResponder("GET", refURL+"/ver/3.1/webmail.js",
 				httpmock.NewStringResponder(200, "xxx http://whatever.com?q=s&yj=ytest&t=a xxxxx"))
 			httpmock.RegisterResponder("GET", refURL,
 				httpmock.NewStringResponder(200, `<html><head></head><body><input id="yp" value="yptest"></body></html>`))
-		}, func() (string, string, map[string]string) {
-			return "test?k=w&g=t", "3.1", map[string]string{"q1": "value1", "q2": "value2"}
+		}, func() (string, string, bool, map[string]string) {
+			return "test?k=w&g=t", "3.1", false, map[string]string{"q1": "value1", "q2": "value2"}
 		}, func(URL string, err error) {
 			assert.NoError(t, err)
-			assert.Equal(t, refURL+"/test?g=t&k=w&q1=value1&q2=value2&v=3.1&yj=ytest&yp=yptest", URL)
+			assert.Equal(t, refURL+"/en/test?g=t&k=w&q1=value1&q2=value2&v=3.1&yj=ytest&yp=yptest", URL)
+		},
+	}, {
+		"decorate the URL and do not add default query params",
+		func() {
+			httpmock.RegisterResponder("GET", refURL+"/ver/3.1/webmail.js",
+				httpmock.NewStringResponder(200, "xxx http://whatever.com?q=s&yj=ytest&t=a xxxxx"))
+			httpmock.RegisterResponder("GET", refURL,
+				httpmock.NewStringResponder(200, `<html><head></head><body><input id="yp" value="yptest"></body></html>`))
+		}, func() (string, string, bool, map[string]string) {
+			return "test?k=w&g=t", "3.1", true, map[string]string{"q1": "value1", "q2": "value2"}
+		}, func(URL string, err error) {
+			assert.NoError(t, err)
+			assert.Equal(t, refURL+"/en/test?g=t&k=w&q1=value1&q2=value2", URL)
 		},
 	}} {
 		t.Run(s.name, func(t *testing.T) {
@@ -299,19 +279,19 @@ func TestGetMailsPage(t *testing.T) {
 	for _, s := range []scenario{{
 		"500 when requesting yopmail",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/inbox.php?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(500, ""))
 		}, func() (string, int) {
 			return "box1", 1
 		},
 		func(doc *goquery.Document, err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching http://www.yopmail.com/inbox.php?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest : request failed with error code 500`)
+			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest : request failed with error code 500 and body `)
 		},
 	}, {
 		"request succeed",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/inbox.php?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
 		}, func() (string, int) {
 			return "box1", 1
@@ -347,19 +327,19 @@ func TestGetMailPage(t *testing.T) {
 	for _, s := range []scenario{{
 		"500 when requesting yopmail",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/m.php?b=box1&id=ABCDEFGH&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/mail?b=box1&id=mABCDEFGH",
 				httpmock.NewStringResponder(500, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
 		func(doc *goquery.Document, err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching http://www.yopmail.com/m.php?b=box1&id=ABCDEFGH&v=3.1&yj=ytest&yp=yptest : request failed with error code 500`)
+			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/mail?b=box1&id=mABCDEFGH : request failed with error code 500 and body `)
 		},
 	}, {
 		"request succeed",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/m.php?b=box1&id=ABCDEFGH&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/mail?b=box1&id=mABCDEFGH",
 				httpmock.NewStringResponder(200, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
@@ -395,19 +375,19 @@ func TestDeleteMail(t *testing.T) {
 	for _, s := range []scenario{{
 		"500 when requesting yopmail",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/inbox.php?ctrl=&d=ABCDEFGH&login=box1&p=1&r_c=&scrl=0&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=ABCDEFGH&login=box1&p=1&r_c=&id=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(500, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
 		func(err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching http://www.yopmail.com/inbox.php?ctrl=&d=ABCDEFGH&login=box1&p=1&r_c=&scrl=0&spam=true&v=3.1&yj=ytest&yp=yptest : request failed with error code 500`)
+			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest : Get "https://yopmail.com/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest": no responder found`)
 		},
 	}, {
 		"request succeed",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/inbox.php?ctrl=&d=ABCDEFGH&login=box1&p=1&r_c=&scrl=0&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
@@ -443,19 +423,19 @@ func TestFlushMail(t *testing.T) {
 	for _, s := range []scenario{{
 		"500 when requesting yopmail",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/inbox.php?ctrl=ABCDEFGH&d=all&id=none&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(500, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
 		func(err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching http://www.yopmail.com/inbox.php?ctrl=ABCDEFGH&d=all&id=none&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest : request failed with error code 500`)
+			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest : request failed with error code 500 and body `)
 		},
 	}, {
 		"request succeed",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/inbox.php?ctrl=ABCDEFGH&d=all&id=none&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
@@ -478,8 +458,9 @@ func TestFlushMail(t *testing.T) {
 }
 
 func mockYopmailSetup() {
-	httpmock.RegisterResponder("GET", refURL+"/style/3.1/webmail.js",
+	httpmock.RegisterResponder("GET", refURL+"/ver/3.1/webmail.js",
 		httpmock.NewStringResponder(200, "xxx http://whatever.com?q=s&yj=ytest&t=a xxxxx"))
+	httpmock.RegisterResponder("GET", refURL+"/consent?c=accept", httpmock.NewStringResponder(200, ""))
 	httpmock.RegisterResponder("GET", refURL,
-		httpmock.NewStringResponder(200, `<script type="text/javascript" src="/style/3.1/webmail.js"></script><input id="yp" value="yptest">`))
+		httpmock.NewStringResponder(200, `<script src="/ver/3.1/webmail.js"></script><input id="yp" value="yptest">`))
 }
