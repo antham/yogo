@@ -1,7 +1,7 @@
 module github.com/antham/yogo
 
 require (
-	github.com/PuerkitoBio/goquery v1.6.1
+	github.com/PuerkitoBio/goquery v1.7.0
 	github.com/Sirupsen/logrus v0.0.0-20160601113210-f3cfb454f4c2
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/fatih/color v1.12.0
