@@ -10,7 +10,7 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
-	github.com/spf13/cobra v1.1.3
+	github.com/spf13/cobra v1.2.0
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
