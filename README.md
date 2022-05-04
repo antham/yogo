@@ -1,4 +1,4 @@
-# Yogo [![codecov](https://codecov.io/gh/antham/yogo/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/yogo)
+# Yogo [![Go Report Card](https://goreportcard.com/badge/github.com/antham/yogo)](https://goreportcard.com/report/github.com/antham/yogo) [![codecov](https://codecov.io/gh/antham/yogo/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/yogo) [![GitHub tag](https://img.shields.io/github/tag/antham/yogo.svg)]()
 
 Check yopmail mails and inboxes from command line.
 
