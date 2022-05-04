@@ -42,4 +42,9 @@ jobs:
           args: build --rm-dist --snapshot
 
       - name: Test
-        run: go test -v ./...
+        run: |
+          go test -race -cover -coverprofile=coverage.txt ./...
+
+      - name: Push on codecov
+        run: |
+          bash <(curl -s https://codecov.io/bash)
