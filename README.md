@@ -1,4 +1,4 @@
-# Yogo [![CircleCI](https://circleci.com/gh/antham/yogo.svg?style=svg)](https://circleci.com/gh/antham/yogo) [![codecov](https://codecov.io/gh/antham/yogo/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/yogo)
+# Yogo [![codecov](https://codecov.io/gh/antham/yogo/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/yogo)
 
 Check yopmail mails and inboxes from command line.
 
