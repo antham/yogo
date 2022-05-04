@@ -1,5 +1,4 @@
-Yogo [![CircleCI](https://circleci.com/gh/antham/yogo.svg?style=svg)](https://circleci.com/gh/antham/yogo) [![codecov](https://codecov.io/gh/antham/yogo/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/yogo) [![codebeat badge](https://codebeat.co/badges/c561682e-6834-4325-8725-6167c16214b1)](https://codebeat.co/projects/github-com-antham-yogo)
-====
+# Yogo [![CircleCI](https://circleci.com/gh/antham/yogo.svg?style=svg)](https://circleci.com/gh/antham/yogo) [![codecov](https://codecov.io/gh/antham/yogo/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/yogo)
 
 Check yopmail mails and inboxes from command line.
 
@@ -9,7 +8,7 @@ Download binaries here : [yogo](https://github.com/antham/yogo/releases/).
 
 A package is available in aur for archlinux.
 
-## Usage ##
+## Usage
 
 ```
 Check yopmail mails and inboxes from command line.
@@ -29,9 +28,9 @@ Flags:
 Use "yogo [command] --help" for more information about a command.
 ```
 
-## Flag ##
+## Flag
 
-Use the ```--json``` output flag to get the output as JSON.
+Use the `--json` output flag to get the output as JSON.
 
 ## Inbox
 
