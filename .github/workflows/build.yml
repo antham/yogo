@@ -12,39 +12,5 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    name: lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-      - uses: actions/checkout@v3
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.45.2
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
-        with:
-          distribution: goreleaser
-          version: latest
-          args: build --rm-dist --snapshot
-
-      - name: Test
-        run: |
-          go test -race -cover -coverprofile=coverage.txt ./...
-
-      - name: Push on codecov
-        run: |
-          bash <(curl -s https://codecov.io/bash)
+  call-workflow:
+    uses: antham/go-workflow-github-action/.github/workflows/build.yml@master
