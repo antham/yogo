@@ -5,24 +5,23 @@ import (
 	"testing"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
-func getDoc(filename string) *goquery.Document {
+func getDoc(t *testing.T, filename string) *goquery.Document {
 	dir, err := os.Getwd()
 	if err != nil {
-		logrus.Fatal(err)
+		assert.NoError(t, err)
 	}
 
 	f, err := os.Open(dir + "/" + filename)
 	if err != nil {
-		logrus.Fatal(err)
+		assert.NoError(t, err)
 	}
 
 	doc, err := goquery.NewDocumentFromReader(f)
 	if err != nil {
-		logrus.Fatal(err)
+		assert.NoError(t, err)
 	}
 
 	return doc
@@ -51,7 +50,7 @@ func TestParseDate(t *testing.T) {
 
 func TestParseMail(t *testing.T) {
 	mail := &Mail{}
-	parseMail(getDoc("mail.html"), mail)
+	parseMail(getDoc(t, "mail.html"), mail)
 
 	assert.Equal(t, "Liana", mail.Sender.Name, "Must return sender name")
 	assert.Equal(t, "AnnaMartinezpisea@lionspest.com.au", mail.Sender.Mail, "Must return sender email")
