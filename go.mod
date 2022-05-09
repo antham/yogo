@@ -2,11 +2,9 @@ module github.com/antham/yogo
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
-	github.com/Sirupsen/logrus v0.0.0-20160601113210-f3cfb454f4c2
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.13.0
-	github.com/jarcoal/httpmock v1.1.0
-	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7
+	github.com/jarcoal/httpmock v1.2.0
+	github.com/jaytaylor/html2text v0.0.0-20211105163654-bc68cce691ba
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect

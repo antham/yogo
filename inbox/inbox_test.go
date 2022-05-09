@@ -12,7 +12,7 @@ import (
 func TestParseInboxPage(t *testing.T) {
 	inbox := &Inbox{}
 
-	parseInboxPage(getDoc("inbox_page.html"), inbox)
+	parseInboxPage(getDoc(t, "inbox_page.html"), inbox)
 
 	assert.Equal(t, 15, inbox.Count())
 	assert.Equal(t, "e_ZwRjAwRkZwRkAQV1ZQNjBGD4AGL4AD==", inbox.Get(0).ID)
@@ -22,7 +22,7 @@ func TestParseInboxPage(t *testing.T) {
 func TestCount(t *testing.T) {
 	inbox := &Inbox{}
 
-	parseInboxPage(getDoc("inbox_page.html"), inbox)
+	parseInboxPage(getDoc(t, "inbox_page.html"), inbox)
 
 	assert.Equal(t, inbox.Count(), 15)
 }
