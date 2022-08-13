@@ -1,7 +1,6 @@
 package inbox
 
 import (
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -359,7 +358,7 @@ func TestDelete(t *testing.T) {
 
 	err = inbox.ParseInboxPages(1)
 	assert.NoError(t, inbox.Delete(0))
-	fmt.Println(httpmock.GetCallCountInfo())
+
 	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET https://yopmail.com/en/inbox?ctrl=&d=e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D&id=&login=test&p=1&r_c=&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp"])
 	assert.NoError(t, err)
 }
