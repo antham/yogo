@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
-	github.com/spf13/cobra v1.5.0
+	github.com/spf13/cobra v1.6.0
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
