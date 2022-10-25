@@ -35,16 +35,30 @@ func renderInboxMail(in *inbox.Inbox) {
 func renderMail(mail *inbox.Mail) {
 	renderJSON(*mail)
 
+	const noDataToDisplay = "No data to display"
+
 	output("---\n")
-	if mail.Sender.Name == "" {
+	switch {
+	case mail.Sender.Name == "" && mail.Sender.Mail == "":
+		output(fmt.Sprintf("From  : %s\n", color.RedString(noDataToDisplay)))
+	case mail.Sender.Name == "":
 		output(fmt.Sprintf("From  : %s\n", color.MagentaString(mail.Sender.Mail)))
-	} else {
+	default:
 		output(fmt.Sprintf("From  : %s <%s>\n", color.MagentaString(mail.Sender.Name), color.MagentaString(mail.Sender.Mail)))
 	}
 	output(fmt.Sprintf("Title : %s\n", color.YellowString(mail.Title)))
-	output(fmt.Sprintf("Date  : %s\n", color.GreenString(mail.Date.Format("2006-01-02 15:04"))))
+
+	if mail.Date == nil {
+		output(fmt.Sprintf("Date  : %s\n", color.RedString(noDataToDisplay)))
+	} else {
+		output(fmt.Sprintf("Date  : %s\n", color.GreenString(mail.Date.Format("2006-01-02 15:04"))))
+	}
 	output("---\n")
-	output(color.CyanString(mail.Body))
+	if mail.Body == "" {
+		output(color.RedString(noDataToDisplay))
+	} else {
+		output(color.CyanString(mail.Body))
+	}
 	output("\n---\n")
 }
 
