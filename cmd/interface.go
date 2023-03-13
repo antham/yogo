@@ -8,4 +8,5 @@ type Inbox interface {
 	GetMails() []inbox.Mail
 	Parse(int) error
 	Get(int) *inbox.Mail
+	Flush() error
 }

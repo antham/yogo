@@ -18,6 +18,7 @@ type InboxMock struct {
 	parseError                 error
 	getIntArgument             int
 	getMail                    *inbox.Mail
+	flushError                 error
 }
 
 func (i *InboxMock) Count() int {
@@ -41,6 +42,10 @@ func (i *InboxMock) Parse(parseIntArgument int) error {
 func (i *InboxMock) Get(getIntArgument int) *inbox.Mail {
 	i.getIntArgument = getIntArgument
 	return i.getMail
+}
+
+func (i *InboxMock) Flush() error {
+	return i.flushError
 }
 
 func TestInboxList(t *testing.T) {
