@@ -10,7 +10,7 @@ import (
 
 // inboxDeleteCmd delete an email in inbox
 var inboxDeleteCmd = &cobra.Command{
-	Use:   "delete",
+	Use:   "delete <inbox> <offset>",
 	Short: "Delete email at given position in inbox",
 	RunE: inboxDelete(
 		func(name string) (Inbox, error) {
@@ -18,6 +18,7 @@ var inboxDeleteCmd = &cobra.Command{
 			return Inbox(in), err
 		},
 	),
+	Args: cobra.ExactArgs(2),
 }
 
 func inboxDelete(inboxBuilder inboxBuilder) cobraCmd {

@@ -7,7 +7,7 @@ import (
 )
 
 var inboxListCmd = &cobra.Command{
-	Use:   "list",
+	Use:   "list <inbox> <offset>",
 	Short: "Get all emails in an inbox",
 	RunE: inboxList(
 		func(name string) (Inbox, error) {
@@ -15,6 +15,7 @@ var inboxListCmd = &cobra.Command{
 			return Inbox(in), err
 		},
 	),
+	Args: cobra.ExactArgs(2),
 }
 
 func inboxList(inboxBuilder inboxBuilder) cobraCmd {

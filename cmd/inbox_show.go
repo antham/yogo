@@ -7,7 +7,7 @@ import (
 )
 
 var inboxShowCmd = &cobra.Command{
-	Use:   "show",
+	Use:   "show <inbox> <offset>",
 	Short: "Show full email at given position in inbox",
 	RunE: inboxShow(
 		func(name string) (Inbox, error) {
@@ -15,6 +15,7 @@ var inboxShowCmd = &cobra.Command{
 			return Inbox(in), err
 		},
 	),
+	Args: cobra.ExactArgs(2),
 }
 
 func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
