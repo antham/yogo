@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -8,54 +9,85 @@ import (
 	"github.com/antham/yogo/inbox"
 )
 
-func TestRenderInboxMailWithEmptyInbox(t *testing.T) {
-	info = func(msg string) {
-		assert.Equal(t, "Inbox is empty", msg, "Must return an info message")
-	}
-
-	successExit = func() {
-		t.SkipNow()
-	}
-
-	in := inbox.Inbox{}
-
-	renderInboxMail(&in)
+type InboxMock struct {
+	count                      int
+	mails                      []inbox.Mail
+	parseInboxPagesIntArgument int
+	parseInboxPagesError       error
 }
 
-func TestRenderInboxWithAnEmptySenderEmail(t *testing.T) {
-	actual := []string{}
-
-	output = func(data string) {
-		actual = append(actual, data)
-	}
-
-	successExit = func() {
-		t.SkipNow()
-	}
-
-	in := inbox.Inbox{}
-	in.Add(inbox.Mail{ID: "test", Sender: &inbox.Sender{Name: "name", Mail: ""}, Title: "title"})
-	renderInboxMail(&in)
-
-	assert.Regexp(t, ".*1.*name.*.*", actual[0], "Must display sender name")
-	assert.Regexp(t, ".*title.*", actual[1], "Must display email title")
+func (i *InboxMock) Count() int {
+	return i.count
 }
 
-func TestRenderInboxWithAnEmptySenderName(t *testing.T) {
-	actual := []string{}
+func (i *InboxMock) GetMails() []inbox.Mail {
+	return i.mails
+}
 
-	output = func(data string) {
-		actual = append(actual, data)
+func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
+	i.parseInboxPagesIntArgument = parseInboxPagesIntArgument
+	return i.parseInboxPagesError
+}
+
+func TestInboxList(t *testing.T) {
+	type scenario struct {
+		name         string
+		args         []string
+		errExpected  error
+		inboxBuilder inboxBuilder
 	}
 
-	successExit = func() {
-		t.SkipNow()
+	scenarios := []scenario{
+		{
+			name: "No mails found",
+			args: []string{"test", "1"},
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				mock.mails = []inbox.Mail{}
+				return mock, nil
+			},
+		},
+		{
+			name:        "An error is thrown in inbox builder",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("inbox builder error"),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				return mock, errors.New("inbox builder error")
+			},
+		},
+		{
+			name:        "An error is thrown in parse inbox pages",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("inbox pages error"),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{parseInboxPagesError: errors.New("inbox pages error")}
+				return mock, nil
+			},
+		},
+		{
+			name: "Render inbox",
+			args: []string{"test", "1"},
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				mock.mails = []inbox.Mail{
+					{
+						ID:    "abcdefg",
+						Title: "title",
+						Body:  "body",
+					},
+				}
+				return mock, nil
+			},
+		},
 	}
 
-	in := inbox.Inbox{}
-	in.Add(inbox.Mail{ID: "test", Sender: &inbox.Sender{Name: "", Mail: "test@test.com"}, Title: "title"})
-	renderInboxMail(&in)
-
-	assert.Regexp(t, ".*1.*test@test.com.*.*", actual[0], "Must display sender email")
-	assert.Regexp(t, ".*title.*", actual[1], "Must display email title")
+	for _, scenario := range scenarios {
+		scenario := scenario
+		t.Run(scenario.name, func(t *testing.T) {
+			t.Parallel()
+			err := inboxList(scenario.inboxBuilder)(nil, scenario.args)
+			assert.Equal(t, scenario.errExpected, err)
+		})
+	}
 }

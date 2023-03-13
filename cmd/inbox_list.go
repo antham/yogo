@@ -6,27 +6,30 @@ import (
 	"github.com/antham/yogo/inbox"
 )
 
-// inboxListCmd get all emails in an inbox
 var inboxListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Get all emails in an inbox",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: inboxList(
+		func(name string) (Inbox, error) {
+			in, err := inbox.NewInbox(name)
+			return Inbox(in), err
+		},
+	),
+}
+
+func inboxList(inboxBuilder inboxBuilder) cobraCmd {
+	return func(cmd *cobra.Command, args []string) error {
 		identifier, offset := parseMailAndOffsetArgs(args)
 
-		in, err := inbox.NewInbox(identifier)
+		in, err := inboxBuilder(identifier)
 		if err != nil {
-			perror(err)
-			errorExit()
+			return err
 		}
-
 		if err := in.ParseInboxPages(offset); err != nil {
-			perror(err)
-
-			errorExit()
+			return err
 		}
-
-		renderInboxMail(&in)
-	},
+		return renderInboxMail(in)
+	}
 }
 
 func init() {

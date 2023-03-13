@@ -21,6 +21,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type cobraCmd func(*cobra.Command, []string) error
+
 var dumpJSON = false
 
 // RootCmd represents the base command when called without any subcommands

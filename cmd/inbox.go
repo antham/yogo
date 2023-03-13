@@ -4,6 +4,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type inboxBuilder func(string) (Inbox, error)
+
 // inboxCmd represents the inbox command
 var inboxCmd = &cobra.Command{
 	Use:   "inbox",

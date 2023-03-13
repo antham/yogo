@@ -12,16 +12,15 @@ import (
 
 var ErrSomethingWrongOccurred = errors.New("something wrong occurred")
 
-func renderInboxMail(in *inbox.Inbox) {
-	renderJSON(*in)
+func renderInboxMail(in Inbox) error {
+	renderJSON(in)
 
 	if in.Count() == 0 {
 		info("Inbox is empty")
-
-		successExit()
+		return nil
 	}
 
-	for index, mail := range in.Mails {
+	for index, mail := range in.GetMails() {
 		var spam string
 		if mail.IsSPAM {
 			spam = " [SPAM]"
@@ -30,6 +29,7 @@ func renderInboxMail(in *inbox.Inbox) {
 		output(fmt.Sprintf(" %s %s%s%s\n", color.GreenString(fmt.Sprintf("%d", index+1)), color.YellowString(mail.Sender.Mail), color.YellowString(mail.Sender.Name), color.RedString(spam)))
 		output(fmt.Sprintf(" %s\n\n", color.CyanString(mail.Title)))
 	}
+	return nil
 }
 
 func renderMail(mail *inbox.Mail) {
