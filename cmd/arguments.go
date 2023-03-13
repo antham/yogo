@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -33,16 +34,13 @@ func parseMailAndOffsetArgs(args []string) (string, int) {
 	return strings.ToLower(args[0]), offset
 }
 
-func checkOffset(count int, offset int) {
+func checkOffset(count int, offset int) error {
+	if count < offset-1 {
+		return errors.New("Lower your offset value")
+	}
+
 	if count == 0 {
 		info("Inbox is empty")
-
-		successExit()
 	}
-
-	if count < offset-1 {
-		perror(fmt.Errorf("Lower your offset value"))
-
-		errorExit()
-	}
+	return nil
 }

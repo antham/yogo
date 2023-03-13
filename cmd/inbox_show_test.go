@@ -4,46 +4,11 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/antham/yogo/inbox"
+	"github.com/stretchr/testify/assert"
 )
 
-type InboxMock struct {
-	count                      int
-	mails                      []inbox.Mail
-	parseInboxPagesIntArgument int
-	parseInboxPagesError       error
-	parseIntArgument           int
-	parseError                 error
-	getIntArgument             int
-	getMail                    *inbox.Mail
-}
-
-func (i *InboxMock) Count() int {
-	return i.count
-}
-
-func (i *InboxMock) GetMails() []inbox.Mail {
-	return i.mails
-}
-
-func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
-	i.parseInboxPagesIntArgument = parseInboxPagesIntArgument
-	return i.parseInboxPagesError
-}
-
-func (i *InboxMock) Parse(parseIntArgument int) error {
-	i.parseIntArgument = parseIntArgument
-	return i.parseError
-}
-
-func (i *InboxMock) Get(getIntArgument int) *inbox.Mail {
-	i.getIntArgument = getIntArgument
-	return i.getMail
-}
-
-func TestInboxList(t *testing.T) {
+func TestInboxShow(t *testing.T) {
 	type scenario struct {
 		name         string
 		args         []string
@@ -80,17 +45,19 @@ func TestInboxList(t *testing.T) {
 			},
 		},
 		{
-			name: "Render inbox",
+			name:        "An error is thrown when parsing mail",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("parse email error"),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{parseError: errors.New("parse email error")}
+				return mock, nil
+			},
+		},
+		{
+			name: "No mail found",
 			args: []string{"test", "1"},
 			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{
-					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
-					},
-				}
+				mock := &InboxMock{getMail: nil}
 				return mock, nil
 			},
 		},
@@ -100,7 +67,7 @@ func TestInboxList(t *testing.T) {
 		scenario := scenario
 		t.Run(scenario.name, func(t *testing.T) {
 			t.Parallel()
-			err := inboxList(scenario.inboxBuilder)(nil, scenario.args)
+			err := inboxShow(scenario.inboxBuilder)(nil, scenario.args)
 			assert.Equal(t, scenario.errExpected, err)
 		})
 	}
