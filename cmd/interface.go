@@ -9,4 +9,5 @@ type Inbox interface {
 	Parse(int) error
 	Get(int) *inbox.Mail
 	Flush() error
+	Delete(int) error
 }

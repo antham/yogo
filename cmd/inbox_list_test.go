@@ -19,6 +19,8 @@ type InboxMock struct {
 	getIntArgument             int
 	getMail                    *inbox.Mail
 	flushError                 error
+	deleteIntArgument          int
+	deleteError                error
 }
 
 func (i *InboxMock) Count() int {
@@ -46,6 +48,11 @@ func (i *InboxMock) Get(getIntArgument int) *inbox.Mail {
 
 func (i *InboxMock) Flush() error {
 	return i.flushError
+}
+
+func (i *InboxMock) Delete(deleteIntArgument int) error {
+	i.deleteIntArgument = deleteIntArgument
+	return i.deleteError
 }
 
 func TestInboxList(t *testing.T) {
