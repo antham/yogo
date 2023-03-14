@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"errors"
 	"testing"
 
@@ -62,6 +63,8 @@ func TestInboxList(t *testing.T) {
 		args         []string
 		errExpected  error
 		inboxBuilder inboxBuilder
+		output       string
+		outputErr    string
 	}
 
 	scenarios := []scenario{
@@ -112,6 +115,11 @@ func TestInboxList(t *testing.T) {
 				}
 				return mock, nil
 			},
+			output: ` 1 test123name123
+ title
+
+
+`,
 		},
 	}
 
@@ -119,9 +127,15 @@ func TestInboxList(t *testing.T) {
 		scenario := scenario
 		t.Run(scenario.name, func(t *testing.T) {
 			t.Parallel()
+			var output bytes.Buffer
+			var outputErr bytes.Buffer
 			cmd := &cobra.Command{}
+			cmd.SetOut(&output)
+			cmd.SetErr(&outputErr)
 			err := inboxList(scenario.inboxBuilder)(cmd, scenario.args)
 			assert.Equal(t, scenario.errExpected, err)
+			assert.Equal(t, scenario.output, output.String())
+			assert.Equal(t, scenario.outputErr, outputErr.String())
 		})
 	}
 }

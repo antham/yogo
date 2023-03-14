@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"errors"
 	"testing"
 
@@ -15,6 +16,8 @@ func TestInboxFlush(t *testing.T) {
 		args         []string
 		errExpected  error
 		inboxBuilder inboxBuilder
+		output       string
+		outputErr    string
 	}
 
 	scenarios := []scenario{
@@ -26,6 +29,8 @@ func TestInboxFlush(t *testing.T) {
 				mock.mails = []inbox.Mail{}
 				return mock, nil
 			},
+			output: `Inbox "test" successfully flushed
+`,
 		},
 		{
 			name:        "An error is thrown in inbox builder",
@@ -51,8 +56,42 @@ func TestInboxFlush(t *testing.T) {
 			errExpected: errors.New("flush inbox error"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{flushError: errors.New("flush inbox error")}
+				mock.count = 1
+				mock.mails = []inbox.Mail{
+					{
+						ID:    "abcdefg",
+						Title: "title",
+						Body:  "body",
+						Sender: &inbox.Sender{
+							Mail: "test123",
+							Name: "name123",
+						},
+					},
+				}
 				return mock, nil
 			},
+		},
+		{
+			name: "Inbox flushed successfully",
+			args: []string{"test", "1"},
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				mock.count = 1
+				mock.mails = []inbox.Mail{
+					{
+						ID:    "abcdefg",
+						Title: "title",
+						Body:  "body",
+						Sender: &inbox.Sender{
+							Mail: "test123",
+							Name: "name123",
+						},
+					},
+				}
+				return mock, nil
+			},
+			output: `Inbox "test" successfully flushed
+`,
 		},
 	}
 
@@ -60,9 +99,15 @@ func TestInboxFlush(t *testing.T) {
 		scenario := scenario
 		t.Run(scenario.name, func(t *testing.T) {
 			t.Parallel()
+			var output bytes.Buffer
+			var outputErr bytes.Buffer
 			cmd := &cobra.Command{}
+			cmd.SetOut(&output)
+			cmd.SetErr(&outputErr)
 			err := inboxFlush(scenario.inboxBuilder)(cmd, scenario.args)
 			assert.Equal(t, scenario.errExpected, err)
+			assert.Equal(t, scenario.output, output.String())
+			assert.Equal(t, scenario.outputErr, outputErr.String())
 		})
 	}
 }
