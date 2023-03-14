@@ -32,8 +32,10 @@ func renderInboxMail(in Inbox) error {
 	return nil
 }
 
-func renderMail(mail *inbox.Mail) {
-	renderJSON(*mail)
+func renderMail(mail *inbox.Mail) error {
+	if err := renderJSON(*mail); err != nil {
+		return err
+	}
 
 	const noDataToDisplay = "No data to display"
 
@@ -60,17 +62,17 @@ func renderMail(mail *inbox.Mail) {
 		output(color.CyanString(mail.Body))
 	}
 	output("\n---\n")
+	return nil
 }
 
-func renderJSON(d interface{}) {
+func renderJSON(d interface{}) error {
 	if dumpJSON {
 		data, err := json.Marshal(d)
 		if err != nil {
-			perror(ErrSomethingWrongOccurred)
-			errorExit()
+			return ErrSomethingWrongOccurred
 		}
 
 		output(string(data))
-		successExit()
 	}
+	return nil
 }

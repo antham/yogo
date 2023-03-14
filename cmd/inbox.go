@@ -10,11 +10,11 @@ type inboxBuilder func(string) (Inbox, error)
 var inboxCmd = &cobra.Command{
 	Use:   "inbox",
 	Short: "Handle inbox messages",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := cmd.Help(); err != nil {
-			perror(err)
-			errorExit()
+			return err
 		}
+		return nil
 	},
 }
 
