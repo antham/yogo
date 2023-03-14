@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"strings"
 	"testing"
 	"time"
 
@@ -9,21 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRenderMail(t *testing.T) {
-	actual := []string{}
-
-	output = func(data string) {
-		actual = append(actual, data)
-	}
-
-	successExit = func() {
-		t.SkipNow()
-	}
-
+func TestComputeMailOutput(t *testing.T) {
 	date, err := time.Parse("2006-01-02 15:04", "2022-10-24 23:20")
 	assert.NoError(t, err)
 
-	renderMail(&inbox.Mail{ID: "test", Sender: &inbox.Sender{Mail: "test@yopmail.com"}, Title: "A title", Date: &date, Body: "test"})
+	actual, err := computeMailOutput(&inbox.Mail{ID: "test", Sender: &inbox.Sender{Mail: "test@yopmail.com"}, Title: "A title", Date: &date, Body: "test"})
 
 	expected := `---
 From  : test@yopmail.com
@@ -33,29 +22,21 @@ Date  : 2022-10-24 23:20
 test
 ---
 `
-	assert.Equal(t, expected, strings.Join(actual, ""))
+	assert.NoError(t, err)
+	assert.Equal(t, expected, actual, "")
 }
 
-func TestRenderMailWithAnEmptySenderAndBody(t *testing.T) {
-	actual := []string{}
-
-	output = func(data string) {
-		actual = append(actual, data)
-	}
-
-	successExit = func() {
-		t.SkipNow()
-	}
-
-	renderMail(&inbox.Mail{ID: "test", Sender: &inbox.Sender{}, Title: "title"})
+func TestComputeMailOutputWithAnEmptySenderAndBody(t *testing.T) {
+	actual, err := computeMailOutput(&inbox.Mail{ID: "test", Sender: &inbox.Sender{}, Title: "title"})
 
 	expected := `---
-From  : No data to display
+From  : <No data to display>
 Title : title
-Date  : No data to display
+Date  : <No data to display>
 ---
-No data to display
+<No data to display>
 ---
 `
-	assert.Equal(t, expected, strings.Join(actual, ""))
+	assert.NoError(t, err)
+	assert.Equal(t, expected, actual)
 }
