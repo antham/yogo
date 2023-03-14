@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -19,9 +18,7 @@ var RootCmd = &cobra.Command{
 
 func Execute() {
 	RootCmd.PersistentFlags().BoolVar(&dumpJSON, "json", false, "Dump the output as json")
-
 	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
 		os.Exit(-1)
 	}
 }
