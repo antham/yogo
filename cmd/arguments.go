@@ -30,7 +30,7 @@ func checkOffset(count int, offset int) error {
 	}
 
 	if count == 0 {
-		info("Inbox is empty")
+		return errors.New("inbox is empty")
 	}
 	return nil
 }
