@@ -68,7 +68,7 @@ func TestCheckOffset(t *testing.T) {
 		{
 			name: "second argument as string",
 			args: []int{1, 3},
-			err:  errors.New(`Lower your offset value`),
+			err:  errors.New(`lower your offset value`),
 		},
 		{
 			name: "regular offset",

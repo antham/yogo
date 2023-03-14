@@ -26,7 +26,7 @@ func parseMailAndOffsetArgs(args []string) (string, int, error) {
 
 func checkOffset(count int, offset int) error {
 	if count < offset-1 {
-		return errors.New("Lower your offset value")
+		return errors.New("lower your offset value")
 	}
 
 	if count == 0 {
