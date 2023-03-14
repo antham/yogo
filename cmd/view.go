@@ -17,8 +17,8 @@ var perror = func(err error) {
 }
 
 // success outputs a green successful message
-var success = func(message string) {
-	color.Green(message)
+func success(message string) string {
+	return color.GreenString(message)
 }
 
 // info outputs a blue info message

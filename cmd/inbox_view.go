@@ -12,67 +12,62 @@ import (
 
 var ErrSomethingWrongOccurred = errors.New("something wrong occurred")
 
-func renderInboxMail(in Inbox) error {
-	renderJSON(in)
-
-	if in.Count() == 0 {
-		info("Inbox is empty")
-		return nil
+func computeInboxMailOutput(in Inbox) (string, error) {
+	JSON, err := computeJSONOutput(in)
+	if err != nil {
+		return "", err
+	}
+	if JSON != nil {
+		return *JSON, nil
 	}
 
+	if in.Count() == 0 {
+		return "", errors.New("Inbox is empty")
+	}
+
+	output := ""
 	for index, mail := range in.GetMails() {
 		var spam string
 		if mail.IsSPAM {
 			spam = " [SPAM]"
 		}
-
-		output(fmt.Sprintf(" %s %s%s%s\n", color.GreenString(fmt.Sprintf("%d", index+1)), color.YellowString(mail.Sender.Mail), color.YellowString(mail.Sender.Name), color.RedString(spam)))
-		output(fmt.Sprintf(" %s\n\n", color.CyanString(mail.Title)))
+		output = output + fmt.Sprintf(" %s %s%s%s\n", color.GreenString(fmt.Sprintf("%d", index+1)), color.YellowString(mail.Sender.Mail), color.YellowString(mail.Sender.Name), color.RedString(spam))
+		output = output + fmt.Sprintf(" %s\n\n", color.CyanString(mail.Title))
 	}
-	return nil
+	return output, nil
 }
 
-func renderMail(mail *inbox.Mail) error {
-	if err := renderJSON(*mail); err != nil {
-		return err
+func computeMailOutput(mail *inbox.Mail) (string, error) {
+	JSON, err := computeJSONOutput(*mail)
+	if err != nil {
+		return "", err
+	}
+	if JSON != nil {
+		return *JSON, nil
 	}
 
-	const noDataToDisplay = "No data to display"
-
-	output("---\n")
-	switch {
-	case mail.Sender.Name == "" && mail.Sender.Mail == "":
-		output(fmt.Sprintf("From  : %s\n", color.RedString(noDataToDisplay)))
-	case mail.Sender.Name == "":
-		output(fmt.Sprintf("From  : %s\n", color.MagentaString(mail.Sender.Mail)))
-	default:
-		output(fmt.Sprintf("From  : %s <%s>\n", color.MagentaString(mail.Sender.Name), color.MagentaString(mail.Sender.Mail)))
-	}
-	output(fmt.Sprintf("Title : %s\n", color.YellowString(mail.Title)))
-
-	if mail.Date == nil {
-		output(fmt.Sprintf("Date  : %s\n", color.RedString(noDataToDisplay)))
+	output := "---\n"
+	if mail.Sender.Name == "" {
+		output = output + fmt.Sprintf("From  : %s\n", color.MagentaString(mail.Sender.Mail))
 	} else {
-		output(fmt.Sprintf("Date  : %s\n", color.GreenString(mail.Date.Format("2006-01-02 15:04"))))
+		output = output + fmt.Sprintf("From  : %s <%s>\n", color.MagentaString(mail.Sender.Name), color.MagentaString(mail.Sender.Mail))
 	}
-	output("---\n")
-	if mail.Body == "" {
-		output(color.RedString(noDataToDisplay))
-	} else {
-		output(color.CyanString(mail.Body))
-	}
-	output("\n---\n")
-	return nil
+	output = output + fmt.Sprintf("Title : %s\n", color.YellowString(mail.Title))
+	output = output + fmt.Sprintf("Date  : %s\n", color.GreenString(mail.Date.Format("2006-01-02 15:04")))
+	output = output + "---\n"
+	output = output + color.CyanString(mail.Body)
+	output = output + "\n---\n"
+	return output, nil
 }
 
-func renderJSON(d interface{}) error {
+func computeJSONOutput(d interface{}) (*string, error) {
 	if dumpJSON {
 		data, err := json.Marshal(d)
 		if err != nil {
-			return ErrSomethingWrongOccurred
+			return nil, ErrSomethingWrongOccurred
 		}
-
-		output(string(data))
+		s := string(data)
+		return &s, nil
 	}
-	return nil
+	return nil, nil
 }

@@ -6,7 +6,6 @@ import (
 
 type inboxBuilder func(string) (Inbox, error)
 
-// inboxCmd represents the inbox command
 var inboxCmd = &cobra.Command{
 	Use:   "inbox",
 	Short: "Handle inbox messages",

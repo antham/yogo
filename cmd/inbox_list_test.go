@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/antham/yogo/inbox"
@@ -65,8 +66,9 @@ func TestInboxList(t *testing.T) {
 
 	scenarios := []scenario{
 		{
-			name: "No mails found",
-			args: []string{"test", "1"},
+			name:        "No mails found",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("Inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
 				mock.mails = []inbox.Mail{}
@@ -96,11 +98,16 @@ func TestInboxList(t *testing.T) {
 			args: []string{"test", "1"},
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
+				mock.count = 1
 				mock.mails = []inbox.Mail{
 					{
 						ID:    "abcdefg",
 						Title: "title",
 						Body:  "body",
+						Sender: &inbox.Sender{
+							Mail: "test123",
+							Name: "name123",
+						},
 					},
 				}
 				return mock, nil
@@ -112,7 +119,8 @@ func TestInboxList(t *testing.T) {
 		scenario := scenario
 		t.Run(scenario.name, func(t *testing.T) {
 			t.Parallel()
-			err := inboxList(scenario.inboxBuilder)(nil, scenario.args)
+			cmd := &cobra.Command{}
+			err := inboxList(scenario.inboxBuilder)(cmd, scenario.args)
 			assert.Equal(t, scenario.errExpected, err)
 		})
 	}

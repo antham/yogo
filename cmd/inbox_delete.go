@@ -8,7 +8,6 @@ import (
 	"github.com/antham/yogo/inbox"
 )
 
-// inboxDeleteCmd delete an email in inbox
 var inboxDeleteCmd = &cobra.Command{
 	Use:   "delete <inbox> <offset>",
 	Short: "Delete email at given position in inbox",
@@ -41,7 +40,7 @@ func inboxDelete(inboxBuilder inboxBuilder) cobraCmd {
 		if err := in.Delete(offset - 1); err != nil {
 			return err
 		}
-		success(fmt.Sprintf(`Email "%d" successfully deleted`, offset))
+		cmd.Println(success(fmt.Sprintf(`Email "%d" successfully deleted`, offset)))
 		return nil
 	}
 }

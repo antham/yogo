@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/antham/yogo/inbox"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -59,7 +60,8 @@ func TestInboxFlush(t *testing.T) {
 		scenario := scenario
 		t.Run(scenario.name, func(t *testing.T) {
 			t.Parallel()
-			err := inboxFlush(scenario.inboxBuilder)(nil, scenario.args)
+			cmd := &cobra.Command{}
+			err := inboxFlush(scenario.inboxBuilder)(cmd, scenario.args)
 			assert.Equal(t, scenario.errExpected, err)
 		})
 	}

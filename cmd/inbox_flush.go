@@ -37,8 +37,7 @@ func inboxFlush(inboxBuilder inboxBuilder) cobraCmd {
 		if err := in.Flush(); err != nil {
 			return err
 		}
-
-		success(fmt.Sprintf(`Inbox "%s" successfully flushed`, args[0]))
+		cmd.Println(success(fmt.Sprintf(`Inbox "%s" successfully flushed`, args[0])))
 		return nil
 	}
 }

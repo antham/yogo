@@ -40,9 +40,14 @@ func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 		}
 
 		mail := in.Get(offset - 1)
-		if mail != nil {
-			renderMail(mail)
+		if mail == nil {
+			return nil
 		}
+		output, err := computeMailOutput(mail)
+		if err != nil {
+			return err
+		}
+		cmd.Println(output)
 		return nil
 	}
 }
