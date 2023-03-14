@@ -10,11 +10,11 @@ import (
 func parseMailAndOffsetArgs(args []string) (string, int, error) {
 	offset, err := strconv.Atoi(args[1])
 	if err != nil {
-		return "", 0, fmt.Errorf(`argument "%s" must be an integer`, args[1])
+		return "", 0, fmt.Errorf(`offset "%s" must be an integer`, args[1])
 	}
 
 	if offset < 1 {
-		return "", 0, fmt.Errorf(`argument "%d" must be greater than 0`, offset)
+		return "", 0, fmt.Errorf(`offset "%d" must be greater than 0`, offset)
 	}
 
 	// Providing an uppercased email triggers a panic.

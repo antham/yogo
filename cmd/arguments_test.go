@@ -20,12 +20,12 @@ func TestParseMailAndOffset(t *testing.T) {
 		{
 			name: "second argument as string",
 			args: []string{"test", "test"},
-			err:  errors.New(`argument "test" must be an integer`),
+			err:  errors.New(`offset "test" must be an integer`),
 		},
 		{
 			name: "offset lower than 0",
 			args: []string{"test", "0"},
-			err:  errors.New(`argument "0" must be greater than 0`),
+			err:  errors.New(`offset "0" must be greater than 0`),
 		},
 		{
 			name:   "regular inbox",
