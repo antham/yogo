@@ -22,7 +22,10 @@ var inboxFlushCmd = &cobra.Command{
 
 func inboxFlush(inboxBuilder inboxBuilder) cobraCmd {
 	return func(cmd *cobra.Command, args []string) error {
-		identifier, offset := parseMailAndOffsetArgs([]string{args[0], "1"})
+		identifier, offset, err := parseMailAndOffsetArgs([]string{args[0], "1"})
+		if err != nil {
+			return err
+		}
 
 		in, err := inboxBuilder(identifier)
 		if err != nil {

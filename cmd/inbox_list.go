@@ -20,7 +20,10 @@ var inboxListCmd = &cobra.Command{
 
 func inboxList(inboxBuilder inboxBuilder) cobraCmd {
 	return func(cmd *cobra.Command, args []string) error {
-		identifier, offset := parseMailAndOffsetArgs(args)
+		identifier, offset, err := parseMailAndOffsetArgs(args)
+		if err != nil {
+			return err
+		}
 
 		in, err := inboxBuilder(identifier)
 		if err != nil {
