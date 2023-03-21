@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"strconv"
 	"text/template"
 
 	"github.com/fatih/color"
@@ -13,6 +13,7 @@ import (
 )
 
 var ErrSomethingWrongOccurred = errors.New("something wrong occurred")
+const noDataToDisplayMsg = "[no data to display]"
 
 func computeInboxMailOutput(in Inbox) (string, error) {
 	JSON, err := computeJSONOutput(in)
@@ -22,19 +23,70 @@ func computeInboxMailOutput(in Inbox) (string, error) {
 	if JSON != nil {
 		return *JSON, nil
 	}
-
 	if in.Count() == 0 {
 		return "", errors.New("inbox is empty")
 	}
 
 	output := ""
 	for index, mail := range in.GetMails() {
-		var spam string
-		if mail.IsSPAM {
-			spam = " [SPAM]"
+		info := struct {
+			Index         string
+			SenderName    string
+			HasSenderName bool
+			SenderMail    string
+			HasSenderMail bool
+			Title         string
+			SPAM          string
+		}{}
+
+		if mail.Sender != nil {
+			if mail.Sender.Name != "" {
+				info.HasSenderName = true
+				info.SenderName = color.YellowString(mail.Sender.Name)
+			} else {
+				info.SenderName = color.YellowString(noDataToDisplayMsg)
+			}
+			if mail.Sender.Mail != "" {
+				info.HasSenderMail = true
+				info.SenderMail = color.YellowString(mail.Sender.Mail)
+			} else {
+				info.SenderMail = color.YellowString(noDataToDisplayMsg)
+			}
+		} else {
+			info.SenderName = color.YellowString(noDataToDisplayMsg)
+			info.SenderMail = color.YellowString(noDataToDisplayMsg)
 		}
-		output = output + fmt.Sprintf(" %s %s%s%s\n", color.GreenString(fmt.Sprintf("%d", index+1)), color.YellowString(mail.Sender.Mail), color.YellowString(mail.Sender.Name), color.RedString(spam))
-		output = output + fmt.Sprintf(" %s\n\n", color.CyanString(mail.Title))
+		if mail.Title != "" {
+			info.Title = color.CyanString(mail.Title)
+		} else {
+			info.Title = color.CyanString(noDataToDisplayMsg)
+		}
+		if mail.IsSPAM {
+			info.SPAM = color.RedString("[SPAM]")
+		}
+		info.Index = strconv.Itoa(index + 1)
+
+		var buf bytes.Buffer
+		tpl := template.Must(template.New("t").Parse(` {{.Index}} {{ if .HasSenderName -}}
+{{- .SenderName -}}
+{{- end -}}
+{{- if (and .HasSenderMail .HasSenderName) }} {{ end -}}
+{{- if (and (eq .HasSenderMail false) (eq .HasSenderName false)) }}{{ .SenderName }}{{- end -}}
+{{- if .HasSenderMail -}}
+	{{- if .HasSenderName -}}<{{- end -}}
+	{{- .SenderMail -}}
+	{{- if .HasSenderName -}}>{{- end -}}
+{{- end -}}
+{{- if .SPAM }} {{ .SPAM -}}{{- end -}}
+{{- if .Title }}
+   {{ .Title }}
+{{ end -}}
+
+`))
+		if err := tpl.Execute(&buf, info); err != nil {
+			return "", err
+		}
+		output = output + buf.String()
 	}
 	return output, nil
 }
@@ -47,8 +99,6 @@ func computeMailOutput(mail *inbox.Mail) (string, error) {
 	if JSON != nil {
 		return *JSON, nil
 	}
-
-	const noDataToDisplayMsg = "[no data to display]"
 
 	info := struct {
 		HasSenderName bool

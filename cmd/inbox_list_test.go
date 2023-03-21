@@ -108,16 +108,15 @@ func TestInboxList(t *testing.T) {
 						Title: "title",
 						Body:  "body",
 						Sender: &inbox.Sender{
-							Mail: "test123",
+							Mail: "test123@protonmail.com",
 							Name: "name123",
 						},
 					},
 				}
 				return mock, nil
 			},
-			output: ` 1 test123name123
- title
-
+			output: ` 1 name123 <test123@protonmail.com>
+   title
 
 `,
 		},
