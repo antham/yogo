@@ -119,7 +119,9 @@ Date  : 2022-10-24 23:20
 	}
 
 	for _, scenario := range scenarios {
+		scenario := scenario
 		t.Run(scenario.name, func(t *testing.T) {
+			t.Parallel()
 			current, err := computeMailOutput(scenario.mail)
 			assert.NoError(t, err)
 			assert.Equal(t, scenario.outputExpected, current)
@@ -216,7 +218,9 @@ func TestComputeInboxMailOutput(t *testing.T) {
 	}
 
 	for _, scenario := range scenarios {
+		scenario := scenario
 		t.Run(scenario.name, func(t *testing.T) {
+			t.Parallel()
 			current, err := computeInboxMailOutput(&scenario.inbox)
 			if err != nil {
 				assert.EqualError(t, err, scenario.errorExpected.Error())
