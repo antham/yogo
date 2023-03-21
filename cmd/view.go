@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"text/template"
 
 	"github.com/fatih/color"
@@ -48,32 +48,74 @@ func computeMailOutput(mail *inbox.Mail) (string, error) {
 		return *JSON, nil
 	}
 
-	const noDataToDisplayMsg = "<No data to display>"
-	output := "---\n"
+	const noDataToDisplayMsg = "[no data to display]"
 
-	switch {
-	case mail.Sender.Mail == "":
-		output = output + fmt.Sprintf("From  : %s\n", color.MagentaString(noDataToDisplayMsg))
-	case mail.Sender.Name == "":
-		output = output + fmt.Sprintf("From  : %s\n", color.MagentaString(mail.Sender.Mail))
-	case mail.Sender.Name != "":
-		output = output + fmt.Sprintf("From  : %s <%s>\n", color.MagentaString(mail.Sender.Name), color.MagentaString(mail.Sender.Mail))
+	info := struct {
+		HasSenderName bool
+		SenderName    string
+		HasSenderMail bool
+		SenderMail    string
+		From          string
+		Title         string
+		Date          string
+		Body          string
+	}{}
+
+	if mail.Sender != nil {
+		if mail.Sender.Name != "" {
+			info.SenderName = color.MagentaString(mail.Sender.Name)
+			info.HasSenderName = true
+		} else {
+			info.SenderName = color.MagentaString(noDataToDisplayMsg)
+		}
+		if mail.Sender.Mail != "" {
+			info.HasSenderMail = true
+			info.SenderMail = color.MagentaString(mail.Sender.Mail)
+		} else {
+			info.SenderMail = color.MagentaString(noDataToDisplayMsg)
+		}
+	} else {
+		info.SenderName = color.MagentaString(noDataToDisplayMsg)
+		info.SenderMail = color.MagentaString(noDataToDisplayMsg)
+	}
+	if mail.Title != "" {
+		info.Title = color.YellowString(mail.Title)
+	} else {
+		info.Title = color.YellowString(noDataToDisplayMsg)
+	}
+	if mail.Date != nil {
+		info.Date = color.GreenString(mail.Date.Format("2006-01-02 15:04"))
+	} else {
+		info.Date = color.GreenString(noDataToDisplayMsg)
+	}
+	if mail.Body != "" {
+		info.Body = color.CyanString(mail.Body)
+	} else {
+		info.Body = color.CyanString(noDataToDisplayMsg)
 	}
 
-	output = output + fmt.Sprintf("Title : %s\n", color.YellowString(mail.Title))
-	if mail.Date == nil {
-		output = output + fmt.Sprintf("Date  : %s\n", color.GreenString(noDataToDisplayMsg))
-	} else {
-		output = output + fmt.Sprintf("Date  : %s\n", color.GreenString(mail.Date.Format("2006-01-02 15:04")))
+	var buf bytes.Buffer
+	tpl := template.Must(template.New("t").Parse(`---
+From  : {{ if .HasSenderName -}}
+{{- .SenderName -}}
+{{- end -}}
+{{- if (and .HasSenderMail .HasSenderName) }} {{ end -}}
+{{- if (and (eq .HasSenderMail false) (eq .HasSenderName false)) }}{{ .SenderName }}{{- end -}}
+{{- if .HasSenderMail -}}
+	{{- if .HasSenderName -}}<{{- end -}}
+	{{- .SenderMail -}}
+	{{- if .HasSenderName -}}>{{- end -}}
+{{ end }}
+Title : {{.Title}}
+Date  : {{.Date}}
+---
+{{.Body}}
+---
+`))
+	if err := tpl.Execute(&buf, info); err != nil {
+		return "", err
 	}
-	output = output + "---\n"
-	if mail.Body == "" {
-		output = output + color.CyanString(noDataToDisplayMsg)
-	} else {
-		output = output + color.CyanString(mail.Body)
-	}
-	output = output + "\n---\n"
-	return output, nil
+	return buf.String(), nil
 }
 
 func computeJSONOutput(d interface{}) (*string, error) {
