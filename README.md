@@ -1,6 +1,6 @@
-# Yogo [![Go Report Card](https://goreportcard.com/badge/github.com/antham/yogo)](https://goreportcard.com/report/github.com/antham/yogo) [![codecov](https://codecov.io/gh/antham/yogo/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/yogo) [![GitHub tag](https://img.shields.io/github/tag/antham/yogo.svg)]()
+# Yogo [![Go Report Card](https://goreportcard.com/badge/github.com/antham/yogo)](https://goreportcard.com/report/github.com/antham/yogo) [![codecov](https://codecov.io/gh/antham/yogo/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/yogo) [![GitHub tag](https://img.shields.io/github/tag/antham/yogo.svg)]() [![Go Reference](https://pkg.go.dev/badge/github.com/antham/yogo.svg)](https://pkg.go.dev/github.com/antham/yogo)
 
-Check yopmail mails and inboxes from command line.
+Check yopmail mails from command line.
 
 ## Install
 
@@ -11,7 +11,7 @@ A package is available in aur for archlinux.
 ## Usage
 
 ```
-Check yopmail mails and inboxes from command line.
+Check yopmail mails from command line.
 
 Usage:
   yogo [command]
