@@ -39,6 +39,12 @@ func TestParseMailAndOffset(t *testing.T) {
 			offset: 1,
 			inbox:  "test",
 		},
+		{
+			name:   "full email provided",
+			args:   []string{"test@yopmail.com", "1"},
+			offset: 1,
+			inbox:  "test",
+		},
 	}
 
 	for _, scenario := range scenarios {

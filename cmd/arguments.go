@@ -21,7 +21,7 @@ func parseMailAndOffsetArgs(args []string) (string, int, error) {
 	// In the web interface there is a redirection to
 	// the inbox with the address lowercased so we mimic
 	// this behaviour
-	return strings.ToLower(args[0]), offset, nil
+	return strings.ReplaceAll(strings.ToLower(args[0]), "@yopmail.com", ""), offset, nil
 }
 
 func checkOffset(count int, offset int) error {
