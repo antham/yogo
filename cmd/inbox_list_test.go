@@ -71,7 +71,7 @@ func TestInboxList(t *testing.T) {
 		{
 			name:        "No mails found",
 			args:        []string{"test", "1"},
-			errExpected: errors.New("Inbox is empty"),
+			errExpected: errors.New("inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
 				mock.mails = []inbox.Mail{}

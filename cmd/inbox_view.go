@@ -22,7 +22,7 @@ func computeInboxMailOutput(in Inbox) (string, error) {
 	}
 
 	if in.Count() == 0 {
-		return "", errors.New("Inbox is empty")
+		return "", errors.New("inbox is empty")
 	}
 
 	output := ""
