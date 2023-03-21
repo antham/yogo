@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"strings"
 	"text/template"
 
 	"github.com/fatih/color"
@@ -79,15 +80,14 @@ func computeInboxMailOutput(in Inbox, isJSONOutput bool) (string, error) {
 {{- if .SPAM }} {{ .SPAM -}}{{- end -}}
 {{- if .Title }}
    {{ .Title }}
-{{ end -}}
-
+{{ end }}
 `))
 		if err := tpl.Execute(&buf, info); err != nil {
 			return "", err
 		}
 		output = output + buf.String()
 	}
-	return output, nil
+	return strings.TrimRight(output, "\n"), nil
 }
 
 func computeMailOutput(mail *inbox.Mail, isJSONOutput bool) (string, error) {

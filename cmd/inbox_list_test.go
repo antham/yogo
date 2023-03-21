@@ -117,7 +117,6 @@ func TestInboxList(t *testing.T) {
 			},
 			output: ` 1 name123 <test123@protonmail.com>
    title
-
 `,
 		},
 	}
