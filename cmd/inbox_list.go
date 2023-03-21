@@ -32,7 +32,7 @@ func inboxList(inboxBuilder inboxBuilder) cobraCmd {
 		if err := in.ParseInboxPages(offset); err != nil {
 			return err
 		}
-		mail, err := computeInboxMailOutput(in)
+		mail, err := computeInboxMailOutput(in, dumpJSON)
 		if err != nil {
 			return err
 		}

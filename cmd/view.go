@@ -12,11 +12,10 @@ import (
 	"github.com/antham/yogo/inbox"
 )
 
-var ErrSomethingWrongOccurred = errors.New("something wrong occurred")
 const noDataToDisplayMsg = "[no data to display]"
 
-func computeInboxMailOutput(in Inbox) (string, error) {
-	JSON, err := computeJSONOutput(in)
+func computeInboxMailOutput(in Inbox, isJSONOutput bool) (string, error) {
+	JSON, err := computeJSONOutput(in, isJSONOutput)
 	if err != nil {
 		return "", err
 	}
@@ -91,8 +90,8 @@ func computeInboxMailOutput(in Inbox) (string, error) {
 	return output, nil
 }
 
-func computeMailOutput(mail *inbox.Mail) (string, error) {
-	JSON, err := computeJSONOutput(*mail)
+func computeMailOutput(mail *inbox.Mail, isJSONOutput bool) (string, error) {
+	JSON, err := computeJSONOutput(*mail, isJSONOutput)
 	if err != nil {
 		return "", err
 	}
@@ -168,16 +167,16 @@ Date  : {{.Date}}
 	return buf.String(), nil
 }
 
-func computeJSONOutput(d interface{}) (*string, error) {
-	if dumpJSON {
-		data, err := json.Marshal(d)
-		if err != nil {
-			return nil, ErrSomethingWrongOccurred
-		}
-		s := string(data)
-		return &s, nil
+func computeJSONOutput(d interface{}, isJSONOutput bool) (*string, error) {
+	if !isJSONOutput {
+		return nil, nil
 	}
-	return nil, nil
+	data, err := json.Marshal(d)
+	if err != nil {
+		return nil, errors.New("something wrong occurred")
+	}
+	s := string(data)
+	return &s, nil
 }
 
 // info outputs a blue info message

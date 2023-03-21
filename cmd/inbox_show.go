@@ -43,7 +43,7 @@ func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 		if mail == nil {
 			return nil
 		}
-		output, err := computeMailOutput(mail)
+		output, err := computeMailOutput(mail, dumpJSON)
 		if err != nil {
 			return err
 		}
