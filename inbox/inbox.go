@@ -18,9 +18,9 @@ type Inbox struct {
 }
 
 // NewInbox creates a new mail inbox
-func NewInbox(name string) (Inbox, error) {
+func NewInbox(name string) (*Inbox, error) {
 	client, err := client.New()
-	return Inbox{
+	return &Inbox{
 		client: client,
 		Name:   name,
 	}, err
@@ -90,6 +90,10 @@ func (i *Inbox) Flush() error {
 
 	i.Mails = []Mail{}
 	return nil
+}
+
+func (i *Inbox) GetMails() []Mail {
+	return i.Mails
 }
 
 // ParseInboxPages parses inbox email in given page

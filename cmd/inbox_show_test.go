@@ -4,60 +4,14 @@ import (
 	"bytes"
 	"errors"
 	"testing"
-
-	"github.com/spf13/cobra"
-	"github.com/stretchr/testify/assert"
+	"time"
 
 	"github.com/antham/yogo/inbox"
+	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/assert"
 )
 
-type InboxMock struct {
-	count                      int
-	mails                      []inbox.Mail
-	parseInboxPagesIntArgument int
-	parseInboxPagesError       error
-	parseIntArgument           int
-	parseError                 error
-	getIntArgument             int
-	getMail                    *inbox.Mail
-	flushError                 error
-	deleteIntArgument          int
-	deleteError                error
-}
-
-func (i *InboxMock) Count() int {
-	return i.count
-}
-
-func (i *InboxMock) GetMails() []inbox.Mail {
-	return i.mails
-}
-
-func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
-	i.parseInboxPagesIntArgument = parseInboxPagesIntArgument
-	return i.parseInboxPagesError
-}
-
-func (i *InboxMock) Parse(parseIntArgument int) error {
-	i.parseIntArgument = parseIntArgument
-	return i.parseError
-}
-
-func (i *InboxMock) Get(getIntArgument int) *inbox.Mail {
-	i.getIntArgument = getIntArgument
-	return i.getMail
-}
-
-func (i *InboxMock) Flush() error {
-	return i.flushError
-}
-
-func (i *InboxMock) Delete(deleteIntArgument int) error {
-	i.deleteIntArgument = deleteIntArgument
-	return i.deleteError
-}
-
-func TestInboxList(t *testing.T) {
+func TestInboxShow(t *testing.T) {
 	type scenario struct {
 		name         string
 		args         []string
@@ -97,9 +51,49 @@ func TestInboxList(t *testing.T) {
 			},
 		},
 		{
-			name: "Render inbox",
-			args: []string{"test", "1"},
+			name:        "An error is thrown when parsing mail",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("parse email error"),
 			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{parseError: errors.New("parse email error")}
+				mock.count = 1
+				mock.mails = []inbox.Mail{
+					{
+						ID:    "abcdefg",
+						Title: "title",
+						Body:  "body",
+						Sender: &inbox.Sender{
+							Mail: "test123",
+							Name: "name123",
+						},
+					},
+				}
+				return mock, nil
+			},
+		},
+		{
+			name:        "No mail found",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("inbox is empty"),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{getMail: nil}
+				return mock, nil
+			},
+		},
+		{
+			name: "Output the mail",
+			args: []string{"test", "1"},
+			output: `---
+From  : name123 <test123>
+Title : title
+Date  : 2001-01-01 00:00
+---
+body
+---
+
+`,
+			inboxBuilder: func(name string) (Inbox, error) {
+				now, _ := time.Parse("2006-01-02", "2001-01-01")
 				mock := &InboxMock{}
 				mock.count = 1
 				mock.mails = []inbox.Mail{
@@ -108,17 +102,24 @@ func TestInboxList(t *testing.T) {
 						Title: "title",
 						Body:  "body",
 						Sender: &inbox.Sender{
-							Mail: "test123@protonmail.com",
+							Mail: "test123",
 							Name: "name123",
 						},
+						Date: &now,
 					},
+				}
+				mock.getMail = &inbox.Mail{
+					ID:    "abcdefg",
+					Title: "title",
+					Body:  "body",
+					Sender: &inbox.Sender{
+						Mail: "test123",
+						Name: "name123",
+					},
+					Date: &now,
 				}
 				return mock, nil
 			},
-			output: ` 1 name123 <test123@protonmail.com>
-   title
-
-`,
 		},
 	}
 
@@ -131,7 +132,7 @@ func TestInboxList(t *testing.T) {
 			cmd := &cobra.Command{}
 			cmd.SetOut(&output)
 			cmd.SetErr(&outputErr)
-			err := inboxList(scenario.inboxBuilder)(cmd, scenario.args)
+			err := inboxShow(scenario.inboxBuilder)(cmd, scenario.args)
 			assert.Equal(t, scenario.errExpected, err)
 			assert.Equal(t, scenario.output, output.String())
 			assert.Equal(t, scenario.outputErr, outputErr.String())

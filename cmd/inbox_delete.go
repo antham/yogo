@@ -8,31 +8,41 @@ import (
 	"github.com/antham/yogo/inbox"
 )
 
-// inboxDeleteCmd delete an email in inbox
 var inboxDeleteCmd = &cobra.Command{
-	Use:   "delete",
+	Use:   "delete <inbox> <offset>",
 	Short: "Delete email at given position in inbox",
-	Run: func(cmd *cobra.Command, args []string) {
-		identifier, offset := parseMailAndOffsetArgs(args)
+	RunE: inboxDelete(
+		func(name string) (Inbox, error) {
+			in, err := inbox.NewInbox(name)
+			return Inbox(in), err
+		},
+	),
+	Args: cobra.ExactArgs(2),
+}
 
-		in, err := inbox.NewInbox(identifier)
+func inboxDelete(inboxBuilder inboxBuilder) cobraCmd {
+	return func(cmd *cobra.Command, args []string) error {
+		identifier, offset, err := parseMailAndOffsetArgs(args)
 		if err != nil {
-			perror(err)
-			errorExit()
+			return err
 		}
 
+		in, err := inboxBuilder(identifier)
+		if err != nil {
+			return err
+		}
 		if err := in.ParseInboxPages(offset); err != nil {
-			perror(err)
-			errorExit()
+			return err
 		}
-
-		checkOffset(in.Count(), offset)
+		if err := checkOffset(in.Count(), offset); err != nil {
+			return err
+		}
 		if err := in.Delete(offset - 1); err != nil {
-			perror(err)
-			errorExit()
+			return err
 		}
-		success(fmt.Sprintf(`Email "%d" successfully deleted`, offset))
-	},
+		cmd.Println(success(fmt.Sprintf(`Email "%d" successfully deleted`, offset)))
+		return nil
+	}
 }
 
 func init() {

@@ -6,27 +6,39 @@ import (
 	"github.com/antham/yogo/inbox"
 )
 
-// inboxListCmd get all emails in an inbox
 var inboxListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "Get all emails in an inbox",
-	Run: func(cmd *cobra.Command, args []string) {
-		identifier, offset := parseMailAndOffsetArgs(args)
+	Use:   "list <inbox> <offset>",
+	Short: "Get all emails from an inbox",
+	RunE: inboxList(
+		func(name string) (Inbox, error) {
+			in, err := inbox.NewInbox(name)
+			return Inbox(in), err
+		},
+	),
+	Args: cobra.ExactArgs(2),
+}
 
-		in, err := inbox.NewInbox(identifier)
+func inboxList(inboxBuilder inboxBuilder) cobraCmd {
+	return func(cmd *cobra.Command, args []string) error {
+		identifier, offset, err := parseMailAndOffsetArgs(args)
 		if err != nil {
-			perror(err)
-			errorExit()
+			return err
 		}
 
+		in, err := inboxBuilder(identifier)
+		if err != nil {
+			return err
+		}
 		if err := in.ParseInboxPages(offset); err != nil {
-			perror(err)
-
-			errorExit()
+			return err
 		}
-
-		renderInboxMail(&in)
-	},
+		mail, err := computeInboxMailOutput(in, dumpJSON)
+		if err != nil {
+			return err
+		}
+		cmd.Println(mail)
+		return nil
+	}
 }
 
 func init() {

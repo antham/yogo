@@ -1,23 +1,113 @@
 package cmd
 
 import (
-	"os"
+	"bytes"
+	"errors"
 	"testing"
 
+	"github.com/antham/yogo/inbox"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInboxFlushWithNoArguments(t *testing.T) {
-
-	perror = func(err error) {
-		assert.EqualError(t, err, "One argument mandatory", "Must return an error")
+func TestInboxFlush(t *testing.T) {
+	type scenario struct {
+		name         string
+		args         []string
+		errExpected  error
+		inboxBuilder inboxBuilder
+		output       string
+		outputErr    string
 	}
 
-	errorExit = func() {
-		t.SkipNow()
+	scenarios := []scenario{
+		{
+			name: "No mails found",
+			args: []string{"test", "1"},
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				mock.mails = []inbox.Mail{}
+				return mock, nil
+			},
+			output: `Inbox "test" successfully flushed
+`,
+		},
+		{
+			name:        "An error is thrown in inbox builder",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("inbox builder error"),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				return mock, errors.New("inbox builder error")
+			},
+		},
+		{
+			name:        "An error is thrown in parse inbox pages",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("inbox pages error"),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{parseInboxPagesError: errors.New("inbox pages error")}
+				return mock, nil
+			},
+		},
+		{
+			name:        "An error is thrown when flushing inbox",
+			args:        []string{"test", "1"},
+			errExpected: errors.New("flush inbox error"),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{flushError: errors.New("flush inbox error")}
+				mock.count = 1
+				mock.mails = []inbox.Mail{
+					{
+						ID:    "abcdefg",
+						Title: "title",
+						Body:  "body",
+						Sender: &inbox.Sender{
+							Mail: "test123",
+							Name: "name123",
+						},
+					},
+				}
+				return mock, nil
+			},
+		},
+		{
+			name: "Inbox flushed successfully",
+			args: []string{"test", "1"},
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				mock.count = 1
+				mock.mails = []inbox.Mail{
+					{
+						ID:    "abcdefg",
+						Title: "title",
+						Body:  "body",
+						Sender: &inbox.Sender{
+							Mail: "test123",
+							Name: "name123",
+						},
+					},
+				}
+				return mock, nil
+			},
+			output: `Inbox "test" successfully flushed
+`,
+		},
 	}
 
-	os.Args = []string{"", "inbox", "flush"}
-
-	assert.NoError(t, RootCmd.Execute())
+	for _, scenario := range scenarios {
+		scenario := scenario
+		t.Run(scenario.name, func(t *testing.T) {
+			t.Parallel()
+			var output bytes.Buffer
+			var outputErr bytes.Buffer
+			cmd := &cobra.Command{}
+			cmd.SetOut(&output)
+			cmd.SetErr(&outputErr)
+			err := inboxFlush(scenario.inboxBuilder)(cmd, scenario.args)
+			assert.Equal(t, scenario.errExpected, err)
+			assert.Equal(t, scenario.output, output.String())
+			assert.Equal(t, scenario.outputErr, outputErr.String())
+		})
+	}
 }
