@@ -33,6 +33,16 @@ func TestInboxShow(t *testing.T) {
 			},
 		},
 		{
+			name:        "Failure when parsing offset",
+			args:        []string{"test", "-1"},
+			errExpected: errors.New(`offset "-1" must be greater than 0`),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				mock.mails = []inbox.Mail{}
+				return mock, nil
+			},
+		},
+		{
 			name:        "An error is thrown in inbox builder",
 			args:        []string{"test", "1"},
 			errExpected: errors.New("inbox builder error"),

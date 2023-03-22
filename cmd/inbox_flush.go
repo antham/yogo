@@ -22,16 +22,12 @@ var inboxFlushCmd = &cobra.Command{
 
 func inboxFlush(inboxBuilder inboxBuilder) cobraCmd {
 	return func(cmd *cobra.Command, args []string) error {
-		identifier, offset, err := parseMailAndOffsetArgs([]string{args[0], "1"})
-		if err != nil {
-			return err
-		}
-
+		identifier := normalizeInboxName(args[0])
 		in, err := inboxBuilder(identifier)
 		if err != nil {
 			return err
 		}
-		if err = in.ParseInboxPages(offset); err != nil {
+		if err = in.ParseInboxPages(1); err != nil {
 			return err
 		}
 		if err := in.Flush(); err != nil {

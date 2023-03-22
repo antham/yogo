@@ -22,11 +22,11 @@ var inboxDeleteCmd = &cobra.Command{
 
 func inboxDelete(inboxBuilder inboxBuilder) cobraCmd {
 	return func(cmd *cobra.Command, args []string) error {
-		identifier, offset, err := parseMailAndOffsetArgs(args)
+		identifier := normalizeInboxName(args[0])
+		offset, err := parseOffset(args[1])
 		if err != nil {
 			return err
 		}
-
 		in, err := inboxBuilder(identifier)
 		if err != nil {
 			return err

@@ -7,43 +7,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseMailAndOffset(t *testing.T) {
+func TestParseOffset(t *testing.T) {
 	type scenario struct {
-		name   string
-		args   []string
-		err    error
-		offset int
-		inbox  string
+		name           string
+		err            error
+		offsetArg      string
+		offsetExpected int
 	}
 
 	scenarios := []scenario{
 		{
-			name: "second argument as string",
-			args: []string{"test", "test"},
-			err:  errors.New(`offset "test" must be an integer`),
+			name:      "offset is a string",
+			offsetArg: "test",
+			err:       errors.New(`offset "test" must be an integer`),
 		},
 		{
-			name: "offset lower than 0",
-			args: []string{"test", "0"},
-			err:  errors.New(`offset "0" must be greater than 0`),
+			name:      "offset lower than 0",
+			offsetArg: "0",
+			err:       errors.New(`offset "0" must be greater than 0`),
 		},
 		{
-			name:   "regular inbox",
-			args:   []string{"test", "1"},
-			offset: 1,
-			inbox:  "test",
-		},
-		{
-			name:   "uppercased inbox",
-			args:   []string{"TeSt", "1"},
-			offset: 1,
-			inbox:  "test",
-		},
-		{
-			name:   "full email provided",
-			args:   []string{"test@yopmail.com", "1"},
-			offset: 1,
-			inbox:  "test",
+			name:           "valid offset",
+			offsetArg:      "1",
+			offsetExpected: 1,
 		},
 	}
 
@@ -52,13 +38,43 @@ func TestParseMailAndOffset(t *testing.T) {
 		t.Run(scenario.name, func(t *testing.T) {
 			t.Parallel()
 
-			inbox, offset, err := parseMailAndOffsetArgs(scenario.args)
+			offset, err := parseOffset(scenario.offsetArg)
 			if scenario.err != nil {
 				assert.EqualError(t, err, scenario.err.Error())
 			} else {
-				assert.Equal(t, scenario.offset, offset)
-				assert.Equal(t, scenario.inbox, inbox)
+				assert.Equal(t, scenario.offsetExpected, offset)
 			}
+		})
+	}
+}
+
+func TestNormalizeInboxName(t *testing.T) {
+	type scenario struct {
+		name          string
+		inboxArg      string
+		inboxExpected string
+	}
+
+	scenarios := []scenario{
+		{
+			name:          "uppercased inbox",
+			inboxArg:      "TeSt",
+			inboxExpected: "test",
+		},
+		{
+			name:          "full email provided",
+			inboxArg:      "test@yopmail.com",
+			inboxExpected: "test",
+		},
+	}
+
+	for _, scenario := range scenarios {
+		scenario := scenario
+		t.Run(scenario.name, func(t *testing.T) {
+			t.Parallel()
+
+			inbox := normalizeInboxName(scenario.inboxArg)
+			assert.Equal(t, scenario.inboxExpected, inbox)
 		})
 	}
 }
