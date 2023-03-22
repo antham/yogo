@@ -33,6 +33,16 @@ func TestInboxShow(t *testing.T) {
 			},
 		},
 		{
+			name:        "Failure when parsing offset",
+			args:        []string{"test", "-1"},
+			errExpected: errors.New(`offset "-1" must be greater than 0`),
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{}
+				mock.mails = []inbox.Mail{}
+				return mock, nil
+			},
+		},
+		{
 			name:        "An error is thrown in inbox builder",
 			args:        []string{"test", "1"},
 			errExpected: errors.New("inbox builder error"),
@@ -56,6 +66,26 @@ func TestInboxShow(t *testing.T) {
 			errExpected: errors.New("parse email error"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{parseError: errors.New("parse email error")}
+				mock.count = 1
+				mock.mails = []inbox.Mail{
+					{
+						ID:    "abcdefg",
+						Title: "title",
+						Body:  "body",
+						Sender: &inbox.Sender{
+							Mail: "test123",
+							Name: "name123",
+						},
+					},
+				}
+				return mock, nil
+			},
+		},
+		{
+			name: "Offset to high compared to the number of emails",
+			args: []string{"test", "2"},
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{getMail: nil}
 				mock.count = 1
 				mock.mails = []inbox.Mail{
 					{

@@ -2,29 +2,22 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-
-	"github.com/antham/yogo/inbox"
 )
 
 var inboxShowCmd = &cobra.Command{
 	Use:   "show <inbox> <offset>",
 	Short: "Show full email at given position in inbox",
-	RunE: inboxShow(
-		func(name string) (Inbox, error) {
-			in, err := inbox.NewInbox(name)
-			return Inbox(in), err
-		},
-	),
-	Args: cobra.ExactArgs(2),
+	RunE:  inboxShow(newInbox),
+	Args:  cobra.ExactArgs(2),
 }
 
 func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 	return func(cmd *cobra.Command, args []string) error {
-		identifier, offset, err := parseMailAndOffsetArgs(args)
+		identifier := normalizeInboxName(args[0])
+		offset, err := parseOffset(args[1])
 		if err != nil {
 			return err
 		}
-
 		in, err := inboxBuilder(identifier)
 		if err != nil {
 			return err

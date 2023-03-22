@@ -2,29 +2,22 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-
-	"github.com/antham/yogo/inbox"
 )
 
 var inboxListCmd = &cobra.Command{
 	Use:   "list <inbox> <offset>",
 	Short: "Get all emails from an inbox",
-	RunE: inboxList(
-		func(name string) (Inbox, error) {
-			in, err := inbox.NewInbox(name)
-			return Inbox(in), err
-		},
-	),
-	Args: cobra.ExactArgs(2),
+	RunE:  inboxList(newInbox),
+	Args:  cobra.ExactArgs(2),
 }
 
 func inboxList(inboxBuilder inboxBuilder) cobraCmd {
 	return func(cmd *cobra.Command, args []string) error {
-		identifier, offset, err := parseMailAndOffsetArgs(args)
+		identifier := normalizeInboxName(args[0])
+		offset, err := parseOffset(args[1])
 		if err != nil {
 			return err
 		}
-
 		in, err := inboxBuilder(identifier)
 		if err != nil {
 			return err
