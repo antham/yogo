@@ -203,6 +203,15 @@ func TestComputeInboxMailOutput(t *testing.T) {
 					{
 						Title: "test8 title",
 					},
+					{
+						Title: "test9 title",
+					},
+					{
+						Title: "test10 title",
+					},
+					{
+						Title: "test11 title",
+					},
 				},
 			},
 			outputExpected: ` 1 test1 <test1@protonmail.com> [SPAM]
@@ -227,7 +236,16 @@ func TestComputeInboxMailOutput(t *testing.T) {
    test7 title
 
  8 [no data to display]
-   test8 title`,
+   test8 title
+
+ 9 [no data to display]
+   test9 title
+
+ 10 [no data to display]
+    test10 title
+
+ 11 [no data to display]
+    test11 title`,
 		},
 		{
 			name: "Display emails as JSON",

@@ -36,6 +36,7 @@ func computeInboxMailOutput(in Inbox, isJSONOutput bool) (string, error) {
 			SenderMail    string
 			HasSenderMail bool
 			Title         string
+			TitlePadding  string
 			SPAM          string
 		}{}
 
@@ -66,6 +67,10 @@ func computeInboxMailOutput(in Inbox, isJSONOutput bool) (string, error) {
 		}
 		info.Index = strconv.Itoa(index + 1)
 
+		for i := 0; i < len(info.Index); i++ {
+			info.TitlePadding = info.TitlePadding + " "
+		}
+
 		var buf bytes.Buffer
 		tpl := template.Must(template.New("t").Parse(` {{.Index}} {{ if .HasSenderName -}}
 {{- .SenderName -}}
@@ -79,7 +84,7 @@ func computeInboxMailOutput(in Inbox, isJSONOutput bool) (string, error) {
 {{- end -}}
 {{- if .SPAM }} {{ .SPAM -}}{{- end -}}
 {{- if .Title }}
-   {{ .Title }}
+  {{.TitlePadding}}{{ .Title }}
 {{ end }}
 `))
 		if err := tpl.Execute(&buf, info); err != nil {
