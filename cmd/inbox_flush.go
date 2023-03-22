@@ -4,20 +4,13 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-
-	"github.com/antham/yogo/inbox"
 )
 
 var inboxFlushCmd = &cobra.Command{
 	Use:   "flush <inbox>",
 	Short: "Flush all emails in an inbox",
-	RunE: inboxFlush(
-		func(name string) (Inbox, error) {
-			in, err := inbox.NewInbox(name)
-			return Inbox(in), err
-		},
-	),
-	Args: cobra.ExactArgs(1),
+	RunE:  inboxFlush(newInbox),
+	Args:  cobra.ExactArgs(1),
 }
 
 func inboxFlush(inboxBuilder inboxBuilder) cobraCmd {

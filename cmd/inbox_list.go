@@ -2,20 +2,13 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-
-	"github.com/antham/yogo/inbox"
 )
 
 var inboxListCmd = &cobra.Command{
 	Use:   "list <inbox> <offset>",
 	Short: "Get all emails from an inbox",
-	RunE: inboxList(
-		func(name string) (Inbox, error) {
-			in, err := inbox.NewInbox(name)
-			return Inbox(in), err
-		},
-	),
-	Args: cobra.ExactArgs(2),
+	RunE:  inboxList(newInbox),
+	Args:  cobra.ExactArgs(2),
 }
 
 func inboxList(inboxBuilder inboxBuilder) cobraCmd {

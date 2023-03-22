@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/antham/yogo/inbox"
 	"github.com/spf13/cobra"
 )
 
@@ -16,4 +17,9 @@ var inboxCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(inboxCmd)
+}
+
+func newInbox(name string) (Inbox, error) {
+	in, err := inbox.NewInbox(name)
+	return Inbox(in), err
 }

@@ -4,20 +4,13 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-
-	"github.com/antham/yogo/inbox"
 )
 
 var inboxDeleteCmd = &cobra.Command{
 	Use:   "delete <inbox> <offset>",
 	Short: "Delete email at given position in inbox",
-	RunE: inboxDelete(
-		func(name string) (Inbox, error) {
-			in, err := inbox.NewInbox(name)
-			return Inbox(in), err
-		},
-	),
-	Args: cobra.ExactArgs(2),
+	RunE:  inboxDelete(newInbox),
+	Args:  cobra.ExactArgs(2),
 }
 
 func inboxDelete(inboxBuilder inboxBuilder) cobraCmd {
