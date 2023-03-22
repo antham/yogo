@@ -82,6 +82,26 @@ func TestInboxShow(t *testing.T) {
 			},
 		},
 		{
+			name: "Offset to high compared to the number of emails",
+			args: []string{"test", "2"},
+			inboxBuilder: func(name string) (Inbox, error) {
+				mock := &InboxMock{getMail: nil}
+				mock.count = 1
+				mock.mails = []inbox.Mail{
+					{
+						ID:    "abcdefg",
+						Title: "title",
+						Body:  "body",
+						Sender: &inbox.Sender{
+							Mail: "test123",
+							Name: "name123",
+						},
+					},
+				}
+				return mock, nil
+			},
+		},
+		{
 			name:        "No mail found",
 			args:        []string{"test", "1"},
 			errExpected: errors.New("inbox is empty"),
