@@ -1,4 +1,4 @@
-package inbox
+package mail
 
 import (
 	"regexp"
@@ -50,7 +50,7 @@ func parseDate(s string) *time.Time {
 	return &date
 }
 
-func parseMail(doc *goquery.Document, mail *Mail) {
+func Parse(doc *goquery.Document, mail *Mail) {
 	mail.Sender = &Sender{}
 
 	doc.Find("body div.fl .ellipsis").Each(func(i int, s *goquery.Selection) {

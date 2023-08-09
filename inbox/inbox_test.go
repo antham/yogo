@@ -15,6 +15,64 @@ func TestFetch(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
+			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"inbox_page_1.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"inbox_page_2.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/en/mail?b=test&id=me_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D",
+			"mail.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com",
+			"main_page.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/consent?c=accept",
+			"main_page.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/ver/4.8/webmail.js",
+			"webmail.js",
+		},
+	}))
+
+	inbox, err := NewInbox("test")
+	assert.NoError(t, err)
+	err = inbox.ParseInboxPages(15)
+	assert.NoError(t, err)
+
+	m, err := inbox.Fetch(0)
+	assert.NoError(t, err)
+	assert.Equal(t, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==", m.ID)
+	assert.Equal(t, "In any case, I am happy that we met", m.Title)
+}
+
+func TestCount(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	assert.NoError(t, registerResponders([]responder{
+		{
+			"GET",
+			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"inbox_page_1.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"inbox_page_2.html",
+		},
+		{
+			"GET",
 			"https://yopmail.com/en/mail?b=test&id=me_ZwRjAwRkZwRkAQV1ZQNjBGD4AGL4AD%3D%3D",
 			"mail.html",
 		},
@@ -37,20 +95,8 @@ func TestFetch(t *testing.T) {
 
 	inbox, err := NewInbox("test")
 	assert.NoError(t, err)
-
-	parseInboxPage(getDoc(t, "inbox_page.html"), inbox)
-
-	assert.Equal(t, 15, inbox.Count())
-	m, err := inbox.Fetch(0)
+	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
-	assert.Equal(t, "e_ZwRjAwRkZwRkAQV1ZQNjBGD4AGL4AD==", m.ID)
-	assert.Equal(t, "In any case, I am happy that we met", m.Title)
-}
-
-func TestCount(t *testing.T) {
-	inbox := &Inbox{}
-
-	parseInboxPage(getDoc(t, "inbox_page.html"), inbox)
 
 	assert.Equal(t, inbox.Count(), 15)
 }
@@ -123,11 +169,11 @@ func TestParseInboxPages(t *testing.T) {
 	assert.Equal(t, "e_ZwRjAwRmZGtmZQR0ZQNjAwt2BGV5BN==", m.ID)
 	m, err = inbox.Fetch(13)
 	assert.NoError(t, err)
-	assert.Equal(t, "e_ZwRjAwRmZGtmZwR0ZQNjAwt3AmxlZN==", m.ID)	
+	assert.Equal(t, "e_ZwRjAwRmZGtmZwR0ZQNjAwt3AmxlZN==", m.ID)
 	assert.False(t, m.IsSPAM)
 	assert.Equal(t, "In any case, I am happy that we met", m.Title)
 	m, err = inbox.Fetch(14)
-	assert.Equal(t, "e_ZwRjAwRmZGtmZwN3ZQNjAwt3AmZlAD==", m.ID)		
+	assert.Equal(t, "e_ZwRjAwRmZGtmZwN3ZQNjAwt3AmZlAD==", m.ID)
 	assert.NoError(t, err)
 	assert.False(t, m.IsSPAM)
 	assert.Equal(t, `A title`, m.Title)
@@ -147,6 +193,16 @@ func TestShrink(t *testing.T) {
 			"GET",
 			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"inbox_page_2.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/en/mail?b=test&id=me_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D",
+			"mail.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/en/mail?b=test&id=me_ZwRjAwRmZGtmZGDlZQNjAwt3AGHkAt%3D%3D",
+			"mail.html",
 		},
 		{
 			"GET",

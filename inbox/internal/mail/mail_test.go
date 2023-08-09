@@ -1,4 +1,4 @@
-package inbox
+package mail
 
 import (
 	"errors"
@@ -83,9 +83,9 @@ func TestParseDate(t *testing.T) {
 	assert.Empty(t, date)
 }
 
-func TestParseMail(t *testing.T) {
+func TestParse(t *testing.T) {
 	mail := &Mail{}
-	parseMail(getDoc(t, "mail.html"), mail)
+	Parse(getDoc(t, "mail.html"), mail)
 
 	assert.Equal(t, "Liana", mail.Sender.Name, "Must return sender name")
 	assert.Equal(t, "AnnaMartinezpisea@lionspest.com.au", mail.Sender.Mail, "Must return sender email")

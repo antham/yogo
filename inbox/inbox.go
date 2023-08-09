@@ -6,9 +6,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/antham/yogo/inbox/internal/client"
+	"github.com/antham/yogo/inbox/internal/mail"
 )
 
 const itemNumber = 15
+
+type Mail = mail.Mail
+type Sender = mail.Sender
 
 // Inbox represents a mail collection
 type Inbox struct {
@@ -19,12 +23,12 @@ type Inbox struct {
 
 // Inbox represents a mail sumup in an inbox
 type InboxItem struct {
-	ID     string     `json:"id"`
-	Sender *Sender    `json:"sender,omitempty"`
-	Title  string     `json:"title"`
-	Date   *time.Time `json:"date,omitempty"`
-	Body   string     `json:"body,omitempty"`
-	IsSPAM bool       `json:"isSPAM"`
+	ID     string       `json:"id"`
+	Sender *mail.Sender `json:"sender,omitempty"`
+	Title  string       `json:"title"`
+	Date   *time.Time   `json:"date,omitempty"`
+	Body   string       `json:"body,omitempty"`
+	IsSPAM bool         `json:"isSPAM"`
 }
 
 // NewInbox creates a new mail inbox
@@ -38,16 +42,16 @@ func NewInbox(name string) (*Inbox, error) {
 
 // Fetch retrieves the full email content from the given
 // inbox email offset
-func (i *Inbox) Fetch(offset int) (*Mail, error) {
+func (i *Inbox) Fetch(offset int) (*mail.Mail, error) {
 	ID := &i.InboxItems[offset].ID
 	doc, err := i.client.GetMailPage(i.Name, *ID)
 	if err != nil {
 		return nil, err
 	}
 
-	mail := &Mail{ID: *ID}
-	parseMail(doc, mail)
-	return mail, nil
+	m := &mail.Mail{ID: *ID}
+	mail.Parse(doc, m)
+	return m, nil
 }
 
 // Count returns total number of mails available in inbox
@@ -120,7 +124,7 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 	doc.Find("div.m").Each(func(i int, s *goquery.Selection) {
 		var isSPAM bool
 		name := s.Find("span.lmf").Text()
-		mail := name
+		userEmail := name
 
 		if len(name) >= 6 && name[:6] == "[SPAM]" {
 			isSPAM = true
@@ -130,15 +134,15 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 		if strings.Contains(name, "@") {
 			name = ""
 		} else {
-			mail = ""
+			userEmail = ""
 		}
 
 		if ID, ok := s.Attr("id"); ok {
 			inboxItem := InboxItem{
 				ID: ID,
-				Sender: &Sender{
+				Sender: &mail.Sender{
 					Name: name,
-					Mail: mail,
+					Mail: userEmail,
 				},
 				Title:  s.Find("div.lms").Text(),
 				IsSPAM: isSPAM,
