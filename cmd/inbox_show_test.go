@@ -28,7 +28,7 @@ func TestInboxShow(t *testing.T) {
 			errExpected: errors.New("inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -38,7 +38,7 @@ func TestInboxShow(t *testing.T) {
 			errExpected: errors.New(`offset "-1" must be greater than 0`),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -65,9 +65,9 @@ func TestInboxShow(t *testing.T) {
 			args:        []string{"test", "1"},
 			errExpected: errors.New("parse email error"),
 			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{parseError: errors.New("parse email error")}
+				mock := &InboxMock{parseInboxPagesError: errors.New("parse email error")}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",
@@ -85,9 +85,9 @@ func TestInboxShow(t *testing.T) {
 			name: "Offset to high compared to the number of emails",
 			args: []string{"test", "2"},
 			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{getMail: nil}
+				mock := &InboxMock{fetchMail: nil}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",
@@ -106,7 +106,7 @@ func TestInboxShow(t *testing.T) {
 			args:        []string{"test", "1"},
 			errExpected: errors.New("inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{getMail: nil}
+				mock := &InboxMock{fetchMail: nil}
 				return mock, nil
 			},
 		},
@@ -126,7 +126,7 @@ body
 				now, _ := time.Parse("2006-01-02", "2001-01-01")
 				mock := &InboxMock{}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",
@@ -138,7 +138,7 @@ body
 						Date: &now,
 					},
 				}
-				mock.getMail = &inbox.Mail{
+				mock.fetchMail = &inbox.Mail{
 					ID:    "abcdefg",
 					Title: "title",
 					Body:  "body",

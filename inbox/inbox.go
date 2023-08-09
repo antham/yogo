@@ -12,9 +12,19 @@ const itemNumber = 15
 
 // Inbox represents a mail collection
 type Inbox struct {
-	Name   string `json:"name"`
-	Mails  []Mail `json:"mails"`
-	client client.Client
+	Name       string      `json:"name"`
+	InboxItems []InboxItem `json:"mails"`
+	client     client.Client
+}
+
+// Inbox represents a mail sumup in an inbox
+type InboxItem struct {
+	ID     string     `json:"id"`
+	Sender *Sender    `json:"sender,omitempty"`
+	Title  string     `json:"title"`
+	Date   *time.Time `json:"date,omitempty"`
+	Body   string     `json:"body,omitempty"`
+	IsSPAM bool       `json:"isSPAM"`
 }
 
 // NewInbox creates a new mail inbox
@@ -26,74 +36,66 @@ func NewInbox(name string) (*Inbox, error) {
 	}, err
 }
 
-// Get returns email at given offset
-func (i *Inbox) Get(offset int) *Mail {
-	if len(i.Mails) > offset {
-		return &i.Mails[offset]
+// Fetch retrieves the full email content from the given
+// inbox email offset
+func (i *Inbox) Fetch(offset int) (*Mail, error) {
+	ID := &i.InboxItems[offset].ID
+	doc, err := i.client.GetMailPage(i.Name, *ID)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	mail := &Mail{ID: *ID}
+	parseMail(doc, mail)
+	return mail, nil
 }
 
 // Count returns total number of mails available in inbox
 func (i *Inbox) Count() int {
-	return len(i.Mails)
+	return len(i.InboxItems)
 }
 
 // Shrink reduces mails size to given value
 func (i *Inbox) Shrink(limit int) {
-	if len(i.Mails) < limit {
+	if len(i.InboxItems) < limit {
 		return
 	}
 
-	i.Mails = i.Mails[:limit]
+	i.InboxItems = i.InboxItems[:limit]
 }
 
 // Add appends a mail to mail list
-func (i *Inbox) Add(mail Mail) {
-	i.Mails = append(i.Mails, mail)
+func (i *Inbox) Add(inboxItem InboxItem) {
+	i.InboxItems = append(i.InboxItems, inboxItem)
 }
 
 // Delete an email
 func (i *Inbox) Delete(position int) error {
-	mail := i.Mails[position]
+	mail := i.InboxItems[position]
 	if err := i.client.DeleteMail(i.Name, mail.ID); err != nil {
 		return err
 	}
 
-	i.Mails = append(i.Mails[:position], i.Mails[position+1:]...)
-	return nil
-}
-
-// Parse retrieves all email datas
-func (i *Inbox) Parse(position int) error {
-	mail := &i.Mails[position]
-	doc, err := i.client.GetMailPage(i.Name, mail.ID)
-	if err != nil {
-		return err
-	}
-
-	parseMail(doc, mail)
-
+	i.InboxItems = append(i.InboxItems[:position], i.InboxItems[position+1:]...)
 	return nil
 }
 
 // Flush empties an inbox
 func (i *Inbox) Flush() error {
-	if len(i.Mails) == 0 {
+	if len(i.InboxItems) == 0 {
 		return nil
 	}
 
-	if err := i.client.FlushMail(i.Name, i.Mails[0].ID); err != nil {
+	if err := i.client.FlushMail(i.Name, i.InboxItems[0].ID); err != nil {
 		return err
 	}
 
-	i.Mails = []Mail{}
+	i.InboxItems = []InboxItem{}
 	return nil
 }
 
-func (i *Inbox) GetMails() []Mail {
-	return i.Mails
+func (i *Inbox) GetMails() []InboxItem {
+	return i.InboxItems
 }
 
 // ParseInboxPages parses inbox email in given page
@@ -132,7 +134,7 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 		}
 
 		if ID, ok := s.Attr("id"); ok {
-			mail := Mail{
+			inboxItem := InboxItem{
 				ID: ID,
 				Sender: &Sender{
 					Name: name,
@@ -142,7 +144,7 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 				IsSPAM: isSPAM,
 			}
 
-			inbox.Add(mail)
+			inbox.Add(inboxItem)
 		}
 	})
 }

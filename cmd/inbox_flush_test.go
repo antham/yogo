@@ -26,7 +26,7 @@ func TestInboxFlush(t *testing.T) {
 			args: []string{"test", "1"},
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 			output: `Inbox "test" successfully flushed
@@ -57,7 +57,7 @@ func TestInboxFlush(t *testing.T) {
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{flushError: errors.New("flush inbox error")}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",
@@ -77,7 +77,7 @@ func TestInboxFlush(t *testing.T) {
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",

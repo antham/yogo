@@ -28,11 +28,11 @@ func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 		if err := checkOffset(in.Count(), offset); err != nil {
 			return err
 		}
-		if err := in.Parse(offset - 1); err != nil {
+
+		mail, err := in.Fetch(offset - 1)
+		if err != nil {
 			return err
 		}
-
-		mail := in.Get(offset - 1)
 		if mail == nil {
 			return nil
 		}

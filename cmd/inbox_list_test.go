@@ -13,13 +13,12 @@ import (
 
 type InboxMock struct {
 	count                      int
-	mails                      []inbox.Mail
+	items                      []inbox.InboxItem
 	parseInboxPagesIntArgument int
 	parseInboxPagesError       error
-	parseIntArgument           int
-	parseError                 error
-	getIntArgument             int
-	getMail                    *inbox.Mail
+	fetchIntArgument           int
+	fetchMail                  *inbox.Mail
+	fetchError                 error
 	flushError                 error
 	deleteIntArgument          int
 	deleteError                error
@@ -29,8 +28,8 @@ func (i *InboxMock) Count() int {
 	return i.count
 }
 
-func (i *InboxMock) GetMails() []inbox.Mail {
-	return i.mails
+func (i *InboxMock) GetMails() []inbox.InboxItem {
+	return i.items
 }
 
 func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
@@ -38,14 +37,9 @@ func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
 	return i.parseInboxPagesError
 }
 
-func (i *InboxMock) Parse(parseIntArgument int) error {
-	i.parseIntArgument = parseIntArgument
-	return i.parseError
-}
-
-func (i *InboxMock) Get(getIntArgument int) *inbox.Mail {
-	i.getIntArgument = getIntArgument
-	return i.getMail
+func (i *InboxMock) Fetch(fetchIntArgument int) (*inbox.Mail, error) {
+	i.fetchIntArgument = fetchIntArgument
+	return i.fetchMail, i.fetchError
 }
 
 func (i *InboxMock) Flush() error {
@@ -74,7 +68,7 @@ func TestInboxList(t *testing.T) {
 			errExpected: errors.New("inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -84,7 +78,7 @@ func TestInboxList(t *testing.T) {
 			errExpected: errors.New(`offset "-1" must be greater than 0`),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -112,7 +106,7 @@ func TestInboxList(t *testing.T) {
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",

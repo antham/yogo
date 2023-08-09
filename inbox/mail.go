@@ -15,7 +15,7 @@ type Sender struct {
 	Name string `json:"name,omitempty"`
 }
 
-// Mail is a message
+// Mail is a mail message
 type Mail struct {
 	ID     string     `json:"id"`
 	Sender *Sender    `json:"sender,omitempty"`

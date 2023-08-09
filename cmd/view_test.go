@@ -154,7 +154,7 @@ func TestComputeInboxMailOutput(t *testing.T) {
 			name: "Display emails",
 			inbox: inbox.Inbox{
 				Name: "test",
-				Mails: []inbox.Mail{
+				InboxItems: []inbox.InboxItem{
 					{
 						IsSPAM: true,
 						Sender: &inbox.Sender{
@@ -251,7 +251,7 @@ func TestComputeInboxMailOutput(t *testing.T) {
 			name: "Display emails as JSON",
 			inbox: inbox.Inbox{
 				Name: "test",
-				Mails: []inbox.Mail{
+				InboxItems: []inbox.InboxItem{
 					{
 						ID:     "02d3583b-7b58-40cb-a2b7-c09d79673334",
 						IsSPAM: true,

@@ -27,7 +27,7 @@ func TestInboxDelete(t *testing.T) {
 			errExpected: errors.New("inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -37,7 +37,7 @@ func TestInboxDelete(t *testing.T) {
 			errExpected: errors.New(`offset "-1" must be greater than 0`),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -66,7 +66,7 @@ func TestInboxDelete(t *testing.T) {
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{deleteError: errors.New("delete message error")}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",
@@ -86,7 +86,7 @@ func TestInboxDelete(t *testing.T) {
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",
