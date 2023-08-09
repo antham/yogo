@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/antham/yogo/inbox/client"
+	"github.com/antham/yogo/inbox/internal/client"
 )
 
 const itemNumber = 15
