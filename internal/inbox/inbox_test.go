@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/antham/yogo/inbox/internal/client"
+	"github.com/antham/yogo/internal/inbox/internal/client"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )

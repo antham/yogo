@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/antham/yogo/inbox"
+	"github.com/antham/yogo/internal/inbox"
 	"github.com/spf13/cobra"
 )
 
@@ -42,12 +42,12 @@ func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 		if dumpJSON {
 			output, err = mail.JSON()
 			if err != nil {
-				return nil
+				return err
 			}
 		} else {
 			output, err = mail.Coloured()
 			if err != nil {
-				return nil
+				return err
 			}
 		}
 

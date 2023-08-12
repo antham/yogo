@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/antham/yogo/inbox"
+	"github.com/antham/yogo/internal/inbox"
 )
 
 type InboxMock struct {

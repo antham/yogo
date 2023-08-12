@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/antham/yogo/inbox"
+	"github.com/antham/yogo/internal/inbox"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInboxDelete(t *testing.T) {
+func TestInboxFlush(t *testing.T) {
 	type scenario struct {
 		name         string
 		args         []string
@@ -22,24 +22,15 @@ func TestInboxDelete(t *testing.T) {
 
 	scenarios := []scenario{
 		{
-			name:        "No mails found",
-			args:        []string{"test", "1"},
-			errExpected: errors.New("inbox is empty"),
+			name: "No mails found",
+			args: []string{"test", "1"},
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
 				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
-		},
-		{
-			name:        "Failure when parsing offset",
-			args:        []string{"test", "-1"},
-			errExpected: errors.New(`offset "-1" must be greater than 0`),
-			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{}
-				mock.items = []inbox.InboxItem{}
-				return mock, nil
-			},
+			output: `Inbox "test" successfully flushed
+`,
 		},
 		{
 			name:        "An error is thrown in inbox builder",
@@ -60,11 +51,11 @@ func TestInboxDelete(t *testing.T) {
 			},
 		},
 		{
-			name:        "An error is thrown when deleting a message",
+			name:        "An error is thrown when flushing inbox",
 			args:        []string{"test", "1"},
-			errExpected: errors.New("delete message error"),
+			errExpected: errors.New("flush inbox error"),
 			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{deleteError: errors.New("delete message error")}
+				mock := &InboxMock{flushError: errors.New("flush inbox error")}
 				mock.count = 1
 				mock.items = []inbox.InboxItem{
 					{
@@ -81,7 +72,7 @@ func TestInboxDelete(t *testing.T) {
 			},
 		},
 		{
-			name: "Email deleted successfully",
+			name: "Inbox flushed successfully",
 			args: []string{"test", "1"},
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
@@ -99,7 +90,7 @@ func TestInboxDelete(t *testing.T) {
 				}
 				return mock, nil
 			},
-			output: `Email "1" successfully deleted
+			output: `Inbox "test" successfully flushed
 `,
 		},
 	}
@@ -113,7 +104,7 @@ func TestInboxDelete(t *testing.T) {
 			cmd := &cobra.Command{}
 			cmd.SetOut(&output)
 			cmd.SetErr(&outputErr)
-			err := inboxDelete(scenario.inboxBuilder)(cmd, scenario.args)
+			err := inboxFlush(scenario.inboxBuilder)(cmd, scenario.args)
 			assert.Equal(t, scenario.errExpected, err)
 			assert.Equal(t, scenario.output, output.String())
 			assert.Equal(t, scenario.outputErr, outputErr.String())

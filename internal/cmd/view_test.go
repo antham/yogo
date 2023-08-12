@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/antham/yogo/inbox"
+	"github.com/antham/yogo/internal/inbox"
 	"github.com/stretchr/testify/assert"
 )
 
