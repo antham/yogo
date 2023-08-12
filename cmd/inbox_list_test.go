@@ -16,8 +16,9 @@ type InboxMock struct {
 	items                      []inbox.InboxItem
 	parseInboxPagesIntArgument int
 	parseInboxPagesError       error
+	fetchMailKindArgument      inbox.MailKind
 	fetchIntArgument           int
-	fetchMail                  *inbox.Mail
+	fetchMail                  inbox.Mail
 	fetchError                 error
 	flushError                 error
 	deleteIntArgument          int
@@ -37,8 +38,9 @@ func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
 	return i.parseInboxPagesError
 }
 
-func (i *InboxMock) Fetch(fetchIntArgument int) (*inbox.Mail, error) {
+func (i *InboxMock) Fetch(fetchMailKind inbox.MailKind, fetchIntArgument int) (inbox.Mail, error) {
 	i.fetchIntArgument = fetchIntArgument
+	i.fetchMailKindArgument = fetchMailKind
 	return i.fetchMail, i.fetchError
 }
 

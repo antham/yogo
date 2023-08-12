@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/antham/yogo/inbox"
 	"github.com/spf13/cobra"
 )
 
@@ -29,17 +30,27 @@ func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 			return err
 		}
 
-		mail, err := in.Fetch(offset - 1)
+		mail, err := in.Fetch(inbox.MailHTML, offset-1)
 		if err != nil {
 			return err
 		}
 		if mail == nil {
 			return nil
 		}
-		output, err := computeMailOutput(mail, dumpJSON)
-		if err != nil {
-			return err
+
+		var output string
+		if dumpJSON {
+			output, err = mail.JSON()
+			if err != nil {
+				return nil
+			}
+		} else {
+			output, err = mail.Coloured()
+			if err != nil {
+				return nil
+			}
 		}
+
 		cmd.Println(output)
 		return nil
 	}

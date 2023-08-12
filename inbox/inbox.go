@@ -11,8 +11,16 @@ import (
 
 const itemNumber = 15
 
-type Mail = mail.Mail
-type Sender = mail.Sender
+type Mail interface {
+	Coloured() (string, error)
+	JSON() (string, error)
+}
+
+type MailKind = client.MailKind
+
+const MailHTML = client.MailHTML
+const MailText = client.MailText
+const MailSource = client.MailSource
 
 // Inbox represents a mail collection
 type Inbox struct {
@@ -21,14 +29,19 @@ type Inbox struct {
 	client     client.Client
 }
 
+type Sender struct {
+	Mail string `json:"mail,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
 // Inbox represents a mail sumup in an inbox
 type InboxItem struct {
-	ID     string       `json:"id"`
-	Sender *mail.Sender `json:"sender,omitempty"`
-	Title  string       `json:"title"`
-	Date   *time.Time   `json:"date,omitempty"`
-	Body   string       `json:"body,omitempty"`
-	IsSPAM bool         `json:"isSPAM"`
+	ID     string     `json:"id"`
+	Sender *Sender    `json:"sender,omitempty"`
+	Title  string     `json:"title"`
+	Date   *time.Time `json:"date,omitempty"`
+	Body   string     `json:"body,omitempty"`
+	IsSPAM bool       `json:"isSPAM"`
 }
 
 // NewInbox creates a new mail inbox
@@ -42,16 +55,15 @@ func NewInbox(name string) (*Inbox, error) {
 
 // Fetch retrieves the full email content from the given
 // inbox email offset
-func (i *Inbox) Fetch(offset int) (*mail.Mail, error) {
+func (i *Inbox) Fetch(kind MailKind, offset int) (Mail, error) {
 	ID := &i.InboxItems[offset].ID
-	doc, err := i.client.GetMailPage(i.Name, *ID)
+	doc, err := i.client.GetMailPage(kind, i.Name, *ID)
 	if err != nil {
 		return nil, err
 	}
-
-	m := &mail.Mail{ID: *ID}
-	mail.Parse(doc, m)
-	return m, nil
+	m := mail.Parse(doc)
+	m.ID = *ID
+	return &m, nil
 }
 
 // Count returns total number of mails available in inbox
@@ -140,7 +152,7 @@ func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
 		if ID, ok := s.Attr("id"); ok {
 			inboxItem := InboxItem{
 				ID: ID,
-				Sender: &mail.Sender{
+				Sender: &Sender{
 					Name: name,
 					Mail: userEmail,
 				},

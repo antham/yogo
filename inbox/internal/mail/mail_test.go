@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/stretchr/testify/assert"
@@ -84,12 +85,11 @@ func TestParseDate(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	mail := &Mail{}
-	Parse(getDoc(t, "mail.html"), mail)
+	mail := Parse(getDoc(t, "mail.html"))
 
 	assert.Equal(t, "Liana", mail.Sender.Name, "Must return sender name")
 	assert.Equal(t, "AnnaMartinezpisea@lionspest.com.au", mail.Sender.Mail, "Must return sender email")
-	assert.Equal(t, "In any case, I am happy that we met", mail.Title, "Must return mail title")
+	assert.Equal(t, "In any case, I am happy that we met", *mail.Title, "Must return mail title")
 	assert.Equal(t, `( https://fectment.page.link/Ymry )
 
 What such a gorgeous man is doing here?
@@ -133,6 +133,128 @@ func TestParseHTML(t *testing.T) {
 			t.Parallel()
 			str := parseHTML(s.contentArg, s.errorArg)
 			assert.Equal(t, s.resultString, str)
+		})
+	}
+}
+
+func TestMail(t *testing.T) {
+	date, err := time.Parse("2006-01-02 15:04", "2022-10-24 23:20")
+	assert.NoError(t, err)
+	title := "A title"
+
+	type scenario struct {
+		name               string
+		mail               *Mail
+		outputExpected     string
+		jsonOutputExpected string
+	}
+
+	scenarios := []scenario{
+		{
+			name: "Display a regular email",
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: &title, Date: &date, Body: "test"},
+			outputExpected: `---
+From  : test <test@protonmail.com>
+Title : A title
+Date  : 2022-10-24 23:20
+---
+test
+---
+`,
+			jsonOutputExpected: `{"id": "test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "title": "A title", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+		},
+		{
+			name: "No sender name defined",
+			mail: &Mail{ID: "test", Sender: &Sender{Mail: "test@protonmail.com"}, Title: &title, Date: &date, Body: "test"},
+			outputExpected: `---
+From  : test@protonmail.com
+Title : A title
+Date  : 2022-10-24 23:20
+---
+test
+---
+`,
+			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"mail": "test@protonmail.com"}, "title": "A title", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+		},
+		{
+			name: "No sender email defined",
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test"}, Title: &title, Date: &date, Body: "test"},
+			outputExpected: `---
+From  : test
+Title : A title
+Date  : 2022-10-24 23:20
+---
+test
+---
+`,
+			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"name": "test"}, "title": "A title", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+		},
+		{
+			name: "No sender object defined",
+			mail: &Mail{ID: "test", Title: &title, Date: &date, Body: "test"},
+			outputExpected: `---
+From  : [no data to display]
+Title : A title
+Date  : 2022-10-24 23:20
+---
+test
+---
+`,
+			jsonOutputExpected: `{"id":"test", "isSPAM": false, "title": "A title", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+		},
+		{
+			name: "No title defined",
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Date: &date, Body: "test"},
+			outputExpected: `---
+From  : test <test@protonmail.com>
+Title : [no data to display]
+Date  : 2022-10-24 23:20
+---
+test
+---
+`,
+			jsonOutputExpected: `{"id": "test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+		},
+		{
+			name: "No date defined",
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: &title, Body: "test"},
+			outputExpected: `---
+From  : test <test@protonmail.com>
+Title : A title
+Date  : [no data to display]
+---
+test
+---
+`,
+			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "title": "A title", "body": "test"}`,
+		},
+		{
+			name: "No body defined",
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: &title, Date: &date},
+			outputExpected: `---
+From  : test <test@protonmail.com>
+Title : A title
+Date  : 2022-10-24 23:20
+---
+[no data to display]
+---
+`,
+			jsonOutputExpected: `{"id": "test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "title": "A title", "date":"2022-10-24T23:20:00Z"}`,
+		},
+	}
+
+	for _, scenario := range scenarios {
+		scenario := scenario
+		t.Run(scenario.name, func(t *testing.T) {
+			t.Parallel()
+			j, err := scenario.mail.JSON()
+			assert.NoError(t, err)
+			c, err := scenario.mail.Coloured()
+			assert.NoError(t, err)
+
+			assert.NoError(t, err)
+			assert.Equal(t, scenario.outputExpected, c)
+			assert.JSONEq(t, scenario.jsonOutputExpected, j)
 		})
 	}
 }

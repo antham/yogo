@@ -317,7 +317,7 @@ func TestGetMailPage(t *testing.T) {
 	type scenario struct {
 		name  string
 		setup func()
-		args  func() (string, string)
+		args  func() (MailKind, string, string)
 		test  func(*goquery.Document, error)
 	}
 
@@ -329,8 +329,8 @@ func TestGetMailPage(t *testing.T) {
 		func() {
 			httpmock.RegisterResponder("GET", refURL+"/en/mail?b=box1&id=mABCDEFGH",
 				httpmock.NewStringResponder(500, ""))
-		}, func() (string, string) {
-			return "box1", "ABCDEFGH"
+		}, func() (MailKind, string, string) {
+			return MailHTML, "box1", "ABCDEFGH"
 		},
 		func(doc *goquery.Document, err error) {
 			assert.Error(t, err)
@@ -341,8 +341,8 @@ func TestGetMailPage(t *testing.T) {
 		func() {
 			httpmock.RegisterResponder("GET", refURL+"/en/mail?b=box1&id=mABCDEFGH",
 				httpmock.NewStringResponder(200, ""))
-		}, func() (string, string) {
-			return "box1", "ABCDEFGH"
+		}, func() (MailKind, string, string) {
+			return MailHTML, "box1", "ABCDEFGH"
 		},
 		func(doc *goquery.Document, err error) {
 			assert.NoError(t, err)

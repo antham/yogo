@@ -11,6 +11,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type MailMock struct {
+	coloured    string
+	colouredErr error
+	json        string
+	jsonErr     error
+}
+
+func (m MailMock) Coloured() (string, error) {
+	return m.coloured, m.colouredErr
+}
+
+func (m MailMock) JSON() (string, error) {
+	return m.json, m.jsonErr
+}
+
 func TestInboxShow(t *testing.T) {
 	type scenario struct {
 		name         string
@@ -138,15 +153,15 @@ body
 						Date: &now,
 					},
 				}
-				mock.fetchMail = &inbox.Mail{
-					ID:    "abcdefg",
-					Title: "title",
-					Body:  "body",
-					Sender: &inbox.Sender{
-						Mail: "test123",
-						Name: "name123",
-					},
-					Date: &now,
+				mock.fetchMail = MailMock{
+					coloured: `---
+From  : name123 <test123>
+Title : title
+Date  : 2001-01-01 00:00
+---
+body
+---
+`,
 				}
 				return mock, nil
 			},

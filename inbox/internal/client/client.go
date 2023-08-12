@@ -18,6 +18,14 @@ import (
 const refURL = "https://yopmail.com"
 const defaultHttpTimeout = 10
 
+type MailKind string
+
+const (
+	MailHTML   MailKind = "m"
+	MailText            = "t"
+	MailSource          = "s"
+)
+
 // Client provides a high level interface to abstract yopmail data fetching
 type Client struct {
 	browser    *browser
@@ -58,8 +66,8 @@ func (c Client) GetMailsPage(identifier string, page int) (*goquery.Document, er
 }
 
 // GetMailPage fetches html page containing the email
-func (c Client) GetMailPage(identifier string, mailID string) (*goquery.Document, error) {
-	URL, err := decorateURL("mail", c.apiVersion, true, map[string]string{"b": identifier, "id": "m" + mailID})
+func (c Client) GetMailPage(kind MailKind, identifier string, mailID string) (*goquery.Document, error) {
+	URL, err := decorateURL("mail", c.apiVersion, true, map[string]string{"b": identifier, "id": fmt.Sprintf("%s%s", kind, mailID)})
 	if err != nil {
 		return nil, err
 	}

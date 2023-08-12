@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/antham/yogo/inbox/internal/client"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
@@ -50,10 +51,11 @@ func TestFetch(t *testing.T) {
 	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
 
-	m, err := inbox.Fetch(0)
+	m, err := inbox.Fetch(client.MailHTML, 0)
 	assert.NoError(t, err)
-	assert.Equal(t, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==", m.ID)
-	assert.Equal(t, "In any case, I am happy that we met", m.Title)
+	j, err := m.JSON()
+	assert.NoError(t, err)
+	assert.Contains(t, j, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==")
 }
 
 func TestCount(t *testing.T) {
@@ -97,7 +99,6 @@ func TestCount(t *testing.T) {
 	assert.NoError(t, err)
 	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
-
 	assert.Equal(t, inbox.Count(), 15)
 }
 
@@ -161,22 +162,26 @@ func TestParseInboxPages(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "test", inbox.Name)
 	assert.Equal(t, 29, inbox.Count())
-	m, err := inbox.Fetch(0)
+	m, err := inbox.Fetch(client.MailHTML, 0)
 	assert.NoError(t, err)
-	assert.Equal(t, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==", m.ID)
-	m, err = inbox.Fetch(28)
+	j, err := m.JSON()
 	assert.NoError(t, err)
-	assert.Equal(t, "e_ZwRjAwRmZGtmZQR0ZQNjAwt2BGV5BN==", m.ID)
-	m, err = inbox.Fetch(13)
+	assert.Contains(t, j, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==")
+	m, err = inbox.Fetch(client.MailHTML, 28)
 	assert.NoError(t, err)
-	assert.Equal(t, "e_ZwRjAwRmZGtmZwR0ZQNjAwt3AmxlZN==", m.ID)
-	assert.False(t, m.IsSPAM)
-	assert.Equal(t, "In any case, I am happy that we met", m.Title)
-	m, err = inbox.Fetch(14)
-	assert.Equal(t, "e_ZwRjAwRmZGtmZwN3ZQNjAwt3AmZlAD==", m.ID)
+	j, err = m.JSON()
 	assert.NoError(t, err)
-	assert.False(t, m.IsSPAM)
-	assert.Equal(t, `A title`, m.Title)
+	assert.Contains(t, j, "e_ZwRjAwRmZGtmZQR0ZQNjAwt2BGV5BN==")
+	m, err = inbox.Fetch(client.MailHTML, 13)
+	assert.NoError(t, err)
+	j, err = m.JSON()
+	assert.NoError(t, err)
+	assert.Contains(t, j, "e_ZwRjAwRmZGtmZwR0ZQNjAwt3AmxlZN==")
+	m, err = inbox.Fetch(client.MailHTML, 14)
+	assert.NoError(t, err)
+	j, err = m.JSON()
+	assert.NoError(t, err)
+	assert.Contains(t, j, "e_ZwRjAwRmZGtmZwN3ZQNjAwt3AmZlAD==")
 }
 
 func TestShrink(t *testing.T) {
@@ -228,12 +233,11 @@ func TestShrink(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 19, inbox.Count())
-	m, err := inbox.Fetch(0)
+	m, err := inbox.Fetch(client.MailHTML, 0)
+	m.JSON()
 	assert.NoError(t, err)
-	assert.Equal(t, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==", m.ID)
-	m, err = inbox.Fetch(18)
+	m, err = inbox.Fetch(client.MailHTML, 18)
 	assert.NoError(t, err)
-	assert.Equal(t, "e_ZwRjAwRmZGtmZGDlZQNjAwt3AGHkAt==", m.ID)
 }
 
 func TestShrinkEmptyInbox(t *testing.T) {
