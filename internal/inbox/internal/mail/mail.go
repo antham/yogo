@@ -26,7 +26,7 @@ type Sender struct {
 type Mail struct {
 	ID     string     `json:"id"`
 	Sender *Sender    `json:"sender,omitempty"`
-	Title  *string    `json:"title,omitempty"`
+	Title  string     `json:"title,omitempty"`
 	Date   *time.Time `json:"date,omitempty"`
 	Body   string     `json:"body,omitempty"`
 	IsSPAM bool       `json:"isSPAM"`
@@ -61,8 +61,8 @@ func (m Mail) Coloured() (string, error) {
 		info.SenderName = color.MagentaString(noDataToDisplayMsg)
 		info.SenderMail = color.MagentaString(noDataToDisplayMsg)
 	}
-	if m.Title != nil {
-		info.Title = color.YellowString(*m.Title)
+	if m.Title != "" {
+		info.Title = color.YellowString(m.Title)
 	} else {
 		info.Title = color.YellowString(noDataToDisplayMsg)
 	}
@@ -150,8 +150,7 @@ func Parse(doc *goquery.Document) Mail {
 	doc.Find("body div.fl .ellipsis").Each(func(i int, s *goquery.Selection) {
 		switch i {
 		case 0:
-			title := strings.TrimSpace(s.Text())
-			mail.Title = &title
+			mail.Title = strings.TrimSpace(s.Text())
 		case 1:
 			mail.Sender = &Sender{}
 			mail.Sender.Name, mail.Sender.Mail = parseFrom(s.Text())

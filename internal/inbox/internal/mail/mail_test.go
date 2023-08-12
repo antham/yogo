@@ -89,7 +89,7 @@ func TestParse(t *testing.T) {
 
 	assert.Equal(t, "Liana", mail.Sender.Name, "Must return sender name")
 	assert.Equal(t, "AnnaMartinezpisea@lionspest.com.au", mail.Sender.Mail, "Must return sender email")
-	assert.Equal(t, "In any case, I am happy that we met", *mail.Title, "Must return mail title")
+	assert.Equal(t, "In any case, I am happy that we met", mail.Title, "Must return mail title")
 	assert.Equal(t, `( https://fectment.page.link/Ymry )
 
 What such a gorgeous man is doing here?
@@ -140,7 +140,6 @@ func TestParseHTML(t *testing.T) {
 func TestMail(t *testing.T) {
 	date, err := time.Parse("2006-01-02 15:04", "2022-10-24 23:20")
 	assert.NoError(t, err)
-	title := "A title"
 
 	type scenario struct {
 		name               string
@@ -152,7 +151,7 @@ func TestMail(t *testing.T) {
 	scenarios := []scenario{
 		{
 			name: "Display a regular email",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: &title, Date: &date, Body: "test"},
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Date: &date, Body: "test"},
 			outputExpected: `---
 From  : test <test@protonmail.com>
 Title : A title
@@ -165,7 +164,7 @@ test
 		},
 		{
 			name: "No sender name defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Mail: "test@protonmail.com"}, Title: &title, Date: &date, Body: "test"},
+			mail: &Mail{ID: "test", Sender: &Sender{Mail: "test@protonmail.com"}, Title: "A title", Date: &date, Body: "test"},
 			outputExpected: `---
 From  : test@protonmail.com
 Title : A title
@@ -178,7 +177,7 @@ test
 		},
 		{
 			name: "No sender email defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test"}, Title: &title, Date: &date, Body: "test"},
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test"}, Title: "A title", Date: &date, Body: "test"},
 			outputExpected: `---
 From  : test
 Title : A title
@@ -191,7 +190,7 @@ test
 		},
 		{
 			name: "No sender object defined",
-			mail: &Mail{ID: "test", Title: &title, Date: &date, Body: "test"},
+			mail: &Mail{ID: "test", Title: "A title", Date: &date, Body: "test"},
 			outputExpected: `---
 From  : [no data to display]
 Title : A title
@@ -217,7 +216,7 @@ test
 		},
 		{
 			name: "No date defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: &title, Body: "test"},
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Body: "test"},
 			outputExpected: `---
 From  : test <test@protonmail.com>
 Title : A title
@@ -230,7 +229,7 @@ test
 		},
 		{
 			name: "No body defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: &title, Date: &date},
+			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Date: &date},
 			outputExpected: `---
 From  : test <test@protonmail.com>
 Title : A title
