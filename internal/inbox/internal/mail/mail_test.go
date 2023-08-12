@@ -16,7 +16,7 @@ func getDoc(t *testing.T, filename string) *goquery.Document {
 		assert.NoError(t, err)
 	}
 
-	f, err := os.Open(dir + "/" + filename)
+	f, err := os.Open(dir + "/features/" + filename)
 	if err != nil {
 		assert.NoError(t, err)
 	}
