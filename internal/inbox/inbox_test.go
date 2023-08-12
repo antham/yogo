@@ -1,6 +1,7 @@
 package inbox
 
 import (
+	"errors"
 	"io/ioutil"
 	"testing"
 
@@ -484,6 +485,156 @@ func TestDelete(t *testing.T) {
 
 	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET https://yopmail.com/en/inbox?ctrl=&d=e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D&id=&login=test&p=1&r_c=&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp"])
 	assert.NoError(t, err)
+}
+
+func TestColoured(t *testing.T) {
+	type scenario struct {
+		name               string
+		inbox              Inbox
+		isJSONOutput       bool
+		outputExpected     string
+		jsonOutputExpected string
+		errorExpected      error
+	}
+
+	scenarios := []scenario{
+		{
+			name: "No mails in the inbox",
+			inbox: Inbox{
+				Name:       "test",
+				InboxItems: []InboxItem{},
+			},
+			errorExpected:      errors.New("inbox is empty"),
+			jsonOutputExpected: `{"name":"test","mails":[]}`,
+		},
+		{
+			name: "Display emails",
+			inbox: Inbox{
+				Name: "test",
+				InboxItems: []InboxItem{
+					{
+						ID:     "02d3583b-7b58-40cb-a2b7-c09d79673334",
+						IsSPAM: true,
+						Sender: &Sender{
+							Mail: "test1@protonmail.com",
+							Name: "test1",
+						},
+						Title: "test1 title",
+					},
+					{
+						ID: "0343583b-7b58-40cb-a2b7-c09d79673334",
+						Sender: &Sender{
+							Mail: "test2@protonmail.com",
+							Name: "test2",
+						},
+						Title: "test2 title",
+					},
+					{
+						ID:     "0243583b-7b58-40cb-a2b7-c09d79673334",
+						IsSPAM: true,
+						Sender: &Sender{
+							Mail: "test3@protonmail.com",
+							Name: "test3",
+						},
+						Title: "test3 title",
+					},
+					{
+						ID: "0783583b-7b58-40cb-a2b7-c09d79673334",
+						Sender: &Sender{
+							Name: "test4",
+						},
+						Title: "test4 title",
+					},
+					{
+						ID: "0903583b-7b58-40cb-a2b7-c09d79673334",
+						Sender: &Sender{
+							Mail: "test5@protonmail.com",
+						},
+						Title: "test5 title",
+					},
+					{
+						ID: "12d3583b-7b58-40cb-a2b7-c09d79673334",
+						Sender: &Sender{
+							Mail: "test6@protonmail.com",
+							Name: "test6",
+						},
+					},
+					{
+						ID:     "67d3583b-7b58-40cb-a2b7-c09d79673334",
+						Sender: &Sender{},
+						Title:  "test7 title",
+					},
+					{
+						ID:    "89d3583b-7b58-40cb-a2b7-c09d79673334",
+						Title: "test8 title",
+					},
+					{
+						ID:    "f44cf3b8-f6a4-4b75-b734-cb1553b23cf6",
+						Title: "test9 title",
+					},
+					{
+						ID:    "f207be30-fad5-4d73-aa30-f69cb2a5ebac",
+						Title: "test10 title",
+					},
+					{
+						ID:    "d64c2eeb-9ff6-4d33-b4dc-034557805308",
+						Title: "test11 title",
+					},
+				},
+			},
+			outputExpected: ` 1 test1 <test1@protonmail.com> [SPAM]
+   test1 title
+
+ 2 test2 <test2@protonmail.com>
+   test2 title
+
+ 3 test3 <test3@protonmail.com> [SPAM]
+   test3 title
+
+ 4 test4
+   test4 title
+
+ 5 test5@protonmail.com
+   test5 title
+
+ 6 test6 <test6@protonmail.com>
+   [no data to display]
+
+ 7 [no data to display]
+   test7 title
+
+ 8 [no data to display]
+   test8 title
+
+ 9 [no data to display]
+   test9 title
+
+ 10 [no data to display]
+    test10 title
+
+ 11 [no data to display]
+    test11 title`,
+			jsonOutputExpected: `{"name":"test","mails":[{"id":"02d3583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test1@protonmail.com","name":"test1"},"title":"test1 title","isSPAM":true},{"id":"0343583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test2@protonmail.com","name":"test2"},"title":"test2 title","isSPAM":false},{"id":"0243583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test3@protonmail.com","name":"test3"},"title":"test3 title","isSPAM":true},{"id":"0783583b-7b58-40cb-a2b7-c09d79673334","sender":{"name":"test4"},"title":"test4 title","isSPAM":false},{"id":"0903583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test5@protonmail.com"},"title":"test5 title","isSPAM":false},{"id":"12d3583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test6@protonmail.com","name":"test6"},"title":"","isSPAM":false},{"id":"67d3583b-7b58-40cb-a2b7-c09d79673334","sender":{},"title":"test7 title","isSPAM":false},{"id":"89d3583b-7b58-40cb-a2b7-c09d79673334","title":"test8 title","isSPAM":false},{"id":"f44cf3b8-f6a4-4b75-b734-cb1553b23cf6","title":"test9 title","isSPAM":false},{"id":"f207be30-fad5-4d73-aa30-f69cb2a5ebac","title":"test10 title","isSPAM":false},{"id":"d64c2eeb-9ff6-4d33-b4dc-034557805308","title":"test11 title","isSPAM":false}]}`,
+		},
+	}
+
+	for _, scenario := range scenarios {
+		scenario := scenario
+		t.Run(scenario.name, func(t *testing.T) {
+			t.Parallel()
+			j, jerr := scenario.inbox.JSON()
+			assert.NoError(t, jerr)
+			assert.JSONEq(t, scenario.jsonOutputExpected, j)
+
+			c, err := scenario.inbox.Coloured()
+			if scenario.errorExpected != nil {
+				assert.EqualError(t, err, scenario.errorExpected.Error())
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, scenario.outputExpected, c)
+			}
+		})
+	}
 }
 
 type responder struct {

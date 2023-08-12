@@ -1,20 +1,27 @@
 package inbox
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"strconv"
 	"strings"
+	"text/template"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/antham/yogo/internal/inbox/internal/client"
 	"github.com/antham/yogo/internal/inbox/internal/mail"
+	"github.com/fatih/color"
 )
 
-const itemNumber = 15
-
-type Mail interface {
+type Render interface {
 	Coloured() (string, error)
 	JSON() (string, error)
 }
+
+const noDataToDisplayMsg = "[no data to display]"
+const itemNumber = 15
 
 type MailKind = client.MailKind
 
@@ -48,14 +55,15 @@ type InboxItem struct {
 func NewInbox(name string) (*Inbox, error) {
 	client, err := client.New()
 	return &Inbox{
-		client: client,
-		Name:   name,
+		client:     client,
+		Name:       name,
+		InboxItems: []InboxItem{},
 	}, err
 }
 
 // Fetch retrieves the full email content from the given
 // inbox email offset
-func (i *Inbox) Fetch(kind MailKind, offset int) (Mail, error) {
+func (i *Inbox) Fetch(kind MailKind, offset int) (Render, error) {
 	ID := &i.InboxItems[offset].ID
 	doc, err := i.client.GetMailPage(kind, i.Name, *ID)
 	if err != nil {
@@ -112,6 +120,88 @@ func (i *Inbox) Flush() error {
 
 func (i *Inbox) GetMails() []InboxItem {
 	return i.InboxItems
+}
+
+func (i *Inbox) Coloured() (string, error) {
+	if i.Count() == 0 {
+		return "", errors.New("inbox is empty")
+	}
+
+	output := ""
+	for index, mail := range i.GetMails() {
+		info := struct {
+			Index         string
+			SenderName    string
+			HasSenderName bool
+			SenderMail    string
+			HasSenderMail bool
+			Title         string
+			TitlePadding  string
+			SPAM          string
+		}{}
+
+		if mail.Sender != nil {
+			if mail.Sender.Name != "" {
+				info.HasSenderName = true
+				info.SenderName = color.YellowString(mail.Sender.Name)
+			} else {
+				info.SenderName = color.YellowString(noDataToDisplayMsg)
+			}
+			if mail.Sender.Mail != "" {
+				info.HasSenderMail = true
+				info.SenderMail = color.YellowString(mail.Sender.Mail)
+			} else {
+				info.SenderMail = color.YellowString(noDataToDisplayMsg)
+			}
+		} else {
+			info.SenderName = color.YellowString(noDataToDisplayMsg)
+			info.SenderMail = color.YellowString(noDataToDisplayMsg)
+		}
+		if mail.Title != "" {
+			info.Title = color.CyanString(mail.Title)
+		} else {
+			info.Title = color.CyanString(noDataToDisplayMsg)
+		}
+		if mail.IsSPAM {
+			info.SPAM = color.RedString("[SPAM]")
+		}
+		info.Index = strconv.Itoa(index + 1)
+
+		for i := 0; i < len(info.Index); i++ {
+			info.TitlePadding = info.TitlePadding + " "
+		}
+
+		var buf bytes.Buffer
+		tpl := template.Must(template.New("t").Parse(` {{.Index}} {{ if .HasSenderName -}}
+{{- .SenderName -}}
+{{- end -}}
+{{- if (and .HasSenderMail .HasSenderName) }} {{ end -}}
+{{- if (and (eq .HasSenderMail false) (eq .HasSenderName false)) }}{{ .SenderName }}{{- end -}}
+{{- if .HasSenderMail -}}
+	{{- if .HasSenderName -}}<{{- end -}}
+	{{- .SenderMail -}}
+	{{- if .HasSenderName -}}>{{- end -}}
+{{- end -}}
+{{- if .SPAM }} {{ .SPAM -}}{{- end -}}
+{{- if .Title }}
+  {{.TitlePadding}}{{ .Title }}
+{{ end }}
+`))
+		if err := tpl.Execute(&buf, info); err != nil {
+			return "", err
+		}
+		output = output + buf.String()
+	}
+	return strings.TrimRight(output, "\n"), nil
+}
+
+func (i *Inbox) JSON() (string, error) {
+	data, err := json.Marshal(i)
+	if err != nil {
+		return "", errors.New("something wrong occurred")
+	}
+	s := string(data)
+	return s, nil
 }
 
 // ParseInboxPages parses inbox email in given page

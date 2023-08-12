@@ -18,11 +18,15 @@ type InboxMock struct {
 	parseInboxPagesError       error
 	fetchMailKindArgument      inbox.MailKind
 	fetchIntArgument           int
-	fetchMail                  inbox.Mail
+	fetchMail                  inbox.Render
 	fetchError                 error
 	flushError                 error
 	deleteIntArgument          int
 	deleteError                error
+	coloured                   string
+	colouredErr                error
+	json                       string
+	jsonErr                    error
 }
 
 func (i *InboxMock) Count() int {
@@ -38,7 +42,7 @@ func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
 	return i.parseInboxPagesError
 }
 
-func (i *InboxMock) Fetch(fetchMailKind inbox.MailKind, fetchIntArgument int) (inbox.Mail, error) {
+func (i *InboxMock) Fetch(fetchMailKind inbox.MailKind, fetchIntArgument int) (inbox.Render, error) {
 	i.fetchIntArgument = fetchIntArgument
 	i.fetchMailKindArgument = fetchMailKind
 	return i.fetchMail, i.fetchError
@@ -51,6 +55,14 @@ func (i *InboxMock) Flush() error {
 func (i *InboxMock) Delete(deleteIntArgument int) error {
 	i.deleteIntArgument = deleteIntArgument
 	return i.deleteError
+}
+
+func (i *InboxMock) Coloured() (string, error) {
+	return i.coloured, i.colouredErr
+}
+
+func (i *InboxMock) JSON() (string, error) {
+	return i.json, i.jsonErr
 }
 
 func TestInboxList(t *testing.T) {
@@ -70,7 +82,7 @@ func TestInboxList(t *testing.T) {
 			errExpected: errors.New("inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.items = []inbox.InboxItem{}
+				mock.colouredErr = errors.New("inbox is empty")
 				return mock, nil
 			},
 		},
@@ -107,18 +119,8 @@ func TestInboxList(t *testing.T) {
 			args: []string{"test", "1"},
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.count = 1
-				mock.items = []inbox.InboxItem{
-					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
-						Sender: &inbox.Sender{
-							Mail: "test123@protonmail.com",
-							Name: "name123",
-						},
-					},
-				}
+				mock.coloured = ` 1 name123 <test123@protonmail.com>
+   title`
 				return mock, nil
 			},
 			output: ` 1 name123 <test123@protonmail.com>

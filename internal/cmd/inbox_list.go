@@ -25,11 +25,21 @@ func inboxList(inboxBuilder inboxBuilder) cobraCmd {
 		if err := in.ParseInboxPages(offset); err != nil {
 			return err
 		}
-		mail, err := computeInboxMailOutput(in, dumpJSON)
-		if err != nil {
-			return err
+
+		var output string
+		if dumpJSON {
+			output, err = in.JSON()
+			if err != nil {
+				return err
+			}
+		} else {
+			output, err = in.Coloured()
+			if err != nil {
+				return err
+			}
 		}
-		cmd.Println(mail)
+
+		cmd.Println(output)
 		return nil
 	}
 }
