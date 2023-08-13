@@ -491,7 +491,6 @@ func TestColoured(t *testing.T) {
 	type scenario struct {
 		name               string
 		inbox              Inbox[client.MailHTMLDoc]
-		isJSONOutput       bool
 		outputExpected     string
 		jsonOutputExpected string
 		errorExpected      error
