@@ -235,9 +235,10 @@ func TestShrink(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 19, inbox.Count())
 	m, err := inbox.Fetch(0)
-	m.JSON()
 	assert.NoError(t, err)
-	m, err = inbox.Fetch(18)
+	_, err = m.JSON()
+	assert.NoError(t, err)
+	_, err = inbox.Fetch(18)
 	assert.NoError(t, err)
 }
 
