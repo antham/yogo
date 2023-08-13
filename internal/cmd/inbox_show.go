@@ -12,6 +12,13 @@ var inboxShowCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 }
 
+var inboxSourceCmd = &cobra.Command{
+	Use:   "source <inbox> <offset>",
+	Short: "Show the email source at given position in inbox",
+	RunE:  inboxShow(newInbox[client.MailSourceDoc]),
+	Args:  cobra.ExactArgs(2),
+}
+
 func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 	return func(cmd *cobra.Command, args []string) error {
 		identifier := normalizeInboxName(args[0])
@@ -58,4 +65,5 @@ func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 
 func init() {
 	inboxCmd.AddCommand(inboxShowCmd)
+	inboxCmd.AddCommand(inboxSourceCmd)
 }

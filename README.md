@@ -64,6 +64,12 @@ Retrieve second message from inbox helloworld@yopmail.com
 yogo inbox show helloworld 2
 ```
 
+### Read the source of the mail with all headers
+
+```bash
+yogo inbox source helloworld 1
+```
+
 ### Delete a mail
 
 Delete first message from inbox helloworld@yopmail.com

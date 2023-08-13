@@ -80,6 +80,8 @@ func (c Client[M]) GetMailPage(identifier string, mailID string) (doc M, err err
 	switch any(doc).(type) {
 	case MailHTMLDoc:
 		kind = mailHTML
+	case MailSourceDoc:
+		kind = mailSource
 	}
 
 	URL, err := decorateURL("mail", c.apiVersion, true, map[string]string{"b": identifier, "id": fmt.Sprintf("%s%s", kind, mailID)})

@@ -1,10 +1,11 @@
 package mail
 
 import (
-	"strings"
-
 	"github.com/PuerkitoBio/goquery"
 	"github.com/antham/yogo/internal/client"
+	"io"
+	gomail "net/mail"
+	"strings"
 )
 
 const noDataToDisplayMsg = "[no data to display]"
@@ -41,6 +42,23 @@ func Parse[M client.MailDoc](doc M) (RenderIdentifier, error) {
 		})
 		mail.Body = parseHTML(doc.Find("div#mail").Html())
 		m = mail
+	case client.MailSourceDoc:
+		msg, err := gomail.ReadMessage(
+			strings.NewReader(
+				doc.Find("body div#mail pre").Text(),
+			),
+		)
+		if err != nil {
+			return m, err
+		}
+		body, err := io.ReadAll(msg.Body)
+		if err != nil {
+			return m, err
+		}
+		m = &SourceMail{
+			Headers: msg.Header,
+			Body:    string(body),
+		}
 	}
 	return m, nil
 }
