@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/antham/yogo/internal/client"
 	"github.com/fatih/color"
 	"github.com/jaytaylor/html2text"
 )
@@ -145,19 +146,23 @@ func parseHTML(content string, err error) string {
 	return text
 }
 
-func Parse(doc *goquery.Document) Mail {
+func Parse[M client.MailDoc](doc M) Mail {
 	mail := Mail{}
-	doc.Find("body div.fl .ellipsis").Each(func(i int, s *goquery.Selection) {
-		switch i {
-		case 0:
-			mail.Title = strings.TrimSpace(s.Text())
-		case 1:
-			mail.Sender = &Sender{}
-			mail.Sender.Name, mail.Sender.Mail = parseFrom(s.Text())
-		case 2:
-			mail.Date = parseDate(strings.Join(strings.Fields(s.Text()), " "))
-		}
-	})
-	mail.Body = parseHTML(doc.Find("div#mail").Html())
+
+	switch any(doc).(type) {
+	case client.MailHTMLDoc:
+		doc.Find("body div.fl .ellipsis").Each(func(i int, s *goquery.Selection) {
+			switch i {
+			case 0:
+				mail.Title = strings.TrimSpace(s.Text())
+			case 1:
+				mail.Sender = &Sender{}
+				mail.Sender.Name, mail.Sender.Mail = parseFrom(s.Text())
+			case 2:
+				mail.Date = parseDate(strings.Join(strings.Fields(s.Text()), " "))
+			}
+		})
+		mail.Body = parseHTML(doc.Find("div#mail").Html())
+	}
 	return mail
 }

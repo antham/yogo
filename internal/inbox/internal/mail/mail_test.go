@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/antham/yogo/internal/client"
 	"github.com/stretchr/testify/assert"
 )
 
-func getDoc(t *testing.T, filename string) *goquery.Document {
+func getDoc[M client.MailDoc](t *testing.T, filename string) M {
 	dir, err := os.Getwd()
 	if err != nil {
 		assert.NoError(t, err)
@@ -26,7 +27,7 @@ func getDoc(t *testing.T, filename string) *goquery.Document {
 		assert.NoError(t, err)
 	}
 
-	return doc
+	return M(*doc)
 }
 
 func TestParseFrom(t *testing.T) {
@@ -85,7 +86,7 @@ func TestParseDate(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	mail := Parse(getDoc(t, "mail.html"))
+	mail := Parse[client.MailHTMLDoc](getDoc[client.MailHTMLDoc](t, "mail.html"))
 
 	assert.Equal(t, "Liana", mail.Sender.Name, "Must return sender name")
 	assert.Equal(t, "AnnaMartinezpisea@lionspest.com.au", mail.Sender.Mail, "Must return sender email")

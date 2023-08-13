@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/antham/yogo/internal/inbox/internal/client"
+	"github.com/antham/yogo/internal/client"
 	"github.com/antham/yogo/internal/inbox/internal/mail"
 	"github.com/fatih/color"
 )
@@ -23,17 +23,11 @@ type Render interface {
 const noDataToDisplayMsg = "[no data to display]"
 const itemNumber = 15
 
-type MailKind = client.MailKind
-
-const MailHTML = client.MailHTML
-const MailText = client.MailText
-const MailSource = client.MailSource
-
 // Inbox represents a mail collection
-type Inbox struct {
+type Inbox[M client.MailDoc] struct {
 	Name       string      `json:"name"`
 	InboxItems []InboxItem `json:"mails"`
-	client     client.Client
+	client     client.Client[M]
 }
 
 type Sender struct {
@@ -52,9 +46,9 @@ type InboxItem struct {
 }
 
 // NewInbox creates a new mail inbox
-func NewInbox(name string) (*Inbox, error) {
-	client, err := client.New()
-	return &Inbox{
+func NewInbox[M client.MailDoc](name string) (*Inbox[M], error) {
+	client, err := client.New[M]()
+	return &Inbox[M]{
 		client:     client,
 		Name:       name,
 		InboxItems: []InboxItem{},
@@ -63,9 +57,9 @@ func NewInbox(name string) (*Inbox, error) {
 
 // Fetch retrieves the full email content from the given
 // inbox email offset
-func (i *Inbox) Fetch(kind MailKind, offset int) (Render, error) {
+func (i *Inbox[M]) Fetch(offset int) (Render, error) {
 	ID := &i.InboxItems[offset].ID
-	doc, err := i.client.GetMailPage(kind, i.Name, *ID)
+	doc, err := i.client.GetMailPage(i.Name, *ID)
 	if err != nil {
 		return nil, err
 	}
@@ -75,12 +69,12 @@ func (i *Inbox) Fetch(kind MailKind, offset int) (Render, error) {
 }
 
 // Count returns total number of mails available in inbox
-func (i *Inbox) Count() int {
+func (i *Inbox[M]) Count() int {
 	return len(i.InboxItems)
 }
 
 // Shrink reduces mails size to given value
-func (i *Inbox) Shrink(limit int) {
+func (i *Inbox[M]) Shrink(limit int) {
 	if len(i.InboxItems) < limit {
 		return
 	}
@@ -89,12 +83,12 @@ func (i *Inbox) Shrink(limit int) {
 }
 
 // Add appends a mail to mail list
-func (i *Inbox) Add(inboxItem InboxItem) {
+func (i *Inbox[M]) Add(inboxItem InboxItem) {
 	i.InboxItems = append(i.InboxItems, inboxItem)
 }
 
 // Delete an email
-func (i *Inbox) Delete(position int) error {
+func (i *Inbox[M]) Delete(position int) error {
 	mail := i.InboxItems[position]
 	if err := i.client.DeleteMail(i.Name, mail.ID); err != nil {
 		return err
@@ -105,7 +99,7 @@ func (i *Inbox) Delete(position int) error {
 }
 
 // Flush empties an inbox
-func (i *Inbox) Flush() error {
+func (i *Inbox[M]) Flush() error {
 	if len(i.InboxItems) == 0 {
 		return nil
 	}
@@ -118,11 +112,11 @@ func (i *Inbox) Flush() error {
 	return nil
 }
 
-func (i *Inbox) GetMails() []InboxItem {
+func (i *Inbox[M]) GetMails() []InboxItem {
 	return i.InboxItems
 }
 
-func (i *Inbox) Coloured() (string, error) {
+func (i *Inbox[M]) Coloured() (string, error) {
 	if i.Count() == 0 {
 		return "", errors.New("inbox is empty")
 	}
@@ -195,7 +189,7 @@ func (i *Inbox) Coloured() (string, error) {
 	return strings.TrimRight(output, "\n"), nil
 }
 
-func (i *Inbox) JSON() (string, error) {
+func (i *Inbox[M]) JSON() (string, error) {
 	data, err := json.Marshal(i)
 	if err != nil {
 		return "", errors.New("something wrong occurred")
@@ -205,7 +199,7 @@ func (i *Inbox) JSON() (string, error) {
 }
 
 // ParseInboxPages parses inbox email in given page
-func (i *Inbox) ParseInboxPages(limit int) error {
+func (i *Inbox[M]) ParseInboxPages(limit int) error {
 	for page := 1; page <= (limit/itemNumber)+1 && limit >= i.Count(); page++ {
 		doc, err := i.client.GetMailsPage(i.Name, page)
 		if err != nil {
@@ -222,7 +216,7 @@ func (i *Inbox) ParseInboxPages(limit int) error {
 }
 
 // ParseInboxPage parses inbox email in given page
-func parseInboxPage(doc *goquery.Document, inbox *Inbox) {
+func parseInboxPage[M client.MailDoc](doc *goquery.Document, inbox *Inbox[M]) {
 	doc.Find("div.m").Each(func(i int, s *goquery.Selection) {
 		var isSPAM bool
 		name := s.Find("span.lmf").Text()

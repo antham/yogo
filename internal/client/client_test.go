@@ -303,7 +303,7 @@ func TestGetMailsPage(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New()
+			c, err := New[MailHTMLDoc]()
 			assert.NoError(t, err)
 
 			s.setup()
@@ -317,8 +317,8 @@ func TestGetMailPage(t *testing.T) {
 	type scenario struct {
 		name  string
 		setup func()
-		args  func() (MailKind, string, string)
-		test  func(*goquery.Document, error)
+		args  func() (string, string)
+		test  func(MailHTMLDoc, error)
 	}
 
 	httpmock.Activate()
@@ -329,10 +329,10 @@ func TestGetMailPage(t *testing.T) {
 		func() {
 			httpmock.RegisterResponder("GET", refURL+"/en/mail?b=box1&id=mABCDEFGH",
 				httpmock.NewStringResponder(500, ""))
-		}, func() (MailKind, string, string) {
-			return MailHTML, "box1", "ABCDEFGH"
+		}, func() (string, string) {
+			return "box1", "ABCDEFGH"
 		},
-		func(doc *goquery.Document, err error) {
+		func(doc MailHTMLDoc, err error) {
 			assert.Error(t, err)
 			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/mail?b=box1&id=mABCDEFGH : request failed with error code 500 and body `)
 		},
@@ -341,17 +341,17 @@ func TestGetMailPage(t *testing.T) {
 		func() {
 			httpmock.RegisterResponder("GET", refURL+"/en/mail?b=box1&id=mABCDEFGH",
 				httpmock.NewStringResponder(200, ""))
-		}, func() (MailKind, string, string) {
-			return MailHTML, "box1", "ABCDEFGH"
+		}, func() (string, string) {
+			return "box1", "ABCDEFGH"
 		},
-		func(doc *goquery.Document, err error) {
+		func(doc MailHTMLDoc, err error) {
 			assert.NoError(t, err)
 		},
 	}} {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New()
+			c, err := New[MailHTMLDoc]()
 			assert.NoError(t, err)
 
 			s.setup()
@@ -399,7 +399,7 @@ func TestDeleteMail(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New()
+			c, err := New[MailHTMLDoc]()
 			assert.NoError(t, err)
 
 			s.setup()
@@ -447,7 +447,7 @@ func TestFlushMail(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New()
+			c, err := New[MailHTMLDoc]()
 			assert.NoError(t, err)
 
 			s.setup()

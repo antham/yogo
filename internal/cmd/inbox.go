@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/antham/yogo/internal/client"
 	"github.com/antham/yogo/internal/inbox"
 	"github.com/spf13/cobra"
 )
@@ -19,7 +20,7 @@ func init() {
 	RootCmd.AddCommand(inboxCmd)
 }
 
-func newInbox(name string) (Inbox, error) {
-	in, err := inbox.NewInbox(name)
+func newInbox[M client.MailDoc](name string) (Inbox, error) {
+	in, err := inbox.NewInbox[M](name)
 	return Inbox(in), err
 }

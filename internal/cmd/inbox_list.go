@@ -1,13 +1,14 @@
 package cmd
 
 import (
+	"github.com/antham/yogo/internal/client"
 	"github.com/spf13/cobra"
 )
 
 var inboxListCmd = &cobra.Command{
 	Use:   "list <inbox> <offset>",
 	Short: "Get all emails from an inbox",
-	RunE:  inboxList(newInbox),
+	RunE:  inboxList(newInbox[client.MailHTMLDoc]),
 	Args:  cobra.ExactArgs(2),
 }
 

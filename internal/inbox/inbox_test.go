@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/antham/yogo/internal/inbox/internal/client"
+	"github.com/antham/yogo/internal/client"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )
@@ -47,12 +47,12 @@ func TestFetch(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
 
-	m, err := inbox.Fetch(client.MailHTML, 0)
+	m, err := inbox.Fetch(0)
 	assert.NoError(t, err)
 	j, err := m.JSON()
 	assert.NoError(t, err)
@@ -96,7 +96,7 @@ func TestCount(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
@@ -155,7 +155,7 @@ func TestParseInboxPages(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(29)
@@ -163,22 +163,22 @@ func TestParseInboxPages(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "test", inbox.Name)
 	assert.Equal(t, 29, inbox.Count())
-	m, err := inbox.Fetch(client.MailHTML, 0)
+	m, err := inbox.Fetch(0)
 	assert.NoError(t, err)
 	j, err := m.JSON()
 	assert.NoError(t, err)
 	assert.Contains(t, j, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==")
-	m, err = inbox.Fetch(client.MailHTML, 28)
+	m, err = inbox.Fetch(28)
 	assert.NoError(t, err)
 	j, err = m.JSON()
 	assert.NoError(t, err)
 	assert.Contains(t, j, "e_ZwRjAwRmZGtmZQR0ZQNjAwt2BGV5BN==")
-	m, err = inbox.Fetch(client.MailHTML, 13)
+	m, err = inbox.Fetch(13)
 	assert.NoError(t, err)
 	j, err = m.JSON()
 	assert.NoError(t, err)
 	assert.Contains(t, j, "e_ZwRjAwRmZGtmZwR0ZQNjAwt3AmxlZN==")
-	m, err = inbox.Fetch(client.MailHTML, 14)
+	m, err = inbox.Fetch(14)
 	assert.NoError(t, err)
 	j, err = m.JSON()
 	assert.NoError(t, err)
@@ -227,17 +227,17 @@ func TestShrink(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(19)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 19, inbox.Count())
-	m, err := inbox.Fetch(client.MailHTML, 0)
+	m, err := inbox.Fetch(0)
 	m.JSON()
 	assert.NoError(t, err)
-	m, err = inbox.Fetch(client.MailHTML, 18)
+	m, err = inbox.Fetch(18)
 	assert.NoError(t, err)
 }
 
@@ -268,7 +268,7 @@ func TestShrinkEmptyInbox(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
@@ -309,7 +309,7 @@ func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(18)
@@ -350,7 +350,7 @@ func TestGetAll(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(29)
@@ -399,7 +399,7 @@ func TestFlush(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(15)
@@ -435,7 +435,7 @@ func TestFlushEmptyInbox(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
@@ -477,7 +477,7 @@ func TestDelete(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test")
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
@@ -490,7 +490,7 @@ func TestDelete(t *testing.T) {
 func TestColoured(t *testing.T) {
 	type scenario struct {
 		name               string
-		inbox              Inbox
+		inbox              Inbox[client.MailHTMLDoc]
 		isJSONOutput       bool
 		outputExpected     string
 		jsonOutputExpected string
@@ -500,7 +500,7 @@ func TestColoured(t *testing.T) {
 	scenarios := []scenario{
 		{
 			name: "No mails in the inbox",
-			inbox: Inbox{
+			inbox: Inbox[client.MailHTMLDoc]{
 				Name:       "test",
 				InboxItems: []InboxItem{},
 			},
@@ -509,7 +509,7 @@ func TestColoured(t *testing.T) {
 		},
 		{
 			name: "Display emails",
-			inbox: Inbox{
+			inbox: Inbox[client.MailHTMLDoc]{
 				Name: "test",
 				InboxItems: []InboxItem{
 					{
