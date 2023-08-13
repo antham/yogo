@@ -2,7 +2,7 @@ package inbox
 
 import (
 	"errors"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/antham/yogo/internal/client"
@@ -645,7 +645,7 @@ type responder struct {
 
 func registerResponders(responders []responder) error {
 	for _, r := range responders {
-		b, err := ioutil.ReadFile(r.filename)
+		b, err := os.ReadFile(r.filename)
 		if err != nil {
 			return err
 		}
