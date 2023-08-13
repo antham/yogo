@@ -86,12 +86,18 @@ func TestParseDate(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	mail := Parse[client.MailHTMLDoc](getDoc[client.MailHTMLDoc](t, "mail.html"))
+	mail, err := Parse[client.MailHTMLDoc](getDoc[client.MailHTMLDoc](t, "mail.html"))
+	assert.NoError(t, err)
 
-	assert.Equal(t, "Liana", mail.Sender.Name, "Must return sender name")
-	assert.Equal(t, "AnnaMartinezpisea@lionspest.com.au", mail.Sender.Mail, "Must return sender email")
-	assert.Equal(t, "In any case, I am happy that we met", mail.Title, "Must return mail title")
-	assert.Equal(t, `( https://fectment.page.link/Ymry )
+	content, err := mail.Coloured()
+	assert.NoError(t, err)
+
+	assert.Equal(t, `---
+From  : Liana <AnnaMartinezpisea@lionspest.com.au>
+Title : In any case, I am happy that we met
+Date  : 2021-06-13 20:57
+---
+( https://fectment.page.link/Ymry )
 
 What such a gorgeous man is doing here?
 
@@ -101,8 +107,9 @@ What such a gorgeous man is doing here?
 
 Will you come to me on the weekend?
 
-*s ho Todd aquaman bullock falcone jester chase croc doom swamp sinestro hangman fairchild nocturna hangman creeper hangman caird aquaman kane barrow. w p Clench chill green canary metallo face robin shrike hatter riddler gleeson justice rumor batarang kane lucius ragman fox grey batmobile. ho Night gleeson oswald cluemaster abattoir ragman gleeson oswald elongated batmobile face quinn abbott clayface moth knight prey knight atkins killer? to* ( https://exteleer.page.link/kjcS )`, mail.Body, "Must return mail body")
-	assert.Equal(t, "2021-06-13 20:57:08 +0000 UTC", mail.Date.String(), "Must return mail date")
+*s ho Todd aquaman bullock falcone jester chase croc doom swamp sinestro hangman fairchild nocturna hangman creeper hangman caird aquaman kane barrow. w p Clench chill green canary metallo face robin shrike hatter riddler gleeson justice rumor batarang kane lucius ragman fox grey batmobile. ho Night gleeson oswald cluemaster abattoir ragman gleeson oswald elongated batmobile face quinn abbott clayface moth knight prey knight atkins killer? to* ( https://exteleer.page.link/kjcS )
+---
+`, content)
 }
 
 func TestParseHTML(t *testing.T) {
@@ -144,7 +151,7 @@ func TestMail(t *testing.T) {
 
 	type scenario struct {
 		name               string
-		mail               *Mail
+		mail               *HTMLMail
 		outputExpected     string
 		jsonOutputExpected string
 	}
@@ -152,7 +159,7 @@ func TestMail(t *testing.T) {
 	scenarios := []scenario{
 		{
 			name: "Display a regular email",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Date: &date, Body: "test"},
 			outputExpected: `---
 From  : test <test@protonmail.com>
 Title : A title
@@ -165,7 +172,7 @@ test
 		},
 		{
 			name: "No sender name defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Mail: "test@protonmail.com"}, Title: "A title", Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Mail: "test@protonmail.com"}, Title: "A title", Date: &date, Body: "test"},
 			outputExpected: `---
 From  : test@protonmail.com
 Title : A title
@@ -178,7 +185,7 @@ test
 		},
 		{
 			name: "No sender email defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test"}, Title: "A title", Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test"}, Title: "A title", Date: &date, Body: "test"},
 			outputExpected: `---
 From  : test
 Title : A title
@@ -191,7 +198,7 @@ test
 		},
 		{
 			name: "No sender object defined",
-			mail: &Mail{ID: "test", Title: "A title", Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Title: "A title", Date: &date, Body: "test"},
 			outputExpected: `---
 From  : [no data to display]
 Title : A title
@@ -204,7 +211,7 @@ test
 		},
 		{
 			name: "No title defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Date: &date, Body: "test"},
 			outputExpected: `---
 From  : test <test@protonmail.com>
 Title : [no data to display]
@@ -217,7 +224,7 @@ test
 		},
 		{
 			name: "No date defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Body: "test"},
 			outputExpected: `---
 From  : test <test@protonmail.com>
 Title : A title
@@ -230,7 +237,7 @@ test
 		},
 		{
 			name: "No body defined",
-			mail: &Mail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Date: &date},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Date: &date},
 			outputExpected: `---
 From  : test <test@protonmail.com>
 Title : A title

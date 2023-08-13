@@ -5,8 +5,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var isSourceMail bool
-
 var inboxShowCmd = &cobra.Command{
 	Use:   "show <inbox> <offset>",
 	Short: "Show full email at given position in inbox",
@@ -59,6 +57,5 @@ func inboxShow(inboxBuilder inboxBuilder) cobraCmd {
 }
 
 func init() {
-	inboxShowCmd.Flags().BoolVar(&isSourceMail, "source", false, "Get the source of the message if enabled")
 	inboxCmd.AddCommand(inboxShowCmd)
 }

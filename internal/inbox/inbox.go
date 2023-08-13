@@ -63,9 +63,12 @@ func (i *Inbox[M]) Fetch(offset int) (Render, error) {
 	if err != nil {
 		return nil, err
 	}
-	m := mail.Parse(doc)
-	m.ID = *ID
-	return &m, nil
+	m, err := mail.Parse(doc)
+	if err != nil {
+		return nil, err
+	}
+	m.SetID(*ID)
+	return m, nil
 }
 
 // Count returns total number of mails available in inbox
