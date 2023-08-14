@@ -22,8 +22,8 @@ type mailKind string
 
 const (
 	mailHTML   mailKind = "m"
-	mailText            = "t"
-	mailSource          = "s"
+	mailText   mailKind = "t"
+	mailSource mailKind = "s"
 )
 
 type MailDoc interface {
