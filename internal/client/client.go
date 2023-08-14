@@ -18,33 +18,50 @@ import (
 const refURL = "https://yopmail.com"
 const defaultHttpTimeout = 10
 
+type mailKind string
+
+const (
+	mailHTML   mailKind = "m"
+	mailText   mailKind = "t"
+	mailSource mailKind = "s"
+)
+
+type MailDoc interface {
+	MailHTMLDoc | MailSourceDoc | MailTextDoc
+	Find(selector string) *goquery.Selection
+}
+
+type MailHTMLDoc goquery.Document
+type MailSourceDoc goquery.Document
+type MailTextDoc goquery.Document
+
 // Client provides a high level interface to abstract yopmail data fetching
-type Client struct {
+type Client[M MailDoc] struct {
 	browser    *browser
 	apiVersion string
 }
 
 // New creates a new client
-func New() (Client, error) {
+func New[M MailDoc]() (Client[M], error) {
 	browser := newBrowser()
 	c, err := browser.get("GET", refURL, map[string]string{}, nil)
 	if err != nil {
-		return Client{}, err
+		return Client[M]{}, err
 	}
 
 	_, err = browser.get("GET", refURL+"/consent?c=accept", map[string]string{}, nil)
 	if err != nil {
-		return Client{}, err
+		return Client[M]{}, err
 	}
 	apiVersion, err := parseApiVersion(c.String())
 	if err != nil {
-		return Client{}, err
+		return Client[M]{}, err
 	}
-	return Client{apiVersion: apiVersion, browser: browser}, nil
+	return Client[M]{apiVersion: apiVersion, browser: browser}, nil
 }
 
 // GetMailsPage fetches all html pages containing emails data
-func (c Client) GetMailsPage(identifier string, page int) (*goquery.Document, error) {
+func (c Client[M]) GetMailsPage(identifier string, page int) (*goquery.Document, error) {
 	URL, err := decorateURL("inbox?d=&ctrl=&scrl=&spam=true&r_c=&id=", c.apiVersion, false, map[string]string{"login": identifier, "p": strconv.Itoa(page)})
 	if err != nil {
 		return nil, err
@@ -58,21 +75,33 @@ func (c Client) GetMailsPage(identifier string, page int) (*goquery.Document, er
 }
 
 // GetMailPage fetches html page containing the email
-func (c Client) GetMailPage(identifier string, mailID string) (*goquery.Document, error) {
-	URL, err := decorateURL("mail", c.apiVersion, true, map[string]string{"b": identifier, "id": "m" + mailID})
+func (c Client[M]) GetMailPage(identifier string, mailID string) (doc M, err error) {
+	var kind mailKind
+	switch any(doc).(type) {
+	case MailHTMLDoc:
+		kind = mailHTML
+	case MailSourceDoc:
+		kind = mailSource
+	}
+
+	URL, err := decorateURL("mail", c.apiVersion, true, map[string]string{"b": identifier, "id": fmt.Sprintf("%s%s", kind, mailID)})
 	if err != nil {
-		return nil, err
+		return
 	}
 	c.browser.populateCookieFromAccount(identifier)
 	r, err := c.browser.get("GET", URL, map[string]string{}, nil)
 	if err != nil {
-		return nil, err
+		return
 	}
-	return goquery.NewDocumentFromReader(r)
+	d, err := goquery.NewDocumentFromReader(r)
+	if err != nil {
+		return
+	}
+	return M(*d), nil
 }
 
 // DeleteMail removes an email from yopmail inbox
-func (c Client) DeleteMail(identifier string, mailID string) error {
+func (c Client[M]) DeleteMail(identifier string, mailID string) error {
 	URL, err := decorateURL("inbox?p=1&ctrl=&r_c=&id=", c.apiVersion, false, map[string]string{"login": identifier, "d": mailID})
 	if err != nil {
 		return err
@@ -83,7 +112,7 @@ func (c Client) DeleteMail(identifier string, mailID string) error {
 }
 
 // FlushMail removes all yopmail inbox mails
-func (c Client) FlushMail(identifier string, mailID string) error {
+func (c Client[M]) FlushMail(identifier string, mailID string) error {
 	URL, err := decorateURL("inbox?p=1&d=all&r_c=&id=", c.apiVersion, false, map[string]string{"login": identifier, "ctrl": mailID})
 	if err != nil {
 		return err

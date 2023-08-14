@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"errors"
 	"testing"
-	"time"
 
-	"github.com/antham/yogo/inbox"
+	"github.com/antham/yogo/internal/inbox"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInboxShow(t *testing.T) {
+func TestInboxDelete(t *testing.T) {
 	type scenario struct {
 		name         string
 		args         []string
@@ -28,7 +27,7 @@ func TestInboxShow(t *testing.T) {
 			errExpected: errors.New("inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -38,7 +37,7 @@ func TestInboxShow(t *testing.T) {
 			errExpected: errors.New(`offset "-1" must be greater than 0`),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -61,13 +60,13 @@ func TestInboxShow(t *testing.T) {
 			},
 		},
 		{
-			name:        "An error is thrown when parsing mail",
+			name:        "An error is thrown when deleting a message",
 			args:        []string{"test", "1"},
-			errExpected: errors.New("parse email error"),
+			errExpected: errors.New("delete message error"),
 			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{parseError: errors.New("parse email error")}
+				mock := &InboxMock{deleteError: errors.New("delete message error")}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",
@@ -82,51 +81,12 @@ func TestInboxShow(t *testing.T) {
 			},
 		},
 		{
-			name: "Offset to high compared to the number of emails",
-			args: []string{"test", "2"},
-			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{getMail: nil}
-				mock.count = 1
-				mock.mails = []inbox.Mail{
-					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
-						Sender: &inbox.Sender{
-							Mail: "test123",
-							Name: "name123",
-						},
-					},
-				}
-				return mock, nil
-			},
-		},
-		{
-			name:        "No mail found",
-			args:        []string{"test", "1"},
-			errExpected: errors.New("inbox is empty"),
-			inboxBuilder: func(name string) (Inbox, error) {
-				mock := &InboxMock{getMail: nil}
-				return mock, nil
-			},
-		},
-		{
-			name: "Output the mail",
+			name: "Email deleted successfully",
 			args: []string{"test", "1"},
-			output: `---
-From  : name123 <test123>
-Title : title
-Date  : 2001-01-01 00:00
----
-body
----
-
-`,
 			inboxBuilder: func(name string) (Inbox, error) {
-				now, _ := time.Parse("2006-01-02", "2001-01-01")
 				mock := &InboxMock{}
 				mock.count = 1
-				mock.mails = []inbox.Mail{
+				mock.items = []inbox.InboxItem{
 					{
 						ID:    "abcdefg",
 						Title: "title",
@@ -135,21 +95,12 @@ body
 							Mail: "test123",
 							Name: "name123",
 						},
-						Date: &now,
 					},
-				}
-				mock.getMail = &inbox.Mail{
-					ID:    "abcdefg",
-					Title: "title",
-					Body:  "body",
-					Sender: &inbox.Sender{
-						Mail: "test123",
-						Name: "name123",
-					},
-					Date: &now,
 				}
 				return mock, nil
 			},
+			output: `Email "1" successfully deleted
+`,
 		},
 	}
 
@@ -162,7 +113,7 @@ body
 			cmd := &cobra.Command{}
 			cmd.SetOut(&output)
 			cmd.SetErr(&outputErr)
-			err := inboxShow(scenario.inboxBuilder)(cmd, scenario.args)
+			err := inboxDelete(scenario.inboxBuilder)(cmd, scenario.args)
 			assert.Equal(t, scenario.errExpected, err)
 			assert.Equal(t, scenario.output, output.String())
 			assert.Equal(t, scenario.outputErr, outputErr.String())

@@ -3,13 +3,14 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/antham/yogo/internal/client"
 	"github.com/spf13/cobra"
 )
 
 var inboxFlushCmd = &cobra.Command{
 	Use:   "flush <inbox>",
 	Short: "Flush all emails in an inbox",
-	RunE:  inboxFlush(newInbox),
+	RunE:  inboxFlush(newInbox[client.MailHTMLDoc]),
 	Args:  cobra.ExactArgs(1),
 }
 

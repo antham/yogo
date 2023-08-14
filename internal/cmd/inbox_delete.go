@@ -3,13 +3,14 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/antham/yogo/internal/client"
 	"github.com/spf13/cobra"
 )
 
 var inboxDeleteCmd = &cobra.Command{
 	Use:   "delete <inbox> <offset>",
 	Short: "Delete email at given position in inbox",
-	RunE:  inboxDelete(newInbox),
+	RunE:  inboxDelete(newInbox[client.MailHTMLDoc]),
 	Args:  cobra.ExactArgs(2),
 }
 

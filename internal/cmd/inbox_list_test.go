@@ -8,29 +8,32 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/antham/yogo/inbox"
+	"github.com/antham/yogo/internal/inbox"
 )
 
 type InboxMock struct {
 	count                      int
-	mails                      []inbox.Mail
+	items                      []inbox.InboxItem
 	parseInboxPagesIntArgument int
 	parseInboxPagesError       error
-	parseIntArgument           int
-	parseError                 error
-	getIntArgument             int
-	getMail                    *inbox.Mail
+	fetchIntArgument           int
+	fetchMail                  inbox.Render
+	fetchError                 error
 	flushError                 error
 	deleteIntArgument          int
 	deleteError                error
+	coloured                   string
+	colouredErr                error
+	json                       string
+	jsonErr                    error
 }
 
 func (i *InboxMock) Count() int {
 	return i.count
 }
 
-func (i *InboxMock) GetMails() []inbox.Mail {
-	return i.mails
+func (i *InboxMock) GetMails() []inbox.InboxItem {
+	return i.items
 }
 
 func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
@@ -38,14 +41,9 @@ func (i *InboxMock) ParseInboxPages(parseInboxPagesIntArgument int) error {
 	return i.parseInboxPagesError
 }
 
-func (i *InboxMock) Parse(parseIntArgument int) error {
-	i.parseIntArgument = parseIntArgument
-	return i.parseError
-}
-
-func (i *InboxMock) Get(getIntArgument int) *inbox.Mail {
-	i.getIntArgument = getIntArgument
-	return i.getMail
+func (i *InboxMock) Fetch(fetchIntArgument int) (inbox.Render, error) {
+	i.fetchIntArgument = fetchIntArgument
+	return i.fetchMail, i.fetchError
 }
 
 func (i *InboxMock) Flush() error {
@@ -55,6 +53,14 @@ func (i *InboxMock) Flush() error {
 func (i *InboxMock) Delete(deleteIntArgument int) error {
 	i.deleteIntArgument = deleteIntArgument
 	return i.deleteError
+}
+
+func (i *InboxMock) Coloured() (string, error) {
+	return i.coloured, i.colouredErr
+}
+
+func (i *InboxMock) JSON() (string, error) {
+	return i.json, i.jsonErr
 }
 
 func TestInboxList(t *testing.T) {
@@ -74,7 +80,7 @@ func TestInboxList(t *testing.T) {
 			errExpected: errors.New("inbox is empty"),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.colouredErr = errors.New("inbox is empty")
 				return mock, nil
 			},
 		},
@@ -84,7 +90,7 @@ func TestInboxList(t *testing.T) {
 			errExpected: errors.New(`offset "-1" must be greater than 0`),
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.mails = []inbox.Mail{}
+				mock.items = []inbox.InboxItem{}
 				return mock, nil
 			},
 		},
@@ -111,18 +117,8 @@ func TestInboxList(t *testing.T) {
 			args: []string{"test", "1"},
 			inboxBuilder: func(name string) (Inbox, error) {
 				mock := &InboxMock{}
-				mock.count = 1
-				mock.mails = []inbox.Mail{
-					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
-						Sender: &inbox.Sender{
-							Mail: "test123@protonmail.com",
-							Name: "name123",
-						},
-					},
-				}
+				mock.coloured = ` 1 name123 <test123@protonmail.com>
+   title`
 				return mock, nil
 			},
 			output: ` 1 name123 <test123@protonmail.com>

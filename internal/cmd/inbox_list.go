@@ -1,13 +1,14 @@
 package cmd
 
 import (
+	"github.com/antham/yogo/internal/client"
 	"github.com/spf13/cobra"
 )
 
 var inboxListCmd = &cobra.Command{
 	Use:   "list <inbox> <offset>",
 	Short: "Get all emails from an inbox",
-	RunE:  inboxList(newInbox),
+	RunE:  inboxList(newInbox[client.MailHTMLDoc]),
 	Args:  cobra.ExactArgs(2),
 }
 
@@ -25,11 +26,21 @@ func inboxList(inboxBuilder inboxBuilder) cobraCmd {
 		if err := in.ParseInboxPages(offset); err != nil {
 			return err
 		}
-		mail, err := computeInboxMailOutput(in, dumpJSON)
-		if err != nil {
-			return err
+
+		var output string
+		if dumpJSON {
+			output, err = in.JSON()
+			if err != nil {
+				return err
+			}
+		} else {
+			output, err = in.Coloured()
+			if err != nil {
+				return err
+			}
 		}
-		cmd.Println(mail)
+
+		cmd.Println(output)
 		return nil
 	}
 }

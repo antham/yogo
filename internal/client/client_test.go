@@ -303,7 +303,7 @@ func TestGetMailsPage(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New()
+			c, err := New[MailHTMLDoc]()
 			assert.NoError(t, err)
 
 			s.setup()
@@ -318,7 +318,7 @@ func TestGetMailPage(t *testing.T) {
 		name  string
 		setup func()
 		args  func() (string, string)
-		test  func(*goquery.Document, error)
+		test  func(MailHTMLDoc, error)
 	}
 
 	httpmock.Activate()
@@ -332,7 +332,7 @@ func TestGetMailPage(t *testing.T) {
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
-		func(doc *goquery.Document, err error) {
+		func(doc MailHTMLDoc, err error) {
 			assert.Error(t, err)
 			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/mail?b=box1&id=mABCDEFGH : request failed with error code 500 and body `)
 		},
@@ -344,14 +344,14 @@ func TestGetMailPage(t *testing.T) {
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
-		func(doc *goquery.Document, err error) {
+		func(doc MailHTMLDoc, err error) {
 			assert.NoError(t, err)
 		},
 	}} {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New()
+			c, err := New[MailHTMLDoc]()
 			assert.NoError(t, err)
 
 			s.setup()
@@ -399,7 +399,7 @@ func TestDeleteMail(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New()
+			c, err := New[MailHTMLDoc]()
 			assert.NoError(t, err)
 
 			s.setup()
@@ -447,7 +447,7 @@ func TestFlushMail(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New()
+			c, err := New[MailHTMLDoc]()
 			assert.NoError(t, err)
 
 			s.setup()
