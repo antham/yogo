@@ -3,7 +3,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/antham/yogo/internal/client"
+	"github.com/antham/yogo/v3/internal/client"
 	"github.com/stretchr/testify/assert"
 )
 

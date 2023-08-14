@@ -2,7 +2,7 @@ package mail
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"github.com/antham/yogo/internal/client"
+	"github.com/antham/yogo/v3/internal/client"
 	"io"
 	gomail "net/mail"
 	"strings"
