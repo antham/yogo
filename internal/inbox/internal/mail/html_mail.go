@@ -21,12 +21,12 @@ type Sender struct {
 
 // HTMLMail is an HTML mail message
 type HTMLMail struct {
-	ID     string     `json:"id"`
-	Sender *Sender    `json:"sender,omitempty"`
-	Title  string     `json:"title,omitempty"`
-	Date   *time.Time `json:"date,omitempty"`
-	Body   string     `json:"body,omitempty"`
-	IsSPAM bool       `json:"isSPAM"`
+	ID      string     `json:"id"`
+	Sender  *Sender    `json:"sender,omitempty"`
+	Subject string     `json:"subject,omitempty"`
+	Date    *time.Time `json:"date,omitempty"`
+	Body    string     `json:"body,omitempty"`
+	IsSPAM  bool       `json:"isSPAM"`
 }
 
 func (m *HTMLMail) SetID(ID string) {
@@ -40,7 +40,7 @@ func (m *HTMLMail) Coloured() (string, error) {
 		HasSenderMail bool
 		SenderMail    string
 		From          string
-		Title         string
+		Subject       string
 		Date          string
 		Body          string
 	}{}
@@ -62,10 +62,10 @@ func (m *HTMLMail) Coloured() (string, error) {
 		info.SenderName = color.MagentaString(noDataToDisplayMsg)
 		info.SenderMail = color.MagentaString(noDataToDisplayMsg)
 	}
-	if m.Title != "" {
-		info.Title = color.YellowString(m.Title)
+	if m.Subject != "" {
+		info.Subject = color.YellowString(m.Subject)
 	} else {
-		info.Title = color.YellowString(noDataToDisplayMsg)
+		info.Subject = color.YellowString(noDataToDisplayMsg)
 	}
 	if m.Date != nil {
 		info.Date = color.GreenString(m.Date.Format("2006-01-02 15:04"))
@@ -80,7 +80,7 @@ func (m *HTMLMail) Coloured() (string, error) {
 
 	var buf bytes.Buffer
 	tpl := template.Must(template.New("t").Parse(`---
-From  : {{ if .HasSenderName -}}
+From    : {{ if .HasSenderName -}}
 {{- .SenderName -}}
 {{- end -}}
 {{- if (and .HasSenderMail .HasSenderName) }} {{ end -}}
@@ -90,8 +90,8 @@ From  : {{ if .HasSenderName -}}
 	{{- .SenderMail -}}
 	{{- if .HasSenderName -}}>{{- end -}}
 {{ end }}
-Title : {{.Title}}
-Date  : {{.Date}}
+Subject : {{.Subject}}
+Date    : {{.Date}}
 ---
 {{.Body}}
 ---

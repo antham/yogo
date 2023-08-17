@@ -22,63 +22,63 @@ func TestHTMLMail(t *testing.T) {
 	scenarios := []scenario{
 		{
 			name: "Display a regular email",
-			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Subject: "A subject", Date: &date, Body: "test"},
 			outputExpected: `---
-From  : test <test@protonmail.com>
-Title : A title
-Date  : 2022-10-24 23:20
+From    : test <test@protonmail.com>
+Subject : A subject
+Date    : 2022-10-24 23:20
 ---
 test
 ---
 `,
-			jsonOutputExpected: `{"id": "test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "title": "A title", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+			jsonOutputExpected: `{"id": "test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "subject": "A subject", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
 		},
 		{
 			name: "No sender name defined",
-			mail: &HTMLMail{ID: "test", Sender: &Sender{Mail: "test@protonmail.com"}, Title: "A title", Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Mail: "test@protonmail.com"}, Subject: "A subject", Date: &date, Body: "test"},
 			outputExpected: `---
-From  : test@protonmail.com
-Title : A title
-Date  : 2022-10-24 23:20
+From    : test@protonmail.com
+Subject : A subject
+Date    : 2022-10-24 23:20
 ---
 test
 ---
 `,
-			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"mail": "test@protonmail.com"}, "title": "A title", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"mail": "test@protonmail.com"}, "subject": "A subject", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
 		},
 		{
 			name: "No sender email defined",
-			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test"}, Title: "A title", Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test"}, Subject: "A subject", Date: &date, Body: "test"},
 			outputExpected: `---
-From  : test
-Title : A title
-Date  : 2022-10-24 23:20
+From    : test
+Subject : A subject
+Date    : 2022-10-24 23:20
 ---
 test
 ---
 `,
-			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"name": "test"}, "title": "A title", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"name": "test"}, "subject": "A subject", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
 		},
 		{
 			name: "No sender object defined",
-			mail: &HTMLMail{ID: "test", Title: "A title", Date: &date, Body: "test"},
+			mail: &HTMLMail{ID: "test", Subject: "A subject", Date: &date, Body: "test"},
 			outputExpected: `---
-From  : [no data to display]
-Title : A title
-Date  : 2022-10-24 23:20
+From    : [no data to display]
+Subject : A subject
+Date    : 2022-10-24 23:20
 ---
 test
 ---
 `,
-			jsonOutputExpected: `{"id":"test", "isSPAM": false, "title": "A title", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
+			jsonOutputExpected: `{"id":"test", "isSPAM": false, "subject": "A subject", "date": "2022-10-24T23:20:00Z", "body": "test"}`,
 		},
 		{
-			name: "No title defined",
+			name: "No subject defined",
 			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Date: &date, Body: "test"},
 			outputExpected: `---
-From  : test <test@protonmail.com>
-Title : [no data to display]
-Date  : 2022-10-24 23:20
+From    : test <test@protonmail.com>
+Subject : [no data to display]
+Date    : 2022-10-24 23:20
 ---
 test
 ---
@@ -87,29 +87,29 @@ test
 		},
 		{
 			name: "No date defined",
-			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Body: "test"},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Subject: "A subject", Body: "test"},
 			outputExpected: `---
-From  : test <test@protonmail.com>
-Title : A title
-Date  : [no data to display]
+From    : test <test@protonmail.com>
+Subject : A subject
+Date    : [no data to display]
 ---
 test
 ---
 `,
-			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "title": "A title", "body": "test"}`,
+			jsonOutputExpected: `{"id":"test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "subject": "A subject", "body": "test"}`,
 		},
 		{
 			name: "No body defined",
-			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Title: "A title", Date: &date},
+			mail: &HTMLMail{ID: "test", Sender: &Sender{Name: "test", Mail: "test@protonmail.com"}, Subject: "A subject", Date: &date},
 			outputExpected: `---
-From  : test <test@protonmail.com>
-Title : A title
-Date  : 2022-10-24 23:20
+From    : test <test@protonmail.com>
+Subject : A subject
+Date    : 2022-10-24 23:20
 ---
 [no data to display]
 ---
 `,
-			jsonOutputExpected: `{"id": "test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "title": "A title", "date":"2022-10-24T23:20:00Z"}`,
+			jsonOutputExpected: `{"id": "test", "isSPAM": false, "sender": {"name": "test", "mail": "test@protonmail.com"}, "subject": "A subject", "date":"2022-10-24T23:20:00Z"}`,
 		},
 	}
 

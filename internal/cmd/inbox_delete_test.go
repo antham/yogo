@@ -68,9 +68,9 @@ func TestInboxDelete(t *testing.T) {
 				mock.count = 1
 				mock.items = []inbox.InboxItem{
 					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
+						ID:      "abcdefg",
+						Subject: "subject",
+						Body:    "body",
 						Sender: &inbox.Sender{
 							Mail: "test123",
 							Name: "name123",
@@ -88,9 +88,9 @@ func TestInboxDelete(t *testing.T) {
 				mock.count = 1
 				mock.items = []inbox.InboxItem{
 					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
+						ID:      "abcdefg",
+						Subject: "subject",
+						Body:    "body",
 						Sender: &inbox.Sender{
 							Mail: "test123",
 							Name: "name123",
