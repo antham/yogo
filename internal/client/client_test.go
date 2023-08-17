@@ -126,7 +126,7 @@ func TestFetch(t *testing.T) {
 				})
 		}, func(reader io.Reader, err error) {
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "lient.Timeout exceeded while awaiting headers")
+			assert.Regexp(t, "lient.Timeout exceeded while awaiting headers|context deadline exceeded", err.Error())
 		},
 	}, {
 		"fetch an URL",
