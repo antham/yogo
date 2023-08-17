@@ -11,4 +11,4 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - -X 'github.com/antham/yogo/v3/internal/cmd.version={{.Version}}'
+      - -X 'github.com/antham/yogo/v4/internal/cmd.version={{.Version}}'

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/antham/yogo/v3/internal/client"
+	"github.com/antham/yogo/v4/internal/client"
 	"github.com/spf13/cobra"
 )
 

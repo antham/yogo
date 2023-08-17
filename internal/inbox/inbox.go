@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/antham/yogo/v3/internal/client"
-	"github.com/antham/yogo/v3/internal/inbox/internal/mail"
+	"github.com/antham/yogo/v4/internal/client"
+	"github.com/antham/yogo/v4/internal/inbox/internal/mail"
 	"github.com/fatih/color"
 )
 

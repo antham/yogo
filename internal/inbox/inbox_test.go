@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/antham/yogo/v3/internal/client"
+	"github.com/antham/yogo/v4/internal/client"
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 )

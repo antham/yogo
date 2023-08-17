@@ -1,4 +1,4 @@
-module github.com/antham/yogo/v3
+module github.com/antham/yogo/v4
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1

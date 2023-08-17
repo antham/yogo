@@ -7,7 +7,7 @@ Check yopmail mails from command line.
 Download binaries here : [yogo](https://github.com/antham/yogo/releases/).
 
 Or run:
-`go install github.com/antham/yogo/v3`
+`go install github.com/antham/yogo/v4`
 
 A package is available in aur for archlinux.
 

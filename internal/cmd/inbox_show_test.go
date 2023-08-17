@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/antham/yogo/v3/internal/inbox"
+	"github.com/antham/yogo/v4/internal/inbox"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )

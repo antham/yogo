@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/antham/yogo/v3/internal/inbox"
+	"github.com/antham/yogo/v4/internal/inbox"
 )
 
 type Inbox interface {
