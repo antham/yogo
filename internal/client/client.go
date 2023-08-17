@@ -15,6 +15,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+var ErrCaptcha = errors.New("failure when trying to access content: a CAPTCHA is probably activated, look to the web interface")
+
 const refURL = "https://yopmail.com"
 const defaultHttpTimeout = 10
 
@@ -66,11 +68,15 @@ func (c Client[M]) GetMailsPage(identifier string, page int) (*goquery.Document,
 		return nil, err
 	}
 	c.browser.populateCookieFromAccount(identifier)
-	r, err := c.browser.fetch("GET", URL, map[string]string{}, nil)
+	content, err := c.browser.fetch("GET", URL, map[string]string{}, nil)
 	if err != nil {
 		return nil, err
 	}
-	return goquery.NewDocumentFromReader(r)
+	err = checkInboxCAPTCHA(content.String())
+	if err != nil {
+		return nil, err
+	}
+	return goquery.NewDocumentFromReader(content)
 }
 
 // GetMailPage fetches html page containing the email
@@ -87,11 +93,15 @@ func (c Client[M]) GetMailPage(identifier string, mailID string) (doc M, err err
 		return
 	}
 	c.browser.populateCookieFromAccount(identifier)
-	r, err := c.browser.fetch("GET", URL, map[string]string{}, nil)
+	content, err := c.browser.fetch("GET", URL, map[string]string{}, nil)
 	if err != nil {
 		return
 	}
-	d, err := goquery.NewDocumentFromReader(r)
+	err = checkMailCAPTCHA(content.String())
+	if err != nil {
+		return
+	}
+	d, err := goquery.NewDocumentFromReader(content)
 	if err != nil {
 		return
 	}
@@ -105,8 +115,11 @@ func (c Client[M]) DeleteMail(identifier string, mailID string) error {
 		return err
 	}
 	c.browser.populateCookieFromAccount(identifier)
-	_, err = c.browser.fetch("GET", URL, map[string]string{}, nil)
-	return err
+	content, err := c.browser.fetch("GET", URL, map[string]string{}, nil)
+	if err != nil {
+		return err
+	}
+	return checkInboxCAPTCHA(content.String())
 }
 
 // FlushMail removes all yopmail inbox mails
@@ -116,8 +129,11 @@ func (c Client[M]) FlushMail(identifier string, mailID string) error {
 		return err
 	}
 	c.browser.populateCookieFromAccount(identifier)
-	_, err = c.browser.fetch("GET", URL, map[string]string{}, nil)
-	return err
+	content, err := c.browser.fetch("GET", URL, map[string]string{}, nil)
+	if err != nil {
+		return err
+	}
+	return checkInboxCAPTCHA(content.String())
 }
 
 func (c Client[M]) decorateURL(URL string, apiVersion string, disableDefaultQueryParams bool, queryParams map[string]string) (string, error) {
@@ -218,7 +234,6 @@ func (b *browser) fetch(method string, URL string, headers map[string]string, bo
 
 		return nil, wrapError(errMsg, fmt.Errorf("request failed with error code %d and body %s", res.StatusCode, string(b)))
 	}
-
 	buf, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, wrapError(errMsg, err)
@@ -248,4 +263,19 @@ func parseApiVersion(s string) (string, error) {
 
 func wrapError(msg string, err error) error {
 	return fmt.Errorf("%s : %w", msg, err)
+}
+
+func checkInboxCAPTCHA(content string) error {
+	s := `w\.finrmail\(\d+,\s*\d+,\s*\d+,\s*\d+,\s*\d+,\s*'alt\.[^']+',\s*'.*?'\)`
+	if !regexp.MustCompile(s).MatchString(content) {
+		return ErrCaptcha
+	}
+	return nil
+}
+
+func checkMailCAPTCHA(content string) error {
+	if strings.Contains(content, "window.showRc()") {
+		return ErrCaptcha
+	}
+	return nil
 }

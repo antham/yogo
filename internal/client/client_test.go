@@ -297,10 +297,22 @@ func TestGetMailsPage(t *testing.T) {
 			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest : request failed with error code 500 and body `)
 		},
 	}, {
-		"request succeed",
+		"CAPTCHA activated",
 		func() {
 			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
+		}, func() (string, int) {
+			return "box1", 1
+		},
+		func(doc *goquery.Document, err error) {
+			assert.Error(t, err)
+			assert.EqualError(t, err, `failure when trying to access content: a CAPTCHA is probably activated, look to the web interface`)
+		},
+	}, {
+		"request succeed",
+		func() {
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
+				httpmock.NewStringResponder(200, "w.finrmail(25,2,1,0,0,'alt.zk-4nyqp5l','')"))
 		}, func() (string, int) {
 			return "box1", 1
 		},
@@ -345,10 +357,22 @@ func TestGetMailPage(t *testing.T) {
 			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/mail?b=box1&id=mABCDEFGH : request failed with error code 500 and body `)
 		},
 	}, {
+		"CAPTCHA activated",
+		func() {
+			httpmock.RegisterResponder("GET", refURL+"/en/mail?b=box1&id=mABCDEFGH",
+				httpmock.NewStringResponder(200, "window.showRc()"))
+		}, func() (string, string) {
+			return "box1", "ABCDEFGH"
+		},
+		func(doc MailHTMLDoc, err error) {
+			assert.Error(t, err)
+			assert.EqualError(t, err, `failure when trying to access content: a CAPTCHA is probably activated, look to the web interface`)
+		},
+	}, {
 		"request succeed",
 		func() {
 			httpmock.RegisterResponder("GET", refURL+"/en/mail?b=box1&id=mABCDEFGH",
-				httpmock.NewStringResponder(200, ""))
+				httpmock.NewStringResponder(200, "w.finrmail(25,2,1,0,0,'alt.zk-4nyqp5l','')"))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
@@ -393,10 +417,22 @@ func TestDeleteMail(t *testing.T) {
 			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest : Get "https://yopmail.com/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest": no responder found`)
 		},
 	}, {
-		"request succeed",
+		"CAPTCHA activated",
 		func() {
 			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
+		}, func() (string, string) {
+			return "box1", "ABCDEFGH"
+		},
+		func(err error) {
+			assert.Error(t, err)
+			assert.EqualError(t, err, `failure when trying to access content: a CAPTCHA is probably activated, look to the web interface`)
+		},
+	}, {
+		"request succeed",
+		func() {
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
+				httpmock.NewStringResponder(200, "w.finrmail(25,2,1,0,0,'alt.zk-4nyqp5l','')"))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
@@ -441,10 +477,22 @@ func TestFlushMail(t *testing.T) {
 			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest : request failed with error code 500 and body `)
 		},
 	}, {
-		"request succeed",
+		"CAPTCHA activated",
 		func() {
 			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
+		}, func() (string, string) {
+			return "box1", "ABCDEFGH"
+		},
+		func(err error) {
+			assert.Error(t, err)
+			assert.EqualError(t, err, `failure when trying to access content: a CAPTCHA is probably activated, look to the web interface`)
+		},
+	}, {
+		"request succeed",
+		func() {
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
+				httpmock.NewStringResponder(200, "w.finrmail(25,2,1,0,0,'alt.zk-4nyqp5l','')"))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
