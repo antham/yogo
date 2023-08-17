@@ -3,7 +3,7 @@ module github.com/antham/yogo/v3
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/fatih/color v1.15.0
-	github.com/jarcoal/httpmock v1.3.0
+	github.com/jarcoal/httpmock v1.3.1
 	github.com/jaytaylor/html2text v0.0.0-20211105163654-bc68cce691ba
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
