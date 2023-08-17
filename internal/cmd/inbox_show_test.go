@@ -84,9 +84,9 @@ func TestInboxShow(t *testing.T) {
 				mock.count = 1
 				mock.items = []inbox.InboxItem{
 					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
+						ID:      "abcdefg",
+						Subject: "subject",
+						Body:    "body",
 						Sender: &inbox.Sender{
 							Mail: "test123",
 							Name: "name123",
@@ -104,9 +104,9 @@ func TestInboxShow(t *testing.T) {
 				mock.count = 1
 				mock.items = []inbox.InboxItem{
 					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
+						ID:      "abcdefg",
+						Subject: "subject",
+						Body:    "body",
 						Sender: &inbox.Sender{
 							Mail: "test123",
 							Name: "name123",
@@ -129,9 +129,9 @@ func TestInboxShow(t *testing.T) {
 			name: "Output the mail",
 			args: []string{"test", "1"},
 			output: `---
-From  : name123 <test123>
-Title : title
-Date  : 2001-01-01 00:00
+From    : name123 <test123>
+Subject : subject
+Date    : 2001-01-01 00:00
 ---
 body
 ---
@@ -143,9 +143,9 @@ body
 				mock.count = 1
 				mock.items = []inbox.InboxItem{
 					{
-						ID:    "abcdefg",
-						Title: "title",
-						Body:  "body",
+						ID:      "abcdefg",
+						Subject: "subject",
+						Body:    "body",
 						Sender: &inbox.Sender{
 							Mail: "test123",
 							Name: "name123",
@@ -155,9 +155,9 @@ body
 				}
 				mock.fetchMail = MailMock{
 					coloured: `---
-From  : name123 <test123>
-Title : title
-Date  : 2001-01-01 00:00
+From    : name123 <test123>
+Subject : subject
+Date    : 2001-01-01 00:00
 ---
 body
 ---

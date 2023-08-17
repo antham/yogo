@@ -519,7 +519,7 @@ func TestColoured(t *testing.T) {
 							Mail: "test1@protonmail.com",
 							Name: "test1",
 						},
-						Title: "test1 title",
+						Subject: "test1 subject",
 					},
 					{
 						ID: "0343583b-7b58-40cb-a2b7-c09d79673334",
@@ -527,7 +527,7 @@ func TestColoured(t *testing.T) {
 							Mail: "test2@protonmail.com",
 							Name: "test2",
 						},
-						Title: "test2 title",
+						Subject: "test2 subject",
 					},
 					{
 						ID:     "0243583b-7b58-40cb-a2b7-c09d79673334",
@@ -536,21 +536,21 @@ func TestColoured(t *testing.T) {
 							Mail: "test3@protonmail.com",
 							Name: "test3",
 						},
-						Title: "test3 title",
+						Subject: "test3 subject",
 					},
 					{
 						ID: "0783583b-7b58-40cb-a2b7-c09d79673334",
 						Sender: &Sender{
 							Name: "test4",
 						},
-						Title: "test4 title",
+						Subject: "test4 subject",
 					},
 					{
 						ID: "0903583b-7b58-40cb-a2b7-c09d79673334",
 						Sender: &Sender{
 							Mail: "test5@protonmail.com",
 						},
-						Title: "test5 title",
+						Subject: "test5 subject",
 					},
 					{
 						ID: "12d3583b-7b58-40cb-a2b7-c09d79673334",
@@ -560,61 +560,61 @@ func TestColoured(t *testing.T) {
 						},
 					},
 					{
-						ID:     "67d3583b-7b58-40cb-a2b7-c09d79673334",
-						Sender: &Sender{},
-						Title:  "test7 title",
+						ID:      "67d3583b-7b58-40cb-a2b7-c09d79673334",
+						Sender:  &Sender{},
+						Subject: "test7 subject",
 					},
 					{
-						ID:    "89d3583b-7b58-40cb-a2b7-c09d79673334",
-						Title: "test8 title",
+						ID:      "89d3583b-7b58-40cb-a2b7-c09d79673334",
+						Subject: "test8 subject",
 					},
 					{
-						ID:    "f44cf3b8-f6a4-4b75-b734-cb1553b23cf6",
-						Title: "test9 title",
+						ID:      "f44cf3b8-f6a4-4b75-b734-cb1553b23cf6",
+						Subject: "test9 subject",
 					},
 					{
-						ID:    "f207be30-fad5-4d73-aa30-f69cb2a5ebac",
-						Title: "test10 title",
+						ID:      "f207be30-fad5-4d73-aa30-f69cb2a5ebac",
+						Subject: "test10 subject",
 					},
 					{
-						ID:    "d64c2eeb-9ff6-4d33-b4dc-034557805308",
-						Title: "test11 title",
+						ID:      "d64c2eeb-9ff6-4d33-b4dc-034557805308",
+						Subject: "test11 subject",
 					},
 				},
 			},
 			outputExpected: ` 1 test1 <test1@protonmail.com> [SPAM]
-   test1 title
+   test1 subject
 
  2 test2 <test2@protonmail.com>
-   test2 title
+   test2 subject
 
  3 test3 <test3@protonmail.com> [SPAM]
-   test3 title
+   test3 subject
 
  4 test4
-   test4 title
+   test4 subject
 
  5 test5@protonmail.com
-   test5 title
+   test5 subject
 
  6 test6 <test6@protonmail.com>
    [no data to display]
 
  7 [no data to display]
-   test7 title
+   test7 subject
 
  8 [no data to display]
-   test8 title
+   test8 subject
 
  9 [no data to display]
-   test9 title
+   test9 subject
 
  10 [no data to display]
-    test10 title
+    test10 subject
 
  11 [no data to display]
-    test11 title`,
-			jsonOutputExpected: `{"name":"test","mails":[{"id":"02d3583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test1@protonmail.com","name":"test1"},"title":"test1 title","isSPAM":true},{"id":"0343583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test2@protonmail.com","name":"test2"},"title":"test2 title","isSPAM":false},{"id":"0243583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test3@protonmail.com","name":"test3"},"title":"test3 title","isSPAM":true},{"id":"0783583b-7b58-40cb-a2b7-c09d79673334","sender":{"name":"test4"},"title":"test4 title","isSPAM":false},{"id":"0903583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test5@protonmail.com"},"title":"test5 title","isSPAM":false},{"id":"12d3583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test6@protonmail.com","name":"test6"},"title":"","isSPAM":false},{"id":"67d3583b-7b58-40cb-a2b7-c09d79673334","sender":{},"title":"test7 title","isSPAM":false},{"id":"89d3583b-7b58-40cb-a2b7-c09d79673334","title":"test8 title","isSPAM":false},{"id":"f44cf3b8-f6a4-4b75-b734-cb1553b23cf6","title":"test9 title","isSPAM":false},{"id":"f207be30-fad5-4d73-aa30-f69cb2a5ebac","title":"test10 title","isSPAM":false},{"id":"d64c2eeb-9ff6-4d33-b4dc-034557805308","title":"test11 title","isSPAM":false}]}`,
+    test11 subject`,
+			jsonOutputExpected: `{"name":"test","mails":[{"id":"02d3583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test1@protonmail.com","name":"test1"},"subject":"test1 subject","isSPAM":true},{"id":"0343583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test2@protonmail.com","name":"test2"},"subject":"test2 subject","isSPAM":false},{"id":"0243583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test3@protonmail.com","name":"test3"},"subject":"test3 subject","isSPAM":true},{"id":"0783583b-7b58-40cb-a2b7-c09d79673334","sender":{"name":"test4"},"subject":"test4 subject","isSPAM":false},{"id":"0903583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test5@protonmail.com"},"subject":"test5 subject","isSPAM":false},{"id":"12d3583b-7b58-40cb-a2b7-c09d79673334","sender":{"mail":"test6@protonmail.com","name":"test6"},"subject":"","isSPAM":false},{"id":"67d3583b-7b58-40cb-a2b7-c09d79673334","sender":{},"subject":"test7 subject","isSPAM":false},{"id":"89d3583b-7b58-40cb-a2b7-c09d79673334","subject":"test8 subject","isSPAM":false},{"id":"f44cf3b8-f6a4-4b75-b734-cb1553b23cf6","subject":"test9 subject","isSPAM":false},{"id":"f207be30-fad5-4d73-aa30-f69cb2a5ebac","subject":"test10 subject","isSPAM":false},{"id":"d64c2eeb-9ff6-4d33-b4dc-034557805308","subject":"test11 subject","isSPAM":false}]}`,
 		},
 	}
 

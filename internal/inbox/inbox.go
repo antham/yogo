@@ -37,12 +37,12 @@ type Sender struct {
 
 // Inbox represents a mail sumup in an inbox
 type InboxItem struct {
-	ID     string     `json:"id"`
-	Sender *Sender    `json:"sender,omitempty"`
-	Title  string     `json:"title"`
-	Date   *time.Time `json:"date,omitempty"`
-	Body   string     `json:"body,omitempty"`
-	IsSPAM bool       `json:"isSPAM"`
+	ID      string     `json:"id"`
+	Sender  *Sender    `json:"sender,omitempty"`
+	Subject string     `json:"subject"`
+	Date    *time.Time `json:"date,omitempty"`
+	Body    string     `json:"body,omitempty"`
+	IsSPAM  bool       `json:"isSPAM"`
 }
 
 // NewInbox creates a new mail inbox
@@ -127,14 +127,14 @@ func (i *Inbox[M]) Coloured() (string, error) {
 	output := ""
 	for index, mail := range i.GetMails() {
 		info := struct {
-			Index         string
-			SenderName    string
-			HasSenderName bool
-			SenderMail    string
-			HasSenderMail bool
-			Title         string
-			TitlePadding  string
-			SPAM          string
+			Index          string
+			SenderName     string
+			HasSenderName  bool
+			SenderMail     string
+			HasSenderMail  bool
+			Subject        string
+			SubjectPadding string
+			SPAM           string
 		}{}
 
 		if mail.Sender != nil {
@@ -154,10 +154,10 @@ func (i *Inbox[M]) Coloured() (string, error) {
 			info.SenderName = color.YellowString(noDataToDisplayMsg)
 			info.SenderMail = color.YellowString(noDataToDisplayMsg)
 		}
-		if mail.Title != "" {
-			info.Title = color.CyanString(mail.Title)
+		if mail.Subject != "" {
+			info.Subject = color.CyanString(mail.Subject)
 		} else {
-			info.Title = color.CyanString(noDataToDisplayMsg)
+			info.Subject = color.CyanString(noDataToDisplayMsg)
 		}
 		if mail.IsSPAM {
 			info.SPAM = color.RedString("[SPAM]")
@@ -165,7 +165,7 @@ func (i *Inbox[M]) Coloured() (string, error) {
 		info.Index = strconv.Itoa(index + 1)
 
 		for i := 0; i < len(info.Index); i++ {
-			info.TitlePadding = info.TitlePadding + " "
+			info.SubjectPadding = info.SubjectPadding + " "
 		}
 
 		var buf bytes.Buffer
@@ -180,8 +180,8 @@ func (i *Inbox[M]) Coloured() (string, error) {
 	{{- if .HasSenderName -}}>{{- end -}}
 {{- end -}}
 {{- if .SPAM }} {{ .SPAM -}}{{- end -}}
-{{- if .Title }}
-  {{.TitlePadding}}{{ .Title }}
+{{- if .Subject }}
+  {{.SubjectPadding}}{{ .Subject }}
 {{ end }}
 `))
 		if err := tpl.Execute(&buf, info); err != nil {
@@ -243,8 +243,8 @@ func parseInboxPage[M client.MailDoc](doc *goquery.Document, inbox *Inbox[M]) {
 					Name: name,
 					Mail: userEmail,
 				},
-				Title:  s.Find("div.lms").Text(),
-				IsSPAM: isSPAM,
+				Subject: s.Find("div.lms").Text(),
+				IsSPAM:  isSPAM,
 			}
 
 			inbox.Add(inboxItem)

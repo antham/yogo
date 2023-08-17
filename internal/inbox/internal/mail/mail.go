@@ -32,7 +32,7 @@ func Parse[M client.MailDoc](doc M) (RenderIdentifier, error) {
 		doc.Find("body div.fl .ellipsis").Each(func(i int, s *goquery.Selection) {
 			switch i {
 			case 0:
-				mail.Title = strings.TrimSpace(s.Text())
+				mail.Subject = strings.TrimSpace(s.Text())
 			case 1:
 				mail.Sender = &Sender{}
 				mail.Sender.Name, mail.Sender.Mail = parseFrom(s.Text())
