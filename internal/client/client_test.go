@@ -79,8 +79,10 @@ func TestFetchDocument(t *testing.T) {
 			},
 		}} {
 		t.Run(s.name, func(t *testing.T) {
+			b := newBrowser()
+
 			s.setup()
-			s.test(fetchDocument("GET", "http://abcdefg.com", map[string]string{}, nil))
+			s.test(b.fetchDocument("GET", "http://abcdefg.com", map[string]string{}, nil))
 			httpmock.Reset()
 		})
 	}
@@ -139,8 +141,9 @@ func TestFetch(t *testing.T) {
 		},
 	}} {
 		t.Run(s.name, func(t *testing.T) {
+			b := newBrowser()
 			s.setup()
-			s.test(fetch("GET", "http://hijklm.com", map[string]string{"header1": "value1", "header2": "value2"}, nil))
+			s.test(b.fetch("GET", "http://hijklm.com", map[string]string{"header1": "value1", "header2": "value2"}, nil))
 			httpmock.Reset()
 		})
 	}
@@ -258,8 +261,13 @@ func TestDecorateURL(t *testing.T) {
 		},
 	}} {
 		t.Run(s.name, func(t *testing.T) {
+			mockYopmailSetup()
+
+			c, err := New[MailHTMLDoc]()
+			assert.NoError(t, err)
+
 			s.setup()
-			s.test(decorateURL(s.args()))
+			s.test(c.decorateURL(s.args()))
 			httpmock.Reset()
 		})
 	}
