@@ -31,9 +31,7 @@ Flags:
 Use "yogo [command] --help" for more information about a command.
 ```
 
-```
 ⚠️ Performing too much calls will trigger a CAPTCHA that you will need to solve through a browser. Add a delay to prevent this.
-```
 
 ## Flag
 
