@@ -47,7 +47,7 @@ func TestFetch(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
@@ -96,7 +96,7 @@ func TestCount(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
@@ -155,7 +155,7 @@ func TestParseInboxPages(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(29)
@@ -227,7 +227,7 @@ func TestShrink(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(19)
@@ -269,7 +269,7 @@ func TestShrinkEmptyInbox(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
@@ -310,7 +310,7 @@ func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(18)
@@ -351,7 +351,7 @@ func TestGetAll(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(29)
@@ -400,7 +400,7 @@ func TestFlush(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(15)
@@ -436,7 +436,7 @@ func TestFlushEmptyInbox(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
@@ -478,7 +478,7 @@ func TestDelete(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)

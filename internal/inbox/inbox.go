@@ -46,8 +46,8 @@ type InboxItem struct {
 }
 
 // NewInbox creates a new mail inbox
-func NewInbox[M client.MailDoc](name string) (*Inbox[M], error) {
-	client, err := client.New[M]()
+func NewInbox[M client.MailDoc](name string, enableDebugMode bool) (*Inbox[M], error) {
+	client, err := client.New[M](enableDebugMode)
 	return &Inbox[M]{
 		client:     client,
 		Name:       name,

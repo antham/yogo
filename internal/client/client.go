@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/google/uuid"
 )
 
 var ErrCaptcha = errors.New("failure when trying to access content: a CAPTCHA is probably activated, look to the web interface")
@@ -44,8 +46,8 @@ type Client[M MailDoc] struct {
 }
 
 // New creates a new client
-func New[M MailDoc]() (Client[M], error) {
-	browser := newBrowser()
+func New[M MailDoc](enableDebugMode bool) (Client[M], error) {
+	browser := newBrowser(enableDebugMode)
 	c, err := browser.fetch("GET", refURL, map[string]string{}, nil)
 	if err != nil {
 		return Client[M]{}, err
@@ -181,11 +183,12 @@ func (c Client[M]) decorateURL(URL string, apiVersion string, disableDefaultQuer
 }
 
 type browser struct {
-	cookies map[string]string
+	cookies         map[string]string
+	enableDebugMode bool
 }
 
-func newBrowser() *browser {
-	return &browser{cookies: map[string]string{}}
+func newBrowser(enableDebugMode bool) *browser {
+	return &browser{cookies: map[string]string{}, enableDebugMode: enableDebugMode}
 }
 
 func (b *browser) setCookie(key string, value string) {
@@ -207,6 +210,7 @@ func (b *browser) buildCookie() string {
 }
 
 func (b *browser) fetch(method string, URL string, headers map[string]string, body io.Reader) (*bytes.Buffer, error) {
+	ID := uuid.New()
 	errMsg := fmt.Sprintf("failure when fetching %s", URL)
 	r, err := http.NewRequest(method, URL, body)
 	if err != nil {
@@ -220,11 +224,29 @@ func (b *browser) fetch(method string, URL string, headers map[string]string, bo
 		r.Header.Add("Cookie", b.buildCookie())
 	}
 	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
+	if b.enableDebugMode {
+		buff, err := httputil.DumpRequest(r, true)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("\n---- REQUEST %s ----\n", ID)
+		fmt.Println(string(buff))
+		fmt.Println("------------------------------------------------------")
+	}
 
 	c := http.Client{Timeout: defaultHttpTimeout * time.Second}
 	res, err := c.Do(r)
 	if err != nil {
 		return nil, wrapError(errMsg, err)
+	}
+	if b.enableDebugMode {
+		buff, err := httputil.DumpResponse(res, true)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("\n---- RESPONSE %s ----\n", ID)
+		fmt.Println(string(buff))
+		fmt.Println("-------------------------------------------------------")
 	}
 	if res.StatusCode > 300 {
 		b, err := io.ReadAll(res.Body)

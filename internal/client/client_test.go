@@ -79,7 +79,7 @@ func TestFetchDocument(t *testing.T) {
 			},
 		}} {
 		t.Run(s.name, func(t *testing.T) {
-			b := newBrowser()
+			b := newBrowser(false)
 
 			s.setup()
 			s.test(b.fetchDocument("GET", "http://abcdefg.com", map[string]string{}, nil))
@@ -141,7 +141,7 @@ func TestFetch(t *testing.T) {
 		},
 	}} {
 		t.Run(s.name, func(t *testing.T) {
-			b := newBrowser()
+			b := newBrowser(false)
 			s.setup()
 			s.test(b.fetch("GET", "http://hijklm.com", map[string]string{"header1": "value1", "header2": "value2"}, nil))
 			httpmock.Reset()
@@ -263,7 +263,7 @@ func TestDecorateURL(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New[MailHTMLDoc]()
+			c, err := New[MailHTMLDoc](false)
 			assert.NoError(t, err)
 
 			s.setup()
@@ -323,7 +323,7 @@ func TestGetMailsPage(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New[MailHTMLDoc]()
+			c, err := New[MailHTMLDoc](false)
 			assert.NoError(t, err)
 
 			s.setup()
@@ -383,7 +383,7 @@ func TestGetMailPage(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New[MailHTMLDoc]()
+			c, err := New[MailHTMLDoc](false)
 			assert.NoError(t, err)
 
 			s.setup()
@@ -443,7 +443,7 @@ func TestDeleteMail(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New[MailHTMLDoc]()
+			c, err := New[MailHTMLDoc](false)
 			assert.NoError(t, err)
 
 			s.setup()
@@ -503,7 +503,7 @@ func TestFlushMail(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) {
 			mockYopmailSetup()
 
-			c, err := New[MailHTMLDoc]()
+			c, err := New[MailHTMLDoc](false)
 			assert.NoError(t, err)
 
 			s.setup()

@@ -20,15 +20,18 @@ Usage:
   yogo [command]
 
 Available Commands:
+  completion  Generate the autocompletion script for the specified shell
   help        Help about any command
   inbox       Handle inbox messages
   version     App version
 
 Flags:
-  -h, --help   help for yogo
-      --json   Dump the output as json
+      --debug   Log all requests/responses
+  -h, --help    help for yogo
+      --json    Dump the output as json
 
 Use "yogo [command] --help" for more information about a command.
+
 ```
 
 ⚠️ Performing too much calls will trigger a CAPTCHA that you will need to solve through a browser. Add a delay to prevent this.
@@ -36,6 +39,8 @@ Use "yogo [command] --help" for more information about a command.
 ## Flag
 
 Use the `--json` output flag to get the output as JSON.
+
+In case of an issue with `yogo`, use the `--debug` flag to log the requests/responses.
 
 ## Inbox
 
