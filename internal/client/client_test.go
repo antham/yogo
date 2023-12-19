@@ -287,19 +287,19 @@ func TestGetMailsPage(t *testing.T) {
 	for _, s := range []scenario{{
 		"500 when requesting yopmail",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(500, ""))
 		}, func() (string, int) {
 			return "box1", 1
 		},
 		func(doc *goquery.Document, err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest : request failed with error code 500 and body `)
+			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest : request failed with error code 500 and body `)
 		},
 	}, {
 		"CAPTCHA activated",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
 		}, func() (string, int) {
 			return "box1", 1
@@ -311,7 +311,7 @@ func TestGetMailsPage(t *testing.T) {
 	}, {
 		"request succeed",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=&d=&id=&login=box1&p=1&r_c=&scrl=&spam=true&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, "w.finrmail(25,2,1,0,0,'alt.zk-4nyqp5l','')"))
 		}, func() (string, int) {
 			return "box1", 1
@@ -407,19 +407,19 @@ func TestDeleteMail(t *testing.T) {
 	for _, s := range []scenario{{
 		"500 when requesting yopmail",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=ABCDEFGH&login=box1&p=1&r_c=&id=&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=&d=ABCDEFGH&login=box1&p=1&r_c=&id=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(500, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
 		func(err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest : Get "https://yopmail.com/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest": no responder found`)
+			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ad=0&ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest : Get "https://yopmail.com/en/inbox?ad=0&ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest": no responder found`)
 		},
 	}, {
 		"CAPTCHA activated",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
@@ -431,7 +431,7 @@ func TestDeleteMail(t *testing.T) {
 	}, {
 		"request succeed",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=&d=ABCDEFGH&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, "w.finrmail(25,2,1,0,0,'alt.zk-4nyqp5l','')"))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
@@ -467,19 +467,19 @@ func TestFlushMail(t *testing.T) {
 	for _, s := range []scenario{{
 		"500 when requesting yopmail",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(500, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
 		},
 		func(err error) {
 			assert.Error(t, err)
-			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest : request failed with error code 500 and body `)
+			assert.EqualError(t, err, `failure when fetching https://yopmail.com/en/inbox?ad=0&ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest : request failed with error code 500 and body `)
 		},
 	}, {
 		"CAPTCHA activated",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, ""))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
@@ -491,7 +491,7 @@ func TestFlushMail(t *testing.T) {
 	}, {
 		"request succeed",
 		func() {
-			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
+			httpmock.RegisterResponder("GET", refURL+"/en/inbox?ad=0&ctrl=ABCDEFGH&d=all&id=&login=box1&p=1&r_c=&v=3.1&yj=ytest&yp=yptest",
 				httpmock.NewStringResponder(200, "w.finrmail(25,2,1,0,0,'alt.zk-4nyqp5l','')"))
 		}, func() (string, string) {
 			return "box1", "ABCDEFGH"
