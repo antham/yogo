@@ -17,12 +17,12 @@ func TestFetch(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_1.html",
 		},
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_2.html",
 		},
 		{
@@ -37,17 +37,12 @@ func TestFetch(t *testing.T) {
 		},
 		{
 			"GET",
-			"https://yopmail.com/consent?c=accept",
-			"features/main_page.html",
-		},
-		{
-			"GET",
 			"https://yopmail.com/ver/4.8/webmail.js",
 			"features/webmail.js",
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
@@ -66,12 +61,12 @@ func TestCount(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_1.html",
 		},
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_2.html",
 		},
 		{
@@ -86,17 +81,12 @@ func TestCount(t *testing.T) {
 		},
 		{
 			"GET",
-			"https://yopmail.com/consent?c=accept",
-			"features/main_page.html",
-		},
-		{
-			"GET",
 			"https://yopmail.com/ver/4.8/webmail.js",
 			"features/webmail.js",
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 	err = inbox.ParseInboxPages(15)
 	assert.NoError(t, err)
@@ -110,12 +100,12 @@ func TestParseInboxPages(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_1.html",
 		},
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_2.html",
 		},
 		{
@@ -145,17 +135,12 @@ func TestParseInboxPages(t *testing.T) {
 		},
 		{
 			"GET",
-			"https://yopmail.com/consent?c=accept",
-			"features/main_page.html",
-		},
-		{
-			"GET",
 			"https://yopmail.com/ver/4.8/webmail.js",
 			"features/webmail.js",
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(29)
@@ -192,12 +177,12 @@ func TestShrink(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_1.html",
 		},
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_2.html",
 		},
 		{
@@ -227,7 +212,7 @@ func TestShrink(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(19)
@@ -249,7 +234,7 @@ func TestShrinkEmptyInbox(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_empty.html",
 		},
 		{
@@ -269,7 +254,7 @@ func TestShrinkEmptyInbox(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
@@ -285,12 +270,12 @@ func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_1.html",
 		},
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_empty.html",
 		},
 		{
@@ -310,7 +295,7 @@ func TestShrinkWithLimitGreaterThanNumberOfMessagesAvailable(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(18)
@@ -326,12 +311,12 @@ func TestGetAll(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_1.html",
 		},
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_2.html",
 		},
 		{
@@ -341,17 +326,12 @@ func TestGetAll(t *testing.T) {
 		},
 		{
 			"GET",
-			"https://yopmail.com/consent?c=accept",
-			"features/main_page.html",
-		},
-		{
-			"GET",
 			"https://yopmail.com/ver/4.8/webmail.js",
 			"features/webmail.js",
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(29)
@@ -370,12 +350,12 @@ func TestFlush(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_1.html",
 		},
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_2.html",
 		},
 		{
@@ -400,7 +380,7 @@ func TestFlush(t *testing.T) {
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(15)
@@ -416,7 +396,7 @@ func TestFlushEmptyInbox(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_empty.html",
 		},
 		{
@@ -426,17 +406,12 @@ func TestFlushEmptyInbox(t *testing.T) {
 		},
 		{
 			"GET",
-			"https://yopmail.com/consent?c=accept",
-			"features/main_page.html",
-		},
-		{
-			"GET",
 			"https://yopmail.com/ver/4.8/webmail.js",
 			"features/webmail.js",
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
@@ -453,7 +428,7 @@ func TestDelete(t *testing.T) {
 	assert.NoError(t, registerResponders([]responder{
 		{
 			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/inbox_page_1.html",
 		},
 		{
@@ -468,23 +443,18 @@ func TestDelete(t *testing.T) {
 		},
 		{
 			"GET",
-			"https://yopmail.com/consent?c=accept",
-			"features/main_page.html",
-		},
-		{
-			"GET",
-			"https://yopmail.com/en/inbox?ctrl=&d=e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D&id=&login=test&p=1&r_c=&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D&id=&login=test&p=1&r_c=&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
 			"features/noop.html",
 		},
 	}))
 
-	inbox, err := NewInbox[client.MailHTMLDoc]("test")
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
 	assert.NoError(t, inbox.Delete(0))
 
-	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET https://yopmail.com/en/inbox?ctrl=&d=e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D&id=&login=test&p=1&r_c=&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp"])
+	assert.Equal(t, 1, httpmock.GetCallCountInfo()["GET https://yopmail.com/en/inbox?ad=0&ctrl=&d=e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D&id=&login=test&p=1&r_c=&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp"])
 	assert.NoError(t, err)
 }
 

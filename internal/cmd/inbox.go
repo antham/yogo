@@ -21,6 +21,6 @@ func init() {
 }
 
 func newInbox[M client.MailDoc](name string) (Inbox, error) {
-	in, err := inbox.NewInbox[M](name)
+	in, err := inbox.NewInbox[M](name, enableDebugMode)
 	return Inbox(in), err
 }
