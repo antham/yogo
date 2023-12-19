@@ -54,6 +54,50 @@ func TestFetch(t *testing.T) {
 	assert.Contains(t, j, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==")
 }
 
+func TestFetchWithDebug(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	assert.NoError(t, registerResponders([]responder{
+		{
+			"GET",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=1&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"features/inbox_page_1.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=&d=&id=&login=test&p=2&r_c=&scrl=&spam=true&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"features/inbox_page_2.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/en/mail?b=test&id=me_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D",
+			"features/mail.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com",
+			"features/main_page.html",
+		},
+		{
+			"GET",
+			"https://yopmail.com/ver/4.8/webmail.js",
+			"features/webmail.js",
+		},
+	}))
+
+	inbox, err := NewInbox[client.MailHTMLDoc]("test", true)
+	assert.NoError(t, err)
+	err = inbox.ParseInboxPages(15)
+	assert.NoError(t, err)
+
+	m, err := inbox.Fetch(0)
+	assert.NoError(t, err)
+	j, err := m.JSON()
+	assert.NoError(t, err)
+	assert.Contains(t, j, "e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj==")
+}
+
 func TestCount(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
