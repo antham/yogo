@@ -575,10 +575,42 @@ func TestHTTPClientFactoryCreate(t *testing.T) {
 	}
 }
 
+func TestCheckInboxCAPTCHA(t *testing.T) {
+	type scenario struct {
+		name string
+		arg  string
+		test func(error)
+	}
+
+	for _, s := range []scenario{{
+		"No captcha because loading is defined",
+		"Loading ...",
+		func(err error) {
+			assert.NoError(t, err)
+		},
+	}, {
+		"No captcha because finrmail is defined",
+		`w.finrmail(699,2,1,1,0,'alt.xm-doh3nzhv','')`,
+		func(err error) {
+			assert.NoError(t, err)
+		},
+	}, {
+		"Captcha activated",
+		``,
+		func(err error) {
+			assert.Error(t, err)
+		},
+	}} {
+		t.Run(s.name, func(t *testing.T) {
+			err := checkInboxCAPTCHA(s.arg)
+			s.test(err)
+		})
+	}
+}
+
 func mockYopmailSetup() {
 	httpmock.RegisterResponder("GET", refURL+"/ver/3.1/webmail.js",
 		httpmock.NewStringResponder(200, "xxx http://whatever.com?q=s&yj=ytest&t=a xxxxx"))
-	httpmock.RegisterResponder("GET", refURL+"/consent?c=accept", httpmock.NewStringResponder(200, ""))
 	httpmock.RegisterResponder("GET", refURL,
 		httpmock.NewStringResponder(200, `<script src="/ver/3.1/webmail.js"></script><input id="yp" value="yptest">`))
 }
