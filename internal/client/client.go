@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -15,12 +16,14 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/google/uuid"
+	"golang.org/x/net/http/httpproxy"
 )
 
 var ErrCaptcha = errors.New("failure when trying to access content: a CAPTCHA is probably activated, look to the web interface")
 
 const refURL = "https://yopmail.com"
-const defaultHttpTimeout = 10
+const defaultRequestTimeout = 10
+const defaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
 
 type mailKind string
 
@@ -179,12 +182,17 @@ func (c Client[M]) decorateURL(URL string, apiVersion string, disableDefaultQuer
 }
 
 type browser struct {
-	cookies         map[string]string
-	enableDebugMode bool
+	cookies           map[string]string
+	enableDebugMode   bool
+	httpClientFactory httpClientFactory
 }
 
 func newBrowser(enableDebugMode bool) *browser {
-	return &browser{cookies: map[string]string{}, enableDebugMode: enableDebugMode}
+	return &browser{
+		cookies:           map[string]string{},
+		enableDebugMode:   enableDebugMode,
+		httpClientFactory: httpClientFactory{},
+	}
 }
 
 func (b *browser) setCookie(key string, value string) {
@@ -219,7 +227,11 @@ func (b *browser) fetch(method string, URL string, headers map[string]string, bo
 	if len(b.cookies) > 0 {
 		r.Header.Add("Cookie", b.buildCookie())
 	}
-	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
+	userAgent := os.Getenv("YOGO_USER_AGENT")
+	if userAgent == "" {
+		userAgent = defaultUserAgent
+	}
+	r.Header.Add("User-Agent", userAgent)
 	if b.enableDebugMode {
 		buff, err := httputil.DumpRequest(r, true)
 		if err != nil {
@@ -230,7 +242,10 @@ func (b *browser) fetch(method string, URL string, headers map[string]string, bo
 		fmt.Println("------------------------------------------------------")
 	}
 
-	c := http.Client{Timeout: defaultHttpTimeout * time.Second}
+	c, err := b.httpClientFactory.create()
+	if err != nil {
+		return nil, wrapError(errMsg, err)
+	}
 	res, err := c.Do(r)
 	if err != nil {
 		return nil, wrapError(errMsg, err)
@@ -296,4 +311,36 @@ func checkMailCAPTCHA(content string) error {
 		return ErrCaptcha
 	}
 	return nil
+}
+
+type httpClientFactory struct{}
+
+func (h httpClientFactory) create() (*http.Client, error) {
+	timeout := defaultRequestTimeout * time.Second
+	if os.Getenv("YOGO_REQUEST_TIMEOUT") != "" {
+		t, err := strconv.Atoi(os.Getenv("YOGO_REQUEST_TIMEOUT"))
+		if err != nil {
+			return nil, err
+		}
+		timeout = time.Duration(t) * time.Second
+	}
+	client := &http.Client{Timeout: timeout}
+	config := httpproxy.FromEnvironment()
+	URL := ""
+	switch {
+	case config.HTTPProxy != "":
+		URL = config.HTTPProxy
+	case config.HTTPSProxy != "":
+		URL = config.HTTPSProxy
+	}
+	if URL != "" {
+		u, err := url.Parse(URL)
+		if err != nil {
+			return nil, err
+		}
+		transport := &http.Transport{}
+		transport.Proxy = http.ProxyURL(u)
+		client.Transport = transport
+	}
+	return client, nil
 }

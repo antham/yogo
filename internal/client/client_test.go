@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -509,6 +510,67 @@ func TestFlushMail(t *testing.T) {
 			s.setup()
 			s.test(c.FlushMail(s.args()))
 			httpmock.Reset()
+		})
+	}
+}
+
+func TestHTTPClientFactoryCreate(t *testing.T) {
+	type scenario struct {
+		name  string
+		setup func()
+		test  func(*http.Client, error)
+	}
+
+	for _, s := range []scenario{{
+		"0 values",
+		func() {
+		},
+		func(c *http.Client, err error) {
+			assert.NoError(t, err)
+		},
+	}, {
+		"Define a timeout alone",
+		func() {
+			os.Setenv("YOGO_REQUEST_TIMEOUT", "10")
+		},
+		func(c *http.Client, err error) {
+			assert.NoError(t, err)
+			assert.Equal(t, time.Second*10, c.Timeout)
+		},
+	}, {
+		"Define an HTTP proxy URL",
+		func() {
+			os.Setenv("HTTP_PROXY", "http://localhost:8000")
+		},
+		func(c *http.Client, err error) {
+			assert.NoError(t, err)
+		},
+	}, {
+		"Define an HTTPs proxy URL",
+		func() {
+			os.Setenv("HTTPS_PROXY", "http://localhost:8000")
+		},
+		func(c *http.Client, err error) {
+			assert.NoError(t, err)
+		},
+	}, {
+		"Define a wrong proxy URL",
+		func() {
+			os.Setenv("HTTP_PROXY", "l\n")
+		},
+		func(c *http.Client, err error) {
+			assert.Error(t, err)
+			assert.EqualError(t, err, `parse "l\n": net/url: invalid control character in URL`)
+		},
+	}} {
+		t.Run(s.name, func(t *testing.T) {
+			os.Setenv("HTTP_PROXY", "")
+			os.Setenv("HTTPS_PROXY", "")
+			os.Setenv("YOGO_REQUEST_TIMEOUT", "")
+			s.setup()
+			h := httpClientFactory{}
+			c, err := h.create()
+			s.test(c, err)
 		})
 	}
 }

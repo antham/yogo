@@ -36,6 +36,17 @@ Use "yogo [command] --help" for more information about a command.
 
 ⚠️ Performing too much calls will trigger a CAPTCHA that you will need to solve through a browser. Add a delay to prevent this.
 
+## Environment variable
+
+You can customize the behaviour of Yogo through several environment variables:
+
+| Name                   | Default value                                                                                                          | Usage                                             |
+|------------------------|------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| `HTTP_PROXY`           | Empty                                                                                                                  | Define an HTTP proxy for the requests             |
+| `HTTPS_PROXY`          | Empty                                                                                                                  | Define an HTTPs proxy for the requests            |
+| `YOGO_USER_AGENT`      | See the `defaultUserAgent` const in the [client](https://github.com/antham/yogo/blob/master/internal/client/client.go) | The user agent used to perfom the requests        |
+| `YOGO_REQUEST_TIMEOUT` | 10s                                                                                                                    | Duration of a request before reaching the timeout |
+
 ## Flag
 
 Use the `--json` output flag to get the output as JSON.
