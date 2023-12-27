@@ -299,7 +299,7 @@ func wrapError(msg string, err error) error {
 }
 
 func checkInboxCAPTCHA(content string) error {
-	s := `w\.finrmail\(\d+,\s*\d+,\s*\d+,\s*\d+,\s*\d+,\s*'alt\.[^']+',\s*'.*?'\)`
+	s := `w\.finrmail\(\d+,\s*\d+,\s*\d+,\s*\d+,\s*\d+,\s*'alt\.[^']+',\s*'.*?'\)|Loading \.\.\.`
 	if !regexp.MustCompile(s).MatchString(content) {
 		return ErrCaptcha
 	}
