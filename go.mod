@@ -2,7 +2,7 @@ module github.com/antham/yogo/v4
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.2
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.17.0
 	github.com/google/uuid v1.6.0
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/jaytaylor/html2text v0.0.0-20230321000545-74c2419ad056
