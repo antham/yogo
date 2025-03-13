@@ -7,7 +7,7 @@ require (
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/jaytaylor/html2text v0.0.0-20230321000545-74c2419ad056
 	github.com/spf13/cobra v1.8.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/net v0.36.0
 	golang.org/x/term v0.29.0
 )
