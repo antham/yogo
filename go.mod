@@ -8,7 +8,7 @@ require (
 	github.com/jaytaylor/html2text v0.0.0-20230321000545-74c2419ad056
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/net v0.37.0
+	golang.org/x/net v0.38.0
 	golang.org/x/term v0.30.0
 )
 
@@ -32,4 +32,4 @@ require (
 )
 
 go 1.23
-toolchain go1.23.2
+toolchain go1.24.1
