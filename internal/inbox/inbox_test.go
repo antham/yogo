@@ -428,7 +428,7 @@ func TestFlush(t *testing.T) {
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(15)
-	inbox.Flush()
+	assert.NoError(inbox.Flush())
 
 	assert.NoError(t, err)
 }
@@ -459,7 +459,7 @@ func TestFlushEmptyInbox(t *testing.T) {
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
-	inbox.Flush()
+	assert.NoError(inbox.Flush())
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, inbox.Count())

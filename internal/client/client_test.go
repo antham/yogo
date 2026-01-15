@@ -531,7 +531,7 @@ func TestHTTPClientFactoryCreate(t *testing.T) {
 	}, {
 		"Define a timeout alone",
 		func() {
-			os.Setenv("YOGO_REQUEST_TIMEOUT", "10")
+			assert.NoError(os.Setenv("YOGO_REQUEST_TIMEOUT", "10"))
 		},
 		func(c *http.Client, err error) {
 			assert.NoError(t, err)
@@ -540,7 +540,7 @@ func TestHTTPClientFactoryCreate(t *testing.T) {
 	}, {
 		"Define an HTTP proxy URL",
 		func() {
-			os.Setenv("HTTP_PROXY", "http://localhost:8000")
+			assert.NoError(os.Setenv("HTTP_PROXY", "http://localhost:8000"))
 		},
 		func(c *http.Client, err error) {
 			assert.NoError(t, err)
@@ -548,7 +548,7 @@ func TestHTTPClientFactoryCreate(t *testing.T) {
 	}, {
 		"Define an HTTPs proxy URL",
 		func() {
-			os.Setenv("HTTPS_PROXY", "http://localhost:8000")
+			assert.NoError(os.Setenv("HTTPS_PROXY", "http://localhost:8000"))
 		},
 		func(c *http.Client, err error) {
 			assert.NoError(t, err)
