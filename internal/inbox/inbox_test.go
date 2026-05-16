@@ -422,14 +422,19 @@ func TestFlush(t *testing.T) {
 			"https://yopmail.com/en/inbox?login=test&p=1&d=all&ctrl=e_ZGtkZwVmZQNmBGV1ZQNjZQVjAwD1BD==&v=4.8&r_c=&id",
 			"features/noop.html",
 		},
+		{
+			"GET",
+			"https://yopmail.com/en/inbox?ad=0&ctrl=e_ZwRjAwRmZGtmAwZ1ZQNjAwt5AQZmZj%3D%3D&d=all&id=&login=test&p=1&r_c=&v=4.8&yj=VZGV5AmpjZwp5ZGNmZwL0BQH&yp=UAQDkAGH2Amp2Zmt0ZmVmAGp",
+			"features/inbox_empty.html",
+		},
 	}))
 
 	inbox, err := NewInbox[client.MailHTMLDoc]("test", false)
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(15)
-	inbox.Flush()
-
+	assert.NoError(t, err)
+	err = inbox.Flush()
 	assert.NoError(t, err)
 }
 
@@ -459,9 +464,10 @@ func TestFlushEmptyInbox(t *testing.T) {
 	assert.NoError(t, err)
 
 	err = inbox.ParseInboxPages(1)
-	inbox.Flush()
-
 	assert.NoError(t, err)
+	err = inbox.Flush()
+	assert.NoError(t, err)
+
 	assert.Equal(t, 0, inbox.Count())
 }
 
