@@ -2,7 +2,7 @@ module github.com/antham/yogo/v4
 
 require (
 	github.com/PuerkitoBio/goquery v1.11.0
-	github.com/fatih/color v1.18.0
+	github.com/fatih/color v1.19.0
 	github.com/google/uuid v1.6.0
 	github.com/jarcoal/httpmock v1.4.1
 	github.com/jaytaylor/html2text v0.0.0-20230321000545-74c2419ad056
@@ -17,7 +17,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
